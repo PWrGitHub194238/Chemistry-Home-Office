@@ -1,0 +1,34 @@
+.file-upload-container {
+  height: 80%;
+  width: 60%;
+  border: 5px dashed #673ab7;
+  border-radius: 10px;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #a399b4 !important;
+    opacity: 0.4;
+  }
+}
+
+.files-list {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  margin: 10px auto;
+  background: #ffffff;
+  border: 1px dashed;
+  border-radius: 12px;
+  padding: 5px;
+  color: #673ab7;
+
+  .delete-file {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    img {
+      width: 30px;
+    }
+  }
+}

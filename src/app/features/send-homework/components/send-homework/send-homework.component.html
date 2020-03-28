@@ -1,0 +1,44 @@
+<cho-spinner
+  [loadingMessage]="loadingMessage"
+  [isLoading]="
+    isLoading ||
+    isFinishUploadBottomSheetOpen ||
+    isSelectSendTypeBottomSheetOpen
+  "
+  fullScreen="true"
+></cho-spinner>
+
+<span *ngIf="isUserWithDetails">
+  <cho-upload-from-camera
+    *ngIf="
+      !isLoading &&
+      attachementSourceTypeSelected ==
+        SelectSendTypeBottomSheetAction.LoadFromCamera
+    "
+    (saveBlob)="onSaveBlob($event)"
+  ></cho-upload-from-camera>
+  <cho-upload-from-disk
+    *ngIf="
+      !isLoading &&
+      attachementSourceTypeSelected ==
+        SelectSendTypeBottomSheetAction.LoadFromDisk
+    "
+    (saveBlob)="onSaveBlob($event)"
+  ></cho-upload-from-disk>
+
+  <button
+    *ngIf="
+      !isLoading &&
+      !isSelectSendTypeBottomSheetOpen &&
+      !isFinishUploadBottomSheetOpen &&
+      !isSending
+    "
+    mat-fab
+    class="bottom-sheet-menu-button"
+    color="primary"
+    matTooltip="Przywołaj menu wyboru"
+    (click)="openSelectAttachmentSourceDialog()"
+  >
+    <mat-icon>more_horiz</mat-icon>
+  </button>
+</span>

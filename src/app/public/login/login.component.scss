@@ -1,0 +1,26 @@
+.login-card {
+  min-width: 300px;
+  max-width: 300px;
+  @media (min-width: 600px) {
+    max-width: 500px;
+  }
+  width: 100%;
+}
+
+.login-card-actions {
+  margin: 0px;
+  padding: 0px;
+}
+
+.login-key-mat-avatar {
+  background-image: url("/assets/login-key-mat-avatar.jpg");
+  background-size: cover;
+}
+
+.login-divider {
+  padding-bottom: 10px;
+}
+
+.form {
+  margin-bottom: 0px !important;
+}

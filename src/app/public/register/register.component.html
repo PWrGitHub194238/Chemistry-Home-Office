@@ -1,0 +1,127 @@
+<div
+  class="container"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxLayoutGap="10px"
+>
+  <mat-card class="register-card">
+    <mat-card-header>
+      <div mat-card-avatar class="register-key-mat-avatar"></div>
+      <mat-card-title>Zarejestruj się do portalu</mat-card-title>
+      <mat-card-subtitle>podając wymagane dane</mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider class="register-divider"></mat-divider>
+    <mat-card-content
+      fxLayout="column"
+      fxLayoutAlign="center"
+      fxLayoutGap="20px"
+    >
+      <div fxFlex></div>
+      <form
+        fxLayout="column"
+        fxLayoutAlign="space-evenly"
+        fxLayoutGap="10px"
+        fxFlex="100%"
+        class="form"
+        [formGroup]="registerForm"
+        (ngSubmit)="onSubmit()"
+      >
+        <mat-form-field class="full-width">
+          <mat-label>Imię i nazwisko</mat-label>
+          <input
+            matInput
+            formControlName="userLogin"
+            placeholder="Imię Nazwisko"
+            type="text"
+          />
+          <mat-error
+            *ngIf="userLogin.invalid && (userLogin.touched || submitted)"
+          >
+            Podaj proszę swoje imię i nazwisko
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Adres e-mail</mat-label>
+          <input
+            matInput
+            formControlName="userMail"
+            placeholder="Adres e-mail"
+            type="email"
+          />
+          <mat-error
+            *ngIf="userMail.invalid && (userMail.touched || submitted)"
+          >
+            Podaj proszę prawidłowy adres e-mail
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Hasło</mat-label>
+          <input
+            matInput
+            formControlName="userPassword"
+            placeholder="Hasło"
+            type="password"
+          />
+          <mat-error
+            *ngIf="userPassword.invalid && (userPassword.touched || submitted)"
+          >
+            Podaj proszę hasło do swojego konta
+          </mat-error>
+        </mat-form-field>
+        <div
+          fxLayout="column"
+          fxLayout.sm="row"
+          fxLayoutAlign="space-between"
+          fxLayoutGap="10px"
+        >
+          <mat-form-field class="full-width">
+            <mat-label>Klasa</mat-label>
+            <input
+              matInput
+              formControlName="studentClass"
+              placeholder="7A"
+              type="text"
+            />
+            <mat-error
+              *ngIf="
+                studentClass.invalid && (studentClass.touched || submitted)
+              "
+            >
+              Podaj proszę swoją nazwę klasy
+            </mat-error>
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-label>Numer w dzienniku</mat-label>
+            <input
+              matInput
+              formControlName="studentNo"
+              placeholder="1"
+              type="number"
+            />
+            <mat-error
+              *ngIf="studentNo.invalid && (studentNo.touched || submitted)"
+            >
+              Podaj proszę liczbę
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <button mat-raised-button color="primary" type="submit">
+          Zarejestruj
+        </button>
+        <button
+          mat-button
+          color="primary"
+          type="button"
+          (click)="onLoginButtonClick()"
+        >
+          lub zaloguj się
+        </button>
+      </form>
+    </mat-card-content>
+    <mat-card-actions class="register-card-actions"></mat-card-actions>
+    <cho-spinner
+      [loadingMessage]="loadingMessage"
+      [isLoading]="isLoading"
+    ></cho-spinner>
+  </mat-card>
+</div>

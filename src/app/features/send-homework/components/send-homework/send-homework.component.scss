@@ -1,0 +1,8 @@
+.bottom-sheet-menu-button {
+  position: fixed;
+  bottom: 100px;
+  left: 0;
+  right: 0;
+  margin: 5% auto; /* Will not center vertically and won't work in IE6/7. */
+  z-index: 999;
+}

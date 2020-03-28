@@ -1,0 +1,36 @@
+<mat-card
+  class="containter mat-elevation-z bottom-sheet-container"
+  fxLayout="column"
+  fxLayoutAlign="space-around"
+>
+  <mat-card-header>
+    <mat-card-title>Dobrze, co dalej?</mat-card-title>
+    <mat-card-subtitle>
+      Wybierz czy chcesz przesyłać dalsze materiały w ramach zadania domowego,
+      czy chcesz zakończyc i wysłać zadanie
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-around streach">
+      <button
+        mat-fab
+        color="primary"
+        matTooltip="Przesyłaj dalsze materiały, dopóki zadanie domowe nie będzie kompletne"
+        (click)="onContinue()"
+      >
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+      <button
+        mat-fab
+        color="primary"
+        matBadgeColor="warn"
+        [matBadge]="attachementCount"
+        matTooltip="Prześlij informację do nauczyciela, że skończyłeś zadanie domowe"
+        (click)="onSendHomework()"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+  <mat-card-actions></mat-card-actions>
+</mat-card>

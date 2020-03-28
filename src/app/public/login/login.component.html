@@ -1,0 +1,83 @@
+<div
+  class="container"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxLayoutGap="10px"
+>
+  <mat-card class="login-card">
+    <mat-card-header>
+      <div mat-card-avatar class="login-key-mat-avatar"></div>
+      <mat-card-title>Zaloguj się do portalu</mat-card-title>
+      <mat-card-subtitle
+        >z wykorzystaniem jednej z poniższych metod</mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-divider class="login-divider"></mat-divider>
+    <mat-card-content
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="20px"
+    >
+      <div fxFlex></div>
+      <form
+        fxLayout="column"
+        fxLayoutAlign="space-evenly"
+        fxLayoutGap="10px"
+        fxFlex="100%"
+        class="form"
+        [formGroup]="loginForm"
+        (ngSubmit)="onSubmit()"
+      >
+        <mat-form-field class="full-width">
+          <mat-label>Adres e-mail</mat-label>
+          <input
+            matInput
+            formControlName="userMail"
+            placeholder="Adres e-mail"
+            type="email"
+          />
+          <mat-error
+            *ngIf="userMail.invalid && (userMail.touched || submitted)"
+          >
+            Podaj proszę prawidłowy adres e-mail
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Hasło</mat-label>
+          <input
+            matInput
+            formControlName="userPassword"
+            placeholder="Hasło"
+            type="password"
+          />
+          <mat-error
+            *ngIf="userPassword.invalid && (userPassword.touched || submitted)"
+          >
+            Podaj proszę hasło do swojego konta
+          </mat-error>
+        </mat-form-field>
+        <button mat-raised-button color="primary" type="submit">Zaloguj</button>
+        <button
+          mat-button
+          color="primary"
+          type="button"
+          (click)="onRegisterButtonClick()"
+        >
+          lub zarejestruj się
+        </button>
+      </form>
+      <firebase-ui
+        class="form"
+        fxLayout="column"
+        fxLayoutAlign="space-evenly"
+        fxLayoutGap="10px"
+        fxFlex="100%"
+      ></firebase-ui>
+    </mat-card-content>
+    <mat-card-actions class="login-card-actions"></mat-card-actions>
+    <cho-spinner
+      [loadingMessage]="loadingMessage"
+      [isLoading]="isLoading"
+    ></cho-spinner>
+  </mat-card>
+</div>

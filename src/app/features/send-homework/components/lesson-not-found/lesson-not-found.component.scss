@@ -1,0 +1,26 @@
+.lesson-not-found-card {
+  min-width: 300px;
+  max-width: 300px;
+  @media (min-width: 600px) {
+    max-width: 500px;
+  }
+  width: 100%;
+}
+
+.lesson-not-found-card-actions {
+  margin: 0px;
+  padding: 0px;
+}
+
+.lesson-not-found-key-mat-avatar {
+  background-image: url("/assets/lesson-not-found-mat-avatar.jpg");
+  background-size: cover;
+}
+
+.lesson-not-found-divider {
+  padding-bottom: 10px;
+}
+
+.form {
+  margin-bottom: 0px !important;
+}

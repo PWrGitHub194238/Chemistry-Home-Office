@@ -1,0 +1,13 @@
+<div class="container webcam-container" fxLayoutAlign="center center">
+  <webcam
+    [imageType]="contentType"
+    [allowCameraSwitch]="false"
+    [width]="width"
+    [height]="height"
+    [trigger]="makeSnapshot$"
+    [switchCamera]="switchCamera$"
+    (imageCapture)="onSnapshotCapture($event)"
+    (imageClick)="takeSnapshot()"
+    (initError)="handleInitError($event)"
+  ></webcam>
+</div>

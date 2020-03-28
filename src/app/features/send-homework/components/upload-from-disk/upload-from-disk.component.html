@@ -1,0 +1,20 @@
+<div
+  class="container"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  fxLayoutGap="10px"
+>
+  <div
+    class="file-upload-container"
+    (click)="fileInput.click()"
+    appDragDrop
+    (onFileDropped)="uploadFile($event)"
+  >
+    <input
+      hidden
+      type="file"
+      #fileInput
+      (change)="uploadFile($event.target.files)"
+    />
+  </div>
+</div>
