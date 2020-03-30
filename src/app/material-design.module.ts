@@ -7,8 +7,12 @@ import { MatDialogModule } from "@angular/material/dialog";
 import { MatDividerModule } from "@angular/material/divider";
 import { MatIconModule } from "@angular/material/icon";
 import { MatInputModule } from "@angular/material/input";
+import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatSelectModule } from "@angular/material/select";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { MatSortModule } from "@angular/material/sort";
+import { MatTableModule } from "@angular/material/table";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatTooltipModule } from "@angular/material/tooltip";
 
@@ -26,7 +30,11 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatTooltipModule,
     MatDialogModule,
     MatBadgeModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatSlideToggleModule
   ],
   exports: [
     MatToolbarModule,
@@ -40,7 +48,11 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatTooltipModule,
     MatDialogModule,
     MatBadgeModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatSlideToggleModule
   ]
 })
 export class MaterialDesignModule {}

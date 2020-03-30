@@ -8,10 +8,10 @@ import { MaterialDesignModule } from "../material-design.module";
 import { FooterComponent } from "./footer/footer.component";
 import { HeaderComponent } from "./header/header.component";
 import { LoginComponent } from "./login/login.component";
-import { PageNotFoundComponent } from "./page-not-found/page-not-found.component";
 import { RegisterComponent } from "./register/register.component";
 import { SnackBarComponent } from "./snack-bar/snack-bar.component";
 import { SpinnerComponent } from "./spinner/spinner.component";
+import { UpdateUserDetailsBottomSheetComponent } from "./update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
 
 const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
   signInFlow: "popup",
@@ -32,10 +32,10 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     LoginComponent,
     FooterComponent,
     HeaderComponent,
-    PageNotFoundComponent,
     SpinnerComponent,
     RegisterComponent,
-    SnackBarComponent
+    SnackBarComponent,
+    UpdateUserDetailsBottomSheetComponent
   ],
   imports: [
     CommonModule,
@@ -46,12 +46,6 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     ReactiveFormsModule,
     NgxSpinnerModule
   ],
-  exports: [
-    LoginComponent,
-    FooterComponent,
-    HeaderComponent,
-    PageNotFoundComponent,
-    SpinnerComponent
-  ]
+  exports: [LoginComponent, FooterComponent, HeaderComponent, SpinnerComponent]
 })
 export class PublicModule {}

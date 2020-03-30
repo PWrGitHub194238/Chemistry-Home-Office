@@ -1,19 +1,27 @@
 import { AfterViewChecked, Component, OnInit } from "@angular/core";
-import { AngularFireAuth } from "@angular/fire/auth";
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators
 } from "@angular/forms";
-import { ActivatedRoute, ParamMap, Router } from "@angular/router";
+import { MatBottomSheet } from "@angular/material/bottom-sheet";
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  ParamMap,
+  Router
+} from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { tap } from "rxjs/operators";
-import { LogoutStateAction } from "src/app/core/actions/logout-state.action";
-import { AuthService } from "src/app/core/auth.service";
-import { SnackBarService } from "src/app/core/snack-bar.service";
+import { filter } from "rxjs/operators";
+import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
+import { SubjectError, SubjectSuccess } from "src/app/core/models";
+import { UserDetails } from "src/app/core/models/User/user-details.model";
+import { AuthService } from "src/app/core/services/auth.service";
+import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
-import { SpinnerService } from "src/app/core/spinner.service";
+import { UpdateUserDetailsBottomSheetComponent } from "../update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
 
 @UntilDestroy()
 @Component({
@@ -45,45 +53,55 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private firebaseAuth: AngularFireAuth,
     private route: ActivatedRoute,
     private router: Router,
     private snackBarService: SnackBarService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private bottomSheet: MatBottomSheet
   ) {}
 
   ngOnInit() {
     this.createForm();
 
-    this.route.queryParamMap
+    this.router.events
       .pipe(
         untilDestroyed(this),
-        tap(() => this.showSnackBarOnLogout(window.history.state))
+        filter(routerEvent => routerEvent instanceof NavigationEnd)
       )
+      .subscribe(() => {
+        this.showSnackBarOnLogout(this.authService.onLogoutState);
+      });
+
+    this.route.queryParamMap
+      .pipe(untilDestroyed(this))
       .subscribe((paramMap: ParamMap) => {
         this.returnUrl = paramMap.get("returnUrl");
       });
 
-    this.firebaseAuth.authState.pipe(untilDestroyed(this)).subscribe(user => {
-      this.spinnerService.hideSpinner();
-      this.authService.user = user;
-      if (user) {
-        this.submitted = false;
-        this.router.navigateByUrl(this.returnUrl);
-      }
-    });
-
-    this.authService.loggedIn$.pipe(untilDestroyed(this)).subscribe(resp => {
-      if (resp["error"]) {
-        this.spinnerService.hideSpinner();
-        this.snackBarService.showLoginError(resp["error"]);
-      }
-    });
+    this.authService.loggedIn$
+      .pipe(untilDestroyed(this))
+      .subscribe((resp: SubjectSuccess | SubjectError) => {
+        if (resp["error"]) {
+          this.spinnerService.hideSpinner();
+          this.snackBarService.showLoginError(resp["error"]);
+        } else {
+          this.spinnerService.hideSpinner();
+          if (this.authService.user.auth) {
+            if (this.authService.user.details) {
+              this.redirectAfterLogin();
+            } else {
+              this.openUpdateUserDetailsDialog();
+            }
+          } else {
+            this.showSnackBarOnLogout(this.authService.onLogoutState);
+          }
+        }
+      });
   }
 
-  ngAfterViewChecked(): void {
-    //this.swapLoginButtonProviderLabels();
+  ngAfterViewChecked() {
     this.addLoginButtonProviderClickListeners();
+    this.swapLoginButtonProviderLabels();
   }
 
   createForm() {
@@ -109,16 +127,57 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
 
   private showSnackBarOnLogout(state?: { [k: string]: any }) {
-    if (state && state[LogoutStateAction.SentHomeworkSuccess]) {
-      this.snackBarService.showHomeworkSent(
-        state[LogoutStateAction.SentHomeworkSuccess]
-      );
+    if (state) {
+      if (state[RedirectToLoginState.SentHomeworkSuccess]) {
+        this.authService.signOut();
+        this.snackBarService.showHomeworkSent(
+          state[RedirectToLoginState.SentHomeworkSuccess]
+        );
+      } else if (state[RedirectToLoginState.NoAdminRole]) {
+        this.authService.signOut();
+        this.snackBarService.showNoAdminRole();
+      } else if (state[RedirectToLoginState.NoStudentRole]) {
+        this.authService.signOut();
+        this.snackBarService.showNoStudentRole();
+      }
+      this.authService.onLogoutState = null;
+    }
+  }
+
+  private openUpdateUserDetailsDialog() {
+    let bottomSheetRef = this.bottomSheet.open(
+      UpdateUserDetailsBottomSheetComponent,
+      {
+        disableClose: true
+      }
+    );
+
+    bottomSheetRef
+      .afterDismissed()
+      .pipe(untilDestroyed(this))
+      .subscribe((result: UserDetails) => {
+        this.authService.user.details = result;
+        this.redirectAfterLogin();
+      });
+  }
+
+  private redirectAfterLogin() {
+    this.submitted = false;
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+    } else if (this.authService.user.roles.admin) {
+      this.router.navigate(["admin"]);
+    } else if (this.authService.user.roles.student) {
+      this.router.navigate(["send-homework"]);
+    } else {
+      this.authService.signOut();
+      this.snackBarService.showNoRulesInfo(this.authService.user);
     }
   }
 
   private swapLoginButtonProviderLabels() {
-    this.swapLoginButtonProviderLabel("facebook.com", "Facebooka");
-    this.swapLoginButtonProviderLabel("google.com", "Google");
+    //this.swapLoginButtonProviderLabel("facebook.com", "Facebooka");
+    //this.swapLoginButtonProviderLabel("google.com", "Google");
   }
 
   private swapLoginButtonProviderLabel(providerId: string, label: string) {
@@ -143,10 +202,14 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       `.firebaseui-idp-button[data-provider-id="${providerId}"`
     );
     if (loginProviderButton) {
-      // loginProviderButton.setAttribute(
-      //   "style",
-      //   `${loginProviderButton.getAttribute("style")}; min-width: 250px`
-      // );
+      const styleAttr = loginProviderButton.getAttribute("style");
+      if (styleAttr.indexOf("min-width") < 0) {
+        loginProviderButton.setAttribute(
+          "style",
+          `${styleAttr}; min-width: 250px`
+        );
+      }
+
       loginProviderButton.addEventListener("click", () => {
         this.spinnerService.showSpinner(SpinnerMessage.LoggingInWithProvider, {
           provider

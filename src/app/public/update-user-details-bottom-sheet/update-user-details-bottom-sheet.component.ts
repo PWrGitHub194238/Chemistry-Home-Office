@@ -1,20 +1,20 @@
-import { Component, OnInit, Inject } from "@angular/core";
-import { AuthService } from "src/app/core/auth.service";
+import { Component, Inject, OnInit } from "@angular/core";
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators
+} from "@angular/forms";
 import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA
 } from "@angular/material/bottom-sheet";
-import {
-  FormGroup,
-  FormControl,
-  Validators,
-  FormBuilder
-} from "@angular/forms";
+import { UserDetails } from "src/app/core/models/user/user-details.model";
+import { AuthService } from "src/app/core/services/auth.service";
 import {
   StudentClass,
   StudentNo
 } from "src/app/shared/validators/login-form.validator";
-import { UserDetails } from "src/app/core/models/user-details.model";
 
 @Component({
   selector: "cho-update-user-details-bottom-sheet",
@@ -58,6 +58,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
     this.submitted = true;
     if (this.registerForm.valid) {
       const UserDetails: UserDetails = {
+        uid: "",
         studentClass: (this.studentClass.value as string).toUpperCase(),
         studentNo: this.studentNo.value as number
       };

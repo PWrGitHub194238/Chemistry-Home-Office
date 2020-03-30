@@ -1,22 +1,17 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import {
-  FormGroup,
-  FormControl,
   FormBuilder,
+  FormControl,
+  FormGroup,
   Validators
 } from "@angular/forms";
-import { AuthService } from "src/app/core/auth.service";
-import { Router } from "@angular/router";
-import { AngularFirestore } from "@angular/fire/firestore";
-import { HomeworkPath } from "functions/src/models/homework-path.model";
-import { Observable } from "rxjs";
-import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
-import { map } from "rxjs/operators";
 import { MatSelectChange } from "@angular/material/select";
+import { Router } from "@angular/router";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { map } from "rxjs/operators";
+import { AuthService } from "src/app/core/services/auth.service";
+import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { Select } from "src/app/models/select.model";
-import { UpdateUserDetailsBottomSheetComponent } from "../update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
-import { MatBottomSheet } from "@angular/material/bottom-sheet";
-import { UserDetails } from "functions/src/models/user-details.model";
 
 @UntilDestroy()
 @Component({
@@ -34,8 +29,8 @@ export class LessonNotFoundComponent {
   }
 
   get studenClassPrefix(): number | null {
-    return this.authService.userDetails
-      ? Number(this.authService.userDetails.studentClass[0])
+    return this.authService.user.details
+      ? Number(this.authService.user.details.studentClass[0])
       : null;
   }
 
@@ -43,16 +38,11 @@ export class LessonNotFoundComponent {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private fireStoreService: AngularFirestore,
-    private bottomSheet: MatBottomSheet
+    private firestoreDocumentService: FirestoreDocumentService
   ) {}
 
   ngOnInit() {
-    if (this.authService.userDetails) {
-      this.loadLessons();
-    } else {
-      this.openUpdateUserDetailsDialog();
-    }
+    this.loadLessons();
     this.createForm();
   }
 
@@ -63,14 +53,8 @@ export class LessonNotFoundComponent {
   }
 
   loadLessons() {
-    this.fireStoreService
-      .collection<HomeworkPath>("homework-paths", ref =>
-        ref
-          .where("active", "==", true)
-          .where("class", "==", this.studenClassPrefix)
-          .orderBy("date")
-      )
-      .valueChanges()
+    this.firestoreDocumentService
+      .getActiveHomeworkPathsForClass$(this.studenClassPrefix)
       .pipe(
         untilDestroyed(this),
         map(homeworkPaths =>
@@ -87,22 +71,5 @@ export class LessonNotFoundComponent {
     if (this.lessonForm.valid) {
       this.router.navigate(["send-homework", selectionChange.value]);
     }
-  }
-
-  openUpdateUserDetailsDialog() {
-    let bottomSheetRef = this.bottomSheet.open(
-      UpdateUserDetailsBottomSheetComponent,
-      {
-        disableClose: true
-      }
-    );
-
-    bottomSheetRef
-      .afterDismissed()
-      .pipe(untilDestroyed(this))
-      .subscribe((result: UserDetails) => {
-        this.authService.userDetails = result;
-        this.loadLessons();
-      });
   }
 }

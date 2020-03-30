@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Subject, Observable } from "rxjs";
 import { AngularFireFunctions } from "@angular/fire/functions";
-import { SentHomework } from "../models/sent-homework.model";
 import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
+import { SentHomework } from "src/app/models";
 
 @UntilDestroy()
 @Injectable({

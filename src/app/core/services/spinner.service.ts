@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import * as stringFormat from "string-format";
-import { SpinnerMessage } from "./spinner-message.consts";
+import { SpinnerMessage } from "../spinner-message.consts";
 
 @Injectable({
   providedIn: "root"

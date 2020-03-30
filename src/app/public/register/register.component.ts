@@ -1,15 +1,15 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import {
-  FormGroup,
   FormBuilder,
   FormControl,
+  FormGroup,
   Validators
 } from "@angular/forms";
-import { AuthService } from "src/app/core/auth.service";
-import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
-import { SnackBarService } from "src/app/core/snack-bar.service";
-import { ActivatedRoute, Router, ParamMap } from "@angular/router";
-import { SpinnerService } from "src/app/core/spinner.service";
+import { ActivatedRoute, ParamMap } from "@angular/router";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { AuthService } from "src/app/core/services/auth.service";
+import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import {
   NoEmail,
@@ -104,6 +104,7 @@ export class RegisterComponent implements OnInit {
         this.userMail.value,
         this.userPassword.value,
         {
+          uid: "",
           studentClass: (this.studentClass.value as string).toUpperCase(),
           studentNo: this.studentNo.value as number
         }

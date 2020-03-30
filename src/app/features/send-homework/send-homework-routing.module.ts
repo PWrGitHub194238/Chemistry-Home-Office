@@ -1,21 +1,16 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-import { HomeworkPathResolver } from "src/app/core/homework-path.resolver";
-import { UserDetailsResolver } from "src/app/core/user-details.resolver";
-import { LoginGuard } from "src/app/login.guard";
+import { LoginGuard } from "src/app/core/guards/login.guard";
+import { HomeworkPathResolver } from "src/app/core/resolvers/homework-path.resolver";
+import { UserDetailsResolver } from "src/app/core/resolvers/user-details.resolver";
 import { LessonNotFoundComponent } from "./components/lesson-not-found/lesson-not-found.component";
 import { SendHomeworkComponent } from "./components/send-homework/send-homework.component";
 
 const routes: Routes = [
   {
-    path: "",
-    pathMatch: "full",
-    redirectTo: "lesson-not-found"
-  },
-  {
     path: "lesson-not-found",
-    component: LessonNotFoundComponent,
     canActivate: [LoginGuard],
+    component: LessonNotFoundComponent,
     resolve: {
       userDetails: UserDetailsResolver
     }
@@ -31,7 +26,7 @@ const routes: Routes = [
   },
   {
     path: "**",
-    component: LessonNotFoundComponent
+    redirectTo: "lesson-not-found"
   }
 ];
 

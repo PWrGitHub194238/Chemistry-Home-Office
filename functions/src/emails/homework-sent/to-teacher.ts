@@ -3,7 +3,7 @@ import * as Mail from "nodemailer/lib/mailer";
 import * as stringFormat from "string-format";
 import { SentHomework } from "../../models/sent-homework.model";
 import { HomeworkPath } from "../../models/homework-path.model";
-import { UserDetails } from "../../models/user-details.model";
+import { UserDetails } from "../../models/user/user-details.model";
 
 export async function getHomeworkSentToTeacherNotificationOptions(
   sentHomeworkDocument: SentHomework,

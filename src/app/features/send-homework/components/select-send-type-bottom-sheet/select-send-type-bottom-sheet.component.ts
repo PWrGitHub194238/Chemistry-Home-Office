@@ -1,20 +1,20 @@
 import { Component, Inject, OnInit } from "@angular/core";
 import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators
+} from "@angular/forms";
+import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA
 } from "@angular/material/bottom-sheet";
 import { Observable } from "rxjs";
-import { BlobUploadService } from "src/app/core/blob-upload.service";
-import { CameraSwitchService } from "src/app/core/camera-switch.service";
+import { AuthService } from "src/app/core/services/auth.service";
+import { BlobUploadService } from "src/app/core/services/blob-upload.service";
+import { CameraSwitchService } from "src/app/core/services/camera-switch.service";
 import { HomeworkPath } from "src/app/models/homework-path.model";
 import { SelectSendTypeBottomSheetAction } from "./select-send-type-bottom-sheet.action";
-import { AuthService } from "src/app/core/auth.service";
-import {
-  FormGroup,
-  FormControl,
-  FormBuilder,
-  Validators
-} from "@angular/forms";
 
 @Component({
   selector: "cho-select-send-type-bottom-sheet",
@@ -41,11 +41,11 @@ export class SelectSendTypeBottomSheetComponent implements OnInit {
   }
 
   get class() {
-    return this.authService.userDetails.studentClass;
+    return this.authService.user.details.studentClass;
   }
 
   get assignments() {
-    return this.homeworkPath.assignments;
+    return this.homeworkPath.assignments.map(assignment => assignment.name);
   }
 
   constructor(

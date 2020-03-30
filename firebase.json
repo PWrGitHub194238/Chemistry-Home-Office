@@ -12,6 +12,10 @@
         "function": "sendHomeworkSentNotificationEmail"
       },
       {
+        "source": "/chemistry-home-office/us-central1/cleanupCloudFirestore",
+        "function": "cleanupCloudFirestore"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

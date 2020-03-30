@@ -1,14 +1,15 @@
 import { Injectable } from "@angular/core";
 import { AngularFireStorage } from "@angular/fire/storage";
-import { UploadTaskSnapshot } from "@angular/fire/storage/interfaces";
 import { UUID } from "angular2-uuid";
 import * as mime from "mime";
 import { Observable, Subject } from "rxjs";
-import { HomeworkPath } from "../models/homework-path.model";
-import { AuthService } from "./auth.service";
-import { FirestorageBlob } from "./models/firestorage-blob.model";
-import { FirestorageUploadStatus } from "./models/firestorage-upload-status";
-import { FirestorageHomeworkFile } from "./models/firestorage-homework-file.model";
+import { HomeworkPath } from "src/app/models";
+import {
+  FirestorageBlob,
+  FirestorageHomeworkFile,
+  FirestorageUploadStatus
+} from "../models";
+import { AuthService } from "../services/auth.service";
 
 @Injectable({
   providedIn: "root"
@@ -46,9 +47,9 @@ export class BlobUploadService {
   ) {
     const fileExtension = this.getFileExtension(data);
     const fullPath = `${homeworkPath.subject}/${
-      this.authService.userDetails.studentClass
+      this.authService.user.details.studentClass
     }/${homeworkPath.topic}/${assignment}/${
-      this.authService.userDetails.studentNo
+      this.authService.user.details.studentNo
     }/${UUID.UUID()}.${fileExtension}`;
 
     this.addBlobToSend(fullPath, assignment, data);
@@ -88,5 +89,7 @@ export class BlobUploadService {
           });
         });
     });
+
+    this.blobMetadataQueue = [];
   }
 }

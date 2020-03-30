@@ -5,18 +5,24 @@ import {
   removeLocalAttachements,
   storeAttachementsLocally
 } from "./attachements";
+import { getUserByEmail } from "./auth";
+import { sendMail } from "./emails/email";
+import { getHomeworkSentToTeacherConfirmationOptions } from "./emails/homework-sent/to-student";
 import { getHomeworkSentToTeacherNotificationOptions } from "./emails/homework-sent/to-teacher";
 import {
+  createUserRoles,
+  deleteUserDetails,
+  deleteUserRoles,
+  getAllUserDetails,
+  getAllUserRoles,
   getHomeworkPaths,
   getSentHomework,
   getUserDetails
 } from "./firestore-documents";
 import { HomeworkPath } from "./models/homework-path.model";
 import { SentHomework } from "./models/sent-homework.model";
-import { sendMail } from "./emails/email";
-import { getUserByEmail } from "./auth";
-import { UserDetails } from "./models/user-details.model";
-import { getHomeworkSentToTeacherConfirmationOptions } from "./emails/homework-sent/to-student";
+import { UserDetails } from "./models/user/user-details.model";
+import { UserRoles } from "./models/user/user-roles.model";
 
 admin.initializeApp();
 
@@ -45,9 +51,11 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
 
   const senderDetails: UserDetails = await getUserDetails(sender.uid);
 
-  const assignments: string[] = homeworkPathDocument.assignments;
-  const assignmentsCount: number = assignments.length;
+  const assignments: string[] = homeworkPathDocument.assignments.map(
+    assignment => assignment.name
+  );
 
+  const assignmentsCount: number = assignments.length;
   for (let i = 0; i < assignmentsCount; i += 1) {
     const assignment: string = assignments[i];
 
@@ -83,3 +91,63 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
     }
   }
 }
+
+exports.cleanupCloudFirestore = functions.https.onCall(
+  async (data, context) => {
+    try {
+      const users: admin.auth.ListUsersResult = await admin.auth().listUsers();
+      const userDetails: UserDetails[] = await getAllUserDetails();
+      const userRoles: UserRoles[] = await getAllUserRoles();
+
+      const userUids: string[] = users.users.map(user => user.uid);
+      const userRoleUids: string[] = userRoles.map(userRole => userRole.uid);
+
+      userDetails.forEach(async (userDetail: UserDetails) => {
+        if (!userUids.includes(userDetail.uid)) {
+          console.log(
+            `No user connected to this user details. Deleting user detail: ${JSON.stringify(
+              userDetail
+            )}...`
+          );
+          await deleteUserDetails(userDetail.uid);
+        }
+      });
+
+      userRoles.forEach(async (userRole: UserRoles) => {
+        if (!userUids.includes(userRole.uid)) {
+          console.log(
+            `No user connected to this user role. Deleting user detail: ${JSON.stringify(
+              userRole
+            )}...`
+          );
+          await deleteUserRoles(userRole.uid);
+        }
+      });
+
+      users.users.forEach(async (user: admin.auth.UserRecord) => {
+        if (!userRoleUids.includes(user.uid)) {
+          console.log(
+            `User ${JSON.stringify(
+              user
+            )} does not has role assigned. Creating user roles: ${JSON.stringify(
+              {
+                uid: user.uid,
+                admin: false,
+                student: true
+              }
+            )}...`
+          );
+          await createUserRoles({
+            uid: user.uid,
+            admin: false,
+            student: true
+          });
+        }
+      });
+
+      return { success: true };
+    } catch (err) {
+      return { error: err };
+    }
+  }
+);

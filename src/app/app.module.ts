@@ -1,5 +1,7 @@
+import { registerLocaleData } from "@angular/common";
 import { HttpClientModule } from "@angular/common/http";
-import { NgModule } from "@angular/core";
+import localePl from "@angular/common/locales/pl";
+import { LOCALE_ID, NgModule } from "@angular/core";
 import { AngularFireModule } from "@angular/fire";
 import { AngularFireAuthModule } from "@angular/fire/auth";
 import { AngularFirestoreModule } from "@angular/fire/firestore";
@@ -16,12 +18,13 @@ import { MaterialDesignModule } from "./material-design.module";
 import { PublicModule } from "./public/public.module";
 import { SharedModule } from "./shared/shared.module";
 
+registerLocaleData(localePl, "pl");
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features,
@@ -32,9 +35,14 @@ import { SharedModule } from "./shared/shared.module";
     SharedModule,
     MaterialDesignModule,
     FlexLayoutModule,
-    HttpClientModule
+    HttpClientModule,
+    AppRoutingModule
   ],
   providers: [
+    {
+      provide: LOCALE_ID,
+      useValue: "pl"
+    },
     {
       provide: ORIGIN,
       useValue: "https://chemistry-home-office.firebaseapp.com"

@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
 import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
-import { HomeworkPath } from "../models/homework-path.model";
-import { AuthResponse } from "../models/auth-response.model";
-import { SnackBarComponent } from "../public/snack-bar/snack-bar.component";
+import { AuthResponse, HomeworkPath } from "src/app/models";
+import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
+import { User } from "../models/user/user.model";
 
 @Injectable({
   providedIn: "root"
@@ -31,6 +31,7 @@ export class SnackBarService {
   getMessageFromAuthCode(code: string) {
     switch (code) {
       case "auth/user-not-found":
+      case "auth/wrong-password":
         return "Podany użytkownik nie istnieje lub podałeś złe dane logowania";
       case "auth/email-already-in-use":
         return "Podany adres e-mail jest już zarejestrowany";
@@ -56,8 +57,47 @@ export class SnackBarService {
       data: {
         header: "Zadanie domowe przesłane",
         color: "accent",
-        message: `Dzięki za wysłanie zadania domowego! <br />
+        message: `Dzięki za wysłanie zadania domowego!<br />
         Dotarło ono całe i zdrowe na skrzynkę pocztową nauczyciela.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
+  showNoStudentRole() {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Błąd uprawnień",
+        color: "warn",
+        message: `Aby mieć dostęp do tego zasobu<br />
+        potrzebujesz mieć przypisane do Twojego konta prawa ucznia.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
+  showNoAdminRole() {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Błąd uprawnień",
+        color: "warn",
+        message: `Aby mieć dostęp do tego zasobu<br />
+        potrzebujesz mieć przypisane do Twojego konta prawa administratora.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
+  showNoRulesInfo(user: User) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Błąd uprawnień",
+        color: "warn",
+        message: `Cześć ${user.auth.displayName}, wygląda na to, że nie masz nadanych żadnych uprawnień do aplikacji.<br />
+          Skontaktuj się z administratorem w celu ich nadania.`
       },
       ...this.displayDefaultconfig,
       duration: 5000

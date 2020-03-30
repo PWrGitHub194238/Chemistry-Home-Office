@@ -1,7 +1,7 @@
-import { Component, OnInit } from "@angular/core";
+import { Component } from "@angular/core";
 import { MatBottomSheetRef } from "@angular/material/bottom-sheet";
+import { BlobUploadService } from "src/app/core/services/blob-upload.service";
 import { FinishUploadBottomSheetAction } from "./finish-upload-bottom-sheet.action";
-import { BlobUploadService } from "src/app/core/blob-upload.service";
 
 @Component({
   selector: "cho-finish-upload-bottom-sheet",

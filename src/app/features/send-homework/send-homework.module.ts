@@ -9,7 +9,6 @@ import { FinishUploadBottomSheetComponent } from "./components/finish-upload-bot
 import { LessonNotFoundComponent } from "./components/lesson-not-found/lesson-not-found.component";
 import { SelectSendTypeBottomSheetComponent } from "./components/select-send-type-bottom-sheet/select-send-type-bottom-sheet.component";
 import { SendHomeworkComponent } from "./components/send-homework/send-homework.component";
-import { UpdateUserDetailsBottomSheetComponent } from "./components/update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
 import { UploadFromCameraComponent } from "./components/upload-from-camera/upload-from-camera.component";
 import { UploadFromDiskComponent } from "./components/upload-from-disk/upload-from-disk.component";
 import { SendHomeworkRoutingModule } from "./send-homework-routing.module";
@@ -21,7 +20,6 @@ import { SendHomeworkRoutingModule } from "./send-homework-routing.module";
     UploadFromCameraComponent,
     UploadFromDiskComponent,
     FinishUploadBottomSheetComponent,
-    UpdateUserDetailsBottomSheetComponent,
     LessonNotFoundComponent
   ],
   imports: [

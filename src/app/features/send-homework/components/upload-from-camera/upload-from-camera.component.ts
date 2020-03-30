@@ -7,8 +7,8 @@ import {
 } from "@angular/core";
 import { WebcamImage, WebcamInitError } from "ngx-webcam";
 import { Observable, Subject } from "rxjs";
-import { CameraSwitchService } from "src/app/core/camera-switch.service";
-import { SnackBarService } from "src/app/core/snack-bar.service";
+import { CameraSwitchService } from "src/app/core/services/camera-switch.service";
+import { SnackBarService } from "src/app/core/services/snack-bar.service";
 
 @Component({
   selector: "cho-upload-from-camera",
@@ -46,7 +46,7 @@ export class UploadFromCameraComponent implements OnInit {
     this.makeSnapshot$ = this.makeSnapshotSubject.asObservable();
     this.snapshotSound = new Audio();
     this.snapshotSound.src = "/assets/snapshot-sound.mp3";
-    this.snapshotSound.load();
+     this.snapshotSound.load();
     this.onResize();
   }
 

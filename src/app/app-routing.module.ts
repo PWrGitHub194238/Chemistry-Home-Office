@@ -1,19 +1,26 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 
-import { LoginGuard } from "./login.guard";
+import { LoginGuard } from "./core/guards/login.guard";
 import { LoginComponent } from "./public/login/login.component";
-import { PageNotFoundComponent } from "./public/page-not-found/page-not-found.component";
 import { RegisterComponent } from "./public/register/register.component";
+import { IsStudentGuard } from "./core/guards/is-student.guard";
+import { IsAdminGuard } from "./core/guards/is-admin.guard";
 
 const routes: Routes = [
+  {
+    path: "admin",
+    loadChildren: () =>
+      import("./features/admin/admin.module").then(m => m.AdminModule),
+    canActivate: [LoginGuard, IsAdminGuard]
+  },
   {
     path: "send-homework",
     loadChildren: () =>
       import("./features/send-homework/send-homework.module").then(
         m => m.SendHomeworkModule
       ),
-    canActivate: [LoginGuard]
+    canActivate: [LoginGuard, IsStudentGuard]
   },
   {
     path: "login",
@@ -25,12 +32,12 @@ const routes: Routes = [
   },
   {
     path: "**",
-    redirectTo: "send-homework"
+    redirectTo: "login"
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, { onSameUrlNavigation: "reload" })],
   exports: [RouterModule]
 })
 export class AppRoutingModule {}

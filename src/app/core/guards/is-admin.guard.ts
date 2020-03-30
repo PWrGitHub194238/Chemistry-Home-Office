@@ -5,20 +5,23 @@ import {
   Router,
   RouterStateSnapshot
 } from "@angular/router";
-import { AuthService } from "./core/auth.service";
+import { AuthService } from "../services/auth.service";
+import { RedirectToLoginState } from "../actions/redirect-to-login-state.action";
 
 @Injectable({
   providedIn: "root"
 })
-export class LoginGuard implements CanActivate {
+export class IsAdminGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): boolean {
-    if (!this.authService.isAuthenticated) {
-      this.authService.redirectToLogin(state.url, null);
+    if (!this.authService.isAdmin) {
+      const quardPayload = {};
+      quardPayload[RedirectToLoginState.NoAdminRole] = true;
+      this.authService.redirectToLogin(state.url, quardPayload);
       return false;
     }
 

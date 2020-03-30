@@ -2,13 +2,13 @@ import { Component, OnInit } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { LogoutStateAction } from "src/app/core/actions/logout-state.action";
-import { AuthService } from "src/app/core/auth.service";
-import { BlobUploadService } from "src/app/core/blob-upload.service";
-import { EmailSenderService } from "src/app/core/email-sender.service";
-import { HomeworkUploadService } from "src/app/core/homework-upload.service";
+import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
 import { FirestorageUploadStatus } from "src/app/core/models/firestorage-upload-status";
-import { SpinnerService } from "src/app/core/spinner.service";
+import { AuthService } from "src/app/core/services/auth.service";
+import { BlobUploadService } from "src/app/core/services/blob-upload.service";
+import { EmailSenderService } from "src/app/core/services/email-sender.service";
+import { HomeworkUploadService } from "src/app/core/services/homework-upload.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { HomeworkPath } from "src/app/models/homework-path.model";
 import { SentHomework } from "src/app/models/sent-homework.model";
 import { SpinnerMessage } from "../../../../core/spinner-message.consts";
@@ -16,9 +16,8 @@ import { FinishUploadBottomSheetAction } from "../finish-upload-bottom-sheet/fin
 import { FinishUploadBottomSheetComponent } from "../finish-upload-bottom-sheet/finish-upload-bottom-sheet.component";
 import { SelectSendTypeBottomSheetAction } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.action";
 import { SelectSendTypeBottomSheetComponent } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.component";
-import { UserDetails } from "src/app/core/models/user-details.model";
-import { UpdateUserDetailsBottomSheetComponent } from "../update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
 import { SelectSendTypeBottomSheetPayload } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.payload";
+import { SubjectSuccess, SubjectError } from "src/app/core/models";
 
 @UntilDestroy()
 @Component({
@@ -47,7 +46,7 @@ export class SendHomeworkComponent implements OnInit {
   }
 
   get isUserWithDetails(): boolean {
-    return !!this.authService.userDetails;
+    return !!this.authService.user.details;
   }
 
   constructor(
@@ -64,16 +63,12 @@ export class SendHomeworkComponent implements OnInit {
   ngOnInit() {
     this.loadResolvedData();
 
-    if (this.homeworkPath) {
+    if (this.homeworkPath.uid) {
       this.attachementSourceTypeSelected =
         SelectSendTypeBottomSheetAction.SelectSource;
       this.spinnerService.showSpinner(SpinnerMessage.SourceSelection);
 
-      if (this.authService.userDetails) {
-        this.openSelectAttachmentSourceDialog();
-      } else {
-        this.openUpdateUserDetailsDialog();
-      }
+      this.openSelectAttachmentSourceDialog();
 
       this.blobUploadService.blobUploaded$
         .pipe(untilDestroyed(this))
@@ -101,14 +96,16 @@ export class SendHomeworkComponent implements OnInit {
 
       this.emailSenderService.emailSent$
         .pipe(untilDestroyed(this))
-        .subscribe((resp: any) => {
+        .subscribe((resp: SubjectSuccess | SubjectError) => {
           if (resp["error"]) {
             // TODO
           } else {
             this.isSending = false;
             const state = {};
-            state[LogoutStateAction.SentHomeworkSuccess] = <HomeworkPath>resp;
-            this.authService.logout(state);
+            state[RedirectToLoginState.SentHomeworkSuccess] = <HomeworkPath>(
+              resp
+            );
+            this.authService.logout(null, state);
           }
         });
     } else {
@@ -210,23 +207,6 @@ export class SendHomeworkComponent implements OnInit {
           default:
             break;
         }
-      });
-  }
-
-  openUpdateUserDetailsDialog() {
-    let bottomSheetRef = this.bottomSheet.open(
-      UpdateUserDetailsBottomSheetComponent,
-      {
-        disableClose: true
-      }
-    );
-
-    bottomSheetRef
-      .afterDismissed()
-      .pipe(untilDestroyed(this))
-      .subscribe((result: UserDetails) => {
-        this.authService.userDetails = result;
-        this.openSelectAttachmentSourceDialog();
       });
   }
 }
