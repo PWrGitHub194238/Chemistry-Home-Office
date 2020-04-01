@@ -22,6 +22,10 @@ import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import { UpdateUserDetailsBottomSheetComponent } from "../update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
+import {
+  FirebaseUISignInSuccessWithAuthResult,
+  FirebaseUISignInFailure
+} from "firebaseui-angular";
 
 @UntilDestroy()
 @Component({
@@ -87,7 +91,10 @@ export class LoginComponent implements OnInit, AfterViewChecked {
         } else {
           this.spinnerService.hideSpinner();
           if (this.authService.user.auth) {
-            if (this.authService.user.details) {
+            if (
+              this.authService.user.auth.email &&
+              this.authService.user.details
+            ) {
               this.redirectAfterLogin();
             } else {
               this.openUpdateUserDetailsDialog();
@@ -126,6 +133,15 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     this.authService.redirectToRegister(this.returnUrl);
   }
 
+  successCallback(signInSuccessData: FirebaseUISignInSuccessWithAuthResult) {
+    this.spinnerService.hideSpinner();
+  }
+
+  errorCallback(errorData: FirebaseUISignInFailure) {
+    console.log("LOGIN FAILED: " + JSON.stringify(errorData));
+    this.spinnerService.hideSpinner();
+  }
+
   private showSnackBarOnLogout(state?: { [k: string]: any }) {
     if (state) {
       if (state[RedirectToLoginState.SentHomeworkSuccess]) {
@@ -139,6 +155,21 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       } else if (state[RedirectToLoginState.NoStudentRole]) {
         this.authService.signOut();
         this.snackBarService.showNoStudentRole();
+      } else if (state[RedirectToLoginState.UserDetailsUpdated]) {
+        this.authService.signOut();
+        this.snackBarService.showUserDetailsUpdated(
+          state[RedirectToLoginState.UserDetailsUpdated]
+        );
+      } else if (state[RedirectToLoginState.StudentNotAllowedForLesson]) {
+        this.authService.signOut();
+        this.snackBarService.showStudentNotAllowedForLesson(
+          state[RedirectToLoginState.StudentNotAllowedForLesson]
+        );
+      } else if (state[RedirectToLoginState.LessonInactive]) {
+        this.authService.signOut();
+        this.snackBarService.showLessonInactive(
+          state[RedirectToLoginState.LessonInactive]
+        );
       }
       this.authService.onLogoutState = null;
     }
@@ -157,7 +188,9 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       .pipe(untilDestroyed(this))
       .subscribe((result: UserDetails) => {
         this.authService.user.details = result;
-        this.redirectAfterLogin();
+        const state = {};
+        state[RedirectToLoginState.UserDetailsUpdated] = <UserDetails>result;
+        this.authService.redirectToLogin(this.returnUrl, state);
       });
   }
 

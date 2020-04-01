@@ -5,8 +5,8 @@ import {
   Router,
   RouterStateSnapshot
 } from "@angular/router";
-import { AuthService } from "../services/auth.service";
 import { RedirectToLoginState } from "../actions/redirect-to-login-state.action";
+import { AuthService } from "../services/auth.service";
 
 @Injectable({
   providedIn: "root"

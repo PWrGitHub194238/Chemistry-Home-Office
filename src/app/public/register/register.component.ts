@@ -12,7 +12,7 @@ import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import {
-  NoEmail,
+  Name,
   StudentClass,
   StudentNo
 } from "src/app/shared/validators/login-form.validator";
@@ -87,7 +87,7 @@ export class RegisterComponent implements OnInit {
 
   createForm() {
     this.registerForm = this.formBuilder.group({
-      userLogin: ["", [Validators.required, NoEmail]],
+      userLogin: ["", [Validators.required, Name]],
       userMail: ["", [Validators.required, Validators.email]],
       userPassword: ["", Validators.required],
       studentClass: ["", [Validators.required, StudentClass]],
@@ -100,7 +100,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.valid) {
       this.spinnerService.showSpinner(SpinnerMessage.RegisteringUser);
       this.authService.signInWithEmailAndPassword(
-        this.userLogin.value,
+        this.formatUserLogin(this.userLogin.value),
         this.userMail.value,
         this.userPassword.value,
         {
@@ -110,6 +110,16 @@ export class RegisterComponent implements OnInit {
         }
       );
     }
+  }
+
+  private formatUserLogin(userLogin: string): string {
+    return userLogin
+      .split(" ")
+      .map(
+        (word: string) =>
+          word.charAt(0).toUpperCase() + word.substring(1).toLowerCase()
+      )
+      .join(" ");
   }
 
   onLoginButtonClick() {

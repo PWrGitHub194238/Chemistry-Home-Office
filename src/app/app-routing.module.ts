@@ -1,11 +1,10 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
-
+import { IsAdminGuard } from "./core/guards/is-admin.guard";
+import { IsStudentGuard } from "./core/guards/is-student.guard";
 import { LoginGuard } from "./core/guards/login.guard";
 import { LoginComponent } from "./public/login/login.component";
 import { RegisterComponent } from "./public/register/register.component";
-import { IsStudentGuard } from "./core/guards/is-student.guard";
-import { IsAdminGuard } from "./core/guards/is-admin.guard";
 
 const routes: Routes = [
   {

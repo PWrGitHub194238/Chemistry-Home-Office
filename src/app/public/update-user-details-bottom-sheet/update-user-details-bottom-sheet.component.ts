@@ -25,6 +25,26 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
   registerForm: FormGroup;
   submitted: boolean;
 
+  get userMailDefaultValue(): string | null {
+    return this.authService.user.auth ? this.authService.user.auth.email : null;
+  }
+
+  get studentClassDefaultValue(): string | null {
+    return this.authService.user.details
+      ? this.authService.user.details.studentClass
+      : null;
+  }
+
+  get studentNoDefaultValue(): number | null {
+    return this.authService.user.details
+      ? this.authService.user.details.studentNo
+      : null;
+  }
+
+  get userMail(): FormControl {
+    return this.registerForm.get("userMail") as FormControl;
+  }
+
   get studentClass(): FormControl {
     return this.registerForm.get("studentClass") as FormControl;
   }
@@ -49,8 +69,27 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
 
   createForm() {
     this.registerForm = this.formBuilder.group({
-      studentClass: ["", [Validators.required, StudentClass]],
-      studentNo: ["", [Validators.required, StudentNo]]
+      userMail: [
+        {
+          value: this.userMailDefaultValue,
+          disabled: !!this.userMailDefaultValue
+        },
+        [Validators.required, Validators.email]
+      ],
+      studentClass: [
+        {
+          value: this.studentClassDefaultValue,
+          disabled: !!this.studentClassDefaultValue
+        },
+        [Validators.required, StudentClass]
+      ],
+      studentNo: [
+        {
+          value: this.studentNoDefaultValue,
+          disabled: !!this.studentNoDefaultValue
+        },
+        [Validators.required, StudentNo]
+      ]
     });
   }
 
@@ -63,6 +102,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
         studentNo: this.studentNo.value as number
       };
 
+      this.authService.updateUserCredentials(this.userMail.value);
       this.authService.updateUserProfileDetails(UserDetails);
 
       this.bottomSheetRef.dismiss(UserDetails);

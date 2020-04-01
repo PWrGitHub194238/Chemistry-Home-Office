@@ -3,11 +3,13 @@ import {
   AngularFirestoreCollection,
   AngularFirestore
 } from "@angular/fire/firestore";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { Observable, of } from "rxjs";
+import { map, switchMap } from "rxjs/operators";
 import { HomeworkPath, SentHomework } from "src/app/models";
 import { UserDetails, UserRoles } from "../models";
+import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Injectable({
   providedIn: "root"
 })
@@ -42,18 +44,24 @@ export class FirestoreDocumentService {
           .where("class", "==", studentClassNumber)
           .orderBy("date")
       )
-      .valueChanges();
+      .valueChanges()
+      .pipe(untilDestroyed(this));
   }
 
   getAllHomeworkPaths$(): Observable<HomeworkPath[]> {
-    return this.homeworkPathCollection.valueChanges();
+    return this.homeworkPathCollection
+      .valueChanges()
+      .pipe(untilDestroyed(this));
   }
 
-  getHomeworkPaths$(uid: string): Observable<HomeworkPath> {
+  getHomeworkPaths$(uid: string): Observable<HomeworkPath | null> {
     return this.homeworkPathCollection
       .doc<HomeworkPath>(uid)
       .get()
-      .pipe(map(document => this.getHomeworkPaths(document)));
+      .pipe(
+        untilDestroyed(this),
+        map(document => this.getHomeworkPaths(document))
+      );
   }
 
   createHomeworkPath(homeworkPath: HomeworkPath): HomeworkPath {
@@ -75,7 +83,7 @@ export class FirestoreDocumentService {
     return sentHomework;
   }
 
-  getUserDetails$(uid: string): Observable<UserDetails> {
+  getUserDetails$(uid: string): Observable<UserDetails | null> {
     return this.userDetailsCollection
       .doc<UserDetails>(uid)
       .get()
@@ -94,16 +102,41 @@ export class FirestoreDocumentService {
     return this.userRolesCollection.doc<UserRoles>(uid).set({ ...userRoles });
   }
 
-  getUserRoles$(uid: string): Observable<UserRoles> {
+  getUserRoles$(uid: string): Observable<UserRoles | null> {
     return this.userRolesCollection
       .doc<UserRoles>(uid)
       .get()
-      .pipe(map(document => this.getUserRoles(document)));
+      .pipe(
+        untilDestroyed(this),
+        map(document => this.getUserRoles(document))
+      );
+  }
+
+  getUserRolesOrCreateDefault$(uid: string): Observable<UserRoles | null> {
+    const defaultUserRoles: UserRoles = {
+      uid,
+      admin: false,
+      student: true
+    };
+
+    return this.getUserRoles$(uid).pipe(
+      switchMap((userRoles: UserRoles | null) =>
+        userRoles
+          ? of(userRoles)
+          : this.setUserRoles$(uid, defaultUserRoles)
+              .then(() => defaultUserRoles)
+              .catch(() => null)
+      )
+    );
   }
 
   private getHomeworkPaths(
     document: firebase.firestore.DocumentData
-  ): HomeworkPath {
+  ): HomeworkPath | null {
+    if (!document.exists) {
+      return null;
+    }
+
     return {
       uid: document.get("uid"),
       active: document.get("active"),
@@ -117,7 +150,11 @@ export class FirestoreDocumentService {
 
   private getUserDetails(
     document: firebase.firestore.DocumentData
-  ): UserDetails {
+  ): UserDetails | null {
+    if (!document.exists) {
+      return null;
+    }
+
     return {
       uid: document.get("uid"),
       studentClass: document.get("studentClass"),
@@ -125,7 +162,13 @@ export class FirestoreDocumentService {
     };
   }
 
-  private getUserRoles(document: firebase.firestore.DocumentData): UserRoles {
+  private getUserRoles(
+    document: firebase.firestore.DocumentData
+  ): UserRoles | null {
+    if (!document.exists) {
+      return null;
+    }
+
     return {
       uid: document.get("uid"),
       admin: document.get("admin"),

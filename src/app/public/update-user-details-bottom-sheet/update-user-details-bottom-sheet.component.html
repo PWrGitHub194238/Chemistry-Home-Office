@@ -9,9 +9,7 @@
   </mat-card-header>
   <mat-card-content fxLayout="row">
     <form
-      fxLayout="row"
-      fxLayout.xs="column"
-      fxLayout.sm="column"
+      fxLayout="column"
       fxLayoutAlign="space-evenly"
       fxLayoutGap="10px"
       fxFlex="100%"
@@ -19,35 +17,73 @@
       [formGroup]="registerForm"
       (ngSubmit)="onSubmit()"
     >
-      <mat-form-field>
-        <mat-label>Klasa</mat-label>
-        <input
-          matInput
-          formControlName="studentClass"
-          placeholder="7A"
-          type="text"
-        />
-        <mat-error
-          *ngIf="studentClass.invalid && (studentClass.touched || submitted)"
-        >
-          Podaj proszę swoją nazwę klasy
-        </mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <mat-label>Numer w dzienniku</mat-label>
-        <input
-          matInput
-          formControlName="studentNo"
-          placeholder="1"
-          type="number"
-        />
-        <mat-error
-          *ngIf="studentNo.invalid && (studentNo.touched || submitted)"
-        >
-          Podaj proszę liczbę
-        </mat-error>
-      </mat-form-field>
-
+      <div
+        class="full-width"
+        fxLayout="row"
+        fxLayout.xs="column"
+        fxLayout.sm="column"
+        fxLayoutGap="10px"
+        fxLayoutAlign="space-evenly"
+      >
+        <span class="full-width" [class.hidden]="userMailDefaultValue">
+          <mat-form-field class="full-width">
+            <mat-label>Adres e-mail</mat-label>
+            <input
+              matInput
+              formControlName="userMail"
+              placeholder="Adres e-mail"
+              type="email"
+            />
+            <mat-error
+              *ngIf="userMail.invalid && (userMail.touched || submitted)"
+            >
+              Podaj proszę prawidłowy adres e-mail
+            </mat-error>
+          </mat-form-field>
+        </span>
+      </div>
+      <div
+        fxLayout="row"
+        fxLayout.xs="column"
+        fxLayout.sm="column"
+        fxLayoutGap="10px"
+        fxLayoutAlign="space-evenly"
+      >
+        <span class="full-width" [class.hidden]="studentClassDefaultValue">
+          <mat-form-field class="full-width">
+            <mat-label>Klasa</mat-label>
+            <input
+              matInput
+              formControlName="studentClass"
+              placeholder="7A"
+              type="text"
+            />
+            <mat-error
+              *ngIf="
+                studentClass.invalid && (studentClass.touched || submitted)
+              "
+            >
+              Podaj proszę swoją nazwę klasy
+            </mat-error>
+          </mat-form-field>
+        </span>
+        <span class="full-width" [class.hidden]="studentNoDefaultValue">
+          <mat-form-field class="full-width">
+            <mat-label>Numer w dzienniku</mat-label>
+            <input
+              matInput
+              formControlName="studentNo"
+              placeholder="1"
+              type="number"
+            />
+            <mat-error
+              *ngIf="studentNo.invalid && (studentNo.touched || submitted)"
+            >
+              Podaj proszę liczbę
+            </mat-error>
+          </mat-form-field>
+        </span>
+      </div>
       <button mat-raised-button color="primary" type="submit">Uzupełnij</button>
     </form>
   </mat-card-content>

@@ -6,6 +6,7 @@ import { BehaviorSubject, Observable, of, Subject, zip } from "rxjs";
 import { filter, map, switchMap } from "rxjs/operators";
 import { SubjectError, SubjectSuccess, User, UserDetails } from "../models";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
+import { UserRoles } from "functions/src/models/user/user-roles.model";
 
 @UntilDestroy()
 @Injectable({
@@ -55,15 +56,23 @@ export class AuthService {
             ? zip(
                 of(auth),
                 this.firestoreDocumentService.getUserDetails$(auth.uid),
-                this.firestoreDocumentService.getUserRoles$(auth.uid)
+                this.firestoreDocumentService.getUserRolesOrCreateDefault$(
+                  auth.uid
+                )
               )
             : of([null, null, null])
         ),
-        map(([auth, userDetails, userRoles]) => ({
-          auth: auth,
-          details: userDetails,
-          roles: userRoles
-        }))
+        map(
+          ([auth, userDetails, userRoles]: [
+            firebase.User,
+            UserDetails,
+            UserRoles
+          ]) => ({
+            auth: auth,
+            details: userDetails,
+            roles: userRoles
+          })
+        )
       )
       .subscribe((user: User) => {
         this.user = user;
@@ -94,6 +103,10 @@ export class AuthService {
       .catch(reason => {
         this.signedInSubject$.next({ error: reason });
       });
+  }
+
+  updateUserCredentials(email: string) {
+    this.firebaseAuth.auth.currentUser.updateEmail(email);
   }
 
   setUserProfile(

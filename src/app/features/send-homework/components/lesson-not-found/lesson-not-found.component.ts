@@ -28,7 +28,7 @@ export class LessonNotFoundComponent {
     return this.lessonForm.get("lesson") as FormControl;
   }
 
-  get studenClassPrefix(): number | null {
+  get studentClassPrefix(): number | null {
     return this.authService.user.details
       ? Number(this.authService.user.details.studentClass[0])
       : null;
@@ -54,7 +54,7 @@ export class LessonNotFoundComponent {
 
   loadLessons() {
     this.firestoreDocumentService
-      .getActiveHomeworkPathsForClass$(this.studenClassPrefix)
+      .getActiveHomeworkPathsForClass$(this.studentClassPrefix)
       .pipe(
         untilDestroyed(this),
         map(homeworkPaths =>

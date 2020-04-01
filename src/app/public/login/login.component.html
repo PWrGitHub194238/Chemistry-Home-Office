@@ -72,6 +72,8 @@
         fxLayoutAlign="space-evenly"
         fxLayoutGap="10px"
         fxFlex="100%"
+        (signInSuccessWithAuthResult)="successCallback($event)"
+        (signInFailure)="errorCallback($event)"
       ></firebase-ui>
     </mat-card-content>
     <mat-card-actions class="login-card-actions"></mat-card-actions>

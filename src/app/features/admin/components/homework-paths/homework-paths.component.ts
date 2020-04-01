@@ -48,8 +48,8 @@ export class HomeworkPathsComponent implements OnInit {
 
   openAddHomeworkPathDialog() {
     const dialogRef = this.matDialog.open(HomeworkPathDialogComponent, {
-      height: "400px",
-      width: "600px",
+      height: "500px",
+      width: "700px",
       data: null
     });
 

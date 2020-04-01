@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
+import { UserDetails } from "functions/src/models/user/user-details.model";
 import { AuthResponse, HomeworkPath } from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
 import { User } from "../models/user/user.model";
@@ -91,6 +92,19 @@ export class SnackBarService {
     });
   }
 
+  showUserDetailsUpdated(userDetails: UserDetails) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Dane zaktualizowane",
+        color: "accent",
+        message: `Wylogowano Cię, aby bezpiecznie zaktualizować Twoje dane.<br />
+        Zaloguj się ponownie.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
   showNoRulesInfo(user: User) {
     this.snackBar.openFromComponent(SnackBarComponent, {
       data: {
@@ -98,6 +112,35 @@ export class SnackBarService {
         color: "warn",
         message: `Cześć ${user.auth.displayName}, wygląda na to, że nie masz nadanych żadnych uprawnień do aplikacji.<br />
           Skontaktuj się z administratorem w celu ich nadania.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
+  showLessonInactive(homeworkPath: HomeworkPath) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Lekcja nieaktywna",
+        color: "warn",
+        message: `Lekcja '${homeworkPath.topic}' jest już nieaktywna<br />
+        i nie można przesyłać już do niej zadań.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
+  showStudentNotAllowedForLesson(user: User) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Błąd uprawnień",
+        color: "warn",
+        message: `Cześć ${user.auth.displayName}, wygląda na to,<br />
+        że nie masz uprawnień do danej lekcji.<br />
+        Czy to na pewno lekcja dla Twojej klasy (${
+          user.details ? user.details.studentClass : ""
+        })?`
       },
       ...this.displayDefaultconfig,
       duration: 5000

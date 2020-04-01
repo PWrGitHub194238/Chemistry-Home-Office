@@ -151,3 +151,12 @@ exports.cleanupCloudFirestore = functions.https.onCall(
     }
   }
 );
+
+exports.getUserData = functions.https.onCall(async (data, context) => {
+  try {
+    const user: admin.auth.UserRecord = await admin.auth().getUser(data["uid"]);
+    return { ...user };
+  } catch (err) {
+    return { error: err };
+  }
+});

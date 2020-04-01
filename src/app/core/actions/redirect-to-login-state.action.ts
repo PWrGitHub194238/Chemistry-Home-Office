@@ -1,5 +1,8 @@
 export enum RedirectToLoginState {
   SentHomeworkSuccess,
   NoAdminRole,
-  NoStudentRole
+  NoStudentRole,
+  UserDetailsUpdated,
+  StudentNotAllowedForLesson,
+  LessonInactive
 }
