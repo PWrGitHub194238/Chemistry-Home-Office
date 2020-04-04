@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>Dodatkowe informacje</h2>
+<mat-dialog-content>
+  <form class="form" [formGroup]="aditionalUploadInfoForm">
+    <fieldset>
+      <legend>Dodatkowe informacje o przesyłanej pracy</legend>
+      <div
+        fxLayout="row"
+        fxLayout.xs="column"
+        fxLayout.sm="column"
+        fxLayoutGap="10px"
+        fxLayoutAlign="space-evenly"
+      >
+        <mat-form-field class="full-width">
+          <mat-label>Rodzaj przesyłanej pracy</mat-label>
+          <mat-select [formControl]="assignmentControl">
+            <mat-option
+              *ngFor="let assignment of assignments"
+              [value]="assignment"
+            >
+              {{ assignment }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="assignmentControl.hasError('required')"
+            >Proszę wybierz typ pracy, jaki teraz chcesz wysyłać</mat-error
+          >
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Nazwa załącznika</mat-label>
+          <input
+            matInput
+            formControlName="uploadFileName"
+            [placeholder]="uploadFileNameDefaultValue"
+            type="text"
+          />
+          <mat-error
+            *ngIf="
+              uploadFileName.invalid && (uploadFileName.touched || submitted)
+            "
+          >
+            Nazwa załącznika nie może być pusta
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div
+        fxLayout="row"
+        fxLayout.xs="column"
+        fxLayout.sm="column"
+        fxLayoutGap="10px"
+        fxLayoutAlign="space-evenly"
+      >
+        <mat-form-field class="full-width">
+          <mat-label>Rodzaj przesyłanej pracy</mat-label>
+          <textarea
+            matInput
+            formControlName="uploadFileDescription"
+            placeholder="Opis przesyłanego pliku (opcjonalny)"
+            type="text"
+            rows="4"
+            cols="50"
+          ></textarea>
+        </mat-form-field>
+      </div>
+    </fieldset>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <a mat-button (click)="onReset()">Resetuj</a>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      (click)="onSubmit()"
+    >
+      Zapisz
+    </button>
+  </div>
+</mat-dialog-actions>

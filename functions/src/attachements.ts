@@ -2,15 +2,15 @@ import * as admin from "firebase-admin";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
+import { SentHomeworkFile } from "./models/sent-homework-file.model";
 import { SentHomework } from "./models/sent-homework.model";
-import { HomeworkFile } from "./models/homework-file.model";
 
 export async function storeAttachementsLocally(
   sentHomeworkDocument: SentHomework,
   assignment: string
 ): Promise<string[]> {
   const tempFilePaths: string[] = [];
-  const filePaths: HomeworkFile[] = sentHomeworkDocument.files.filter(
+  const filePaths: SentHomeworkFile[] = sentHomeworkDocument.files.filter(
     homeworkFile => homeworkFile.assignment === assignment
   );
   const filePathCount: number = filePaths.length;

@@ -24,18 +24,18 @@ export class HomeworkUploadService {
     homeworkPath: HomeworkPath,
     firestorageUploadStatus: FirestorageUploadStatus
   ) {
-    const sentHomework: SentHomework = this.firestoreDocumenrService.createSentHomework(
-      {
-        uid: "",
-        path_uid: homeworkPath.uid,
-        email: this.authService.user.auth.email,
-        files: firestorageUploadStatus.uploadedFiles.map(
-          uploadTaskSnapshot => ({
-            fullPath: uploadTaskSnapshot.snapshot.ref.fullPath,
-            assignment: uploadTaskSnapshot.assignment
-          })
-        )
-      }
+    let sentHomework: SentHomework = {
+      uid: "",
+      path_uid: homeworkPath.uid,
+      email: this.authService.user.auth.email,
+      files: firestorageUploadStatus.uploadedFiles.map(
+        uploadTaskSnapshot => uploadTaskSnapshot.sentHomeworkFileMetadata
+      )
+    };
+
+    // Add UID
+    sentHomework = this.firestoreDocumenrService.createSentHomework(
+      sentHomework
     );
 
     this.homeworkUploadedSubject$.next(sentHomework);

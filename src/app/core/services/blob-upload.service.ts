@@ -3,7 +3,7 @@ import { AngularFireStorage } from "@angular/fire/storage";
 import { UUID } from "angular2-uuid";
 import * as mime from "mime";
 import { Observable, Subject } from "rxjs";
-import { HomeworkPath } from "src/app/models";
+import { HomeworkPath, SentHomeworkFile } from "src/app/models";
 import {
   FirestorageBlob,
   FirestorageHomeworkFile,
@@ -32,27 +32,37 @@ export class BlobUploadService {
     this.blobUploaded$ = this.blobUploadedSubject$.asObservable();
   }
 
-  addBlobToSend(fullPath: string, assignment: string, data: Blob) {
+  getNextSugestedFileName(assignmentSelected: string): string {
+    const assignmentBlobCounter = this.blobMetadataQueue.filter(
+      (blob: FirestorageBlob) =>
+        blob.sentHomeworkFileMetadata.assignment === assignmentSelected
+    ).length;
+    return `${assignmentSelected} ${assignmentBlobCounter + 1}`;
+  }
+
+  addBlobToSend(sentHomeworkFileMetadata: SentHomeworkFile, data: Blob) {
     this.blobMetadataQueue.push({
-      fullPath,
-      assignment,
+      sentHomeworkFileMetadata,
       data
     });
   }
 
   addHomeworkAttachment(
     homeworkPath: HomeworkPath,
-    assignment: string,
+    sentHomeworkFileMetadata: SentHomeworkFile,
     data: Blob | File
-  ) {
+  ): string {
     const fileExtension = this.getFileExtension(data);
-    const fullPath = `${homeworkPath.subject}/${
+
+    sentHomeworkFileMetadata.fullPath = `${homeworkPath.subject}/${
       this.authService.user.details.studentClass
-    }/${homeworkPath.topic}/${assignment}/${
+    }/${homeworkPath.topic}/${sentHomeworkFileMetadata.assignment}/${
       this.authService.user.details.studentNo
     }/${UUID.UUID()}.${fileExtension}`;
 
-    this.addBlobToSend(fullPath, assignment, data);
+    this.addBlobToSend(sentHomeworkFileMetadata, data);
+
+    return sentHomeworkFileMetadata.fullPath;
   }
 
   private getFileExtension(data: Blob | File): string {
@@ -74,12 +84,12 @@ export class BlobUploadService {
     let uploadedFilesCounter = 0;
     this.blobMetadataQueue.forEach(blobMeta => {
       this.fireStorageService
-        .upload(blobMeta.fullPath, blobMeta.data)
+        .upload(blobMeta.sentHomeworkFileMetadata.fullPath, blobMeta.data)
         .then(uploadedTaskSnapshot => {
           uploadedFilesCounter += 1;
           uploadedSnapshots.push({
             snapshot: uploadedTaskSnapshot,
-            assignment: blobMeta.assignment
+            sentHomeworkFileMetadata: blobMeta.sentHomeworkFileMetadata
           });
           this.blobUploadedSubject$.next({
             uploadFinish: uploadedFilesCounter === filesToUploadCount,

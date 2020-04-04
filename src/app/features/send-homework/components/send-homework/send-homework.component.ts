@@ -18,6 +18,9 @@ import { SelectSendTypeBottomSheetAction } from "../select-send-type-bottom-shee
 import { SelectSendTypeBottomSheetComponent } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.component";
 import { SelectSendTypeBottomSheetPayload } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.payload";
 import { SubjectSuccess, SubjectError } from "src/app/core/models";
+import { SentHomeworkFile } from "src/app/models";
+import { AddCommentForUploadDialogComponent } from "../add-comment-for-upload-dialog/add-comment-for-upload-dialog.component";
+import { MatDialog } from "@angular/material/dialog";
 
 @UntilDestroy()
 @Component({
@@ -29,11 +32,11 @@ export class SendHomeworkComponent implements OnInit {
   homeworkPath: HomeworkPath;
   isFinishUploadBottomSheetOpen: boolean = false;
   isSelectSendTypeBottomSheetOpen: boolean = true;
+  isAddCommentForUploadDialogOpen: boolean = false;
   attachementSourceTypeSelected: SelectSendTypeBottomSheetAction;
-  selectedTypeOfAassignment: string;
   sentHomework: SentHomework;
-  fileArray: string[] = [];
   isSending: boolean;
+  nextHomeworkFileMetadataToSend: SentHomeworkFile;
 
   SelectSendTypeBottomSheetAction = SelectSendTypeBottomSheetAction;
 
@@ -53,11 +56,12 @@ export class SendHomeworkComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private authService: AuthService,
-    private bottomSheet: MatBottomSheet,
     private blobUploadService: BlobUploadService,
     private homeworkUploadService: HomeworkUploadService,
     private emailSenderService: EmailSenderService,
-    private spinnerService: SpinnerService
+    private spinnerService: SpinnerService,
+    private bottomSheet: MatBottomSheet,
+    private matDialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -67,6 +71,8 @@ export class SendHomeworkComponent implements OnInit {
       this.attachementSourceTypeSelected =
         SelectSendTypeBottomSheetAction.SelectSource;
       this.spinnerService.showSpinner(SpinnerMessage.SourceSelection);
+
+      this.resetNextHomeworkFileMetadata();
 
       this.openSelectAttachmentSourceDialog();
 
@@ -117,12 +123,33 @@ export class SendHomeworkComponent implements OnInit {
     this.homeworkPath = this.route.snapshot.data["homeworkPath"];
   }
 
+  resetNextHomeworkFileMetadata() {
+    if (this.nextHomeworkFileMetadataToSend) {
+      this.nextHomeworkFileMetadataToSend = {
+        fileName: this.blobUploadService.getNextSugestedFileName(
+          this.nextHomeworkFileMetadataToSend.assignment
+        ),
+        fullPath: "",
+        assignment: this.nextHomeworkFileMetadataToSend.assignment,
+        description: ""
+      };
+    } else {
+      this.nextHomeworkFileMetadataToSend = {
+        fileName: "",
+        fullPath: "",
+        assignment: "",
+        description: ""
+      };
+    }
+  }
+
   onSaveBlob(data: Blob) {
-    this.blobUploadService.addHomeworkAttachment(
+    this.nextHomeworkFileMetadataToSend.fullPath = this.blobUploadService.addHomeworkAttachment(
       this.homeworkPath,
-      this.selectedTypeOfAassignment,
+      this.nextHomeworkFileMetadataToSend,
       data
     );
+
     this.openSelectNextActionDialog();
   }
 
@@ -157,6 +184,7 @@ export class SendHomeworkComponent implements OnInit {
         switch (result) {
           default:
           case FinishUploadBottomSheetAction.Continue:
+            this.resetNextHomeworkFileMetadata();
             return;
           case FinishUploadBottomSheetAction.SendHomework:
             this.sendHomework();
@@ -172,7 +200,7 @@ export class SendHomeworkComponent implements OnInit {
         disableClose: true,
         data: {
           homeworkPath: this.homeworkPath,
-          assignment: this.selectedTypeOfAassignment
+          assignment: this.nextHomeworkFileMetadataToSend.assignment
         }
       }
     );
@@ -194,11 +222,9 @@ export class SendHomeworkComponent implements OnInit {
         this.attachementSourceTypeSelected = result.action;
         switch (result.action) {
           case SelectSendTypeBottomSheetAction.LoadFromCamera:
-            this.selectedTypeOfAassignment = result.assignment;
-            this.spinnerService.hideSpinner();
-            return;
           case SelectSendTypeBottomSheetAction.LoadFromDisk:
-            this.selectedTypeOfAassignment = result.assignment;
+            this.nextHomeworkFileMetadataToSend.assignment = result.assignment;
+            this.resetNextHomeworkFileMetadata();
             this.spinnerService.hideSpinner();
             return;
           case SelectSendTypeBottomSheetAction.SendHomework:
@@ -206,6 +232,32 @@ export class SendHomeworkComponent implements OnInit {
             return;
           default:
             break;
+        }
+      });
+  }
+
+  openAddCommentForUploadDialog() {
+    let matDialogRef = this.matDialog.open(AddCommentForUploadDialogComponent, {
+      data: {
+        homeworkPath: this.homeworkPath,
+        homeworkFileMetadata: this.nextHomeworkFileMetadataToSend
+      }
+    });
+
+    matDialogRef
+      .afterOpened()
+      .pipe(untilDestroyed(this))
+      .subscribe(() => {
+        this.isAddCommentForUploadDialogOpen = true;
+      });
+
+    matDialogRef
+      .afterClosed()
+      .pipe(untilDestroyed(this))
+      .subscribe((result: SentHomeworkFile | null) => {
+        this.isAddCommentForUploadDialogOpen = false;
+        if (result) {
+          this.nextHomeworkFileMetadataToSend = result;
         }
       });
   }

@@ -35,32 +35,35 @@
       <button
         *ngFor="let device of mediaDevices$ | async"
         mat-fab
+        class="full-size-button"
         color="primary"
         matTooltip="Zrób zdjęcie swojej pracy domowej klikając w dowolne miejsce na fotografii, tak jak w swoim telefonie"
         [disabled]="assignmentControl.invalid"
         (click)="onCameraButtonClick(device)"
       >
-        <mat-icon>add_a_photo</mat-icon>
+        <mat-icon class="full-size-icon">add_a_photo</mat-icon>
       </button>
       <button
         mat-fab
+        class="full-size-button"
         color="primary"
         matTooltip="Prześlij zdjęcie lub dokument w dowlnym innym formacie ze swoją pracą domową"
         [disabled]="assignmentControl.invalid"
         (click)="onLoadFromDiskClick()"
       >
-        <mat-icon>add_photo_alternate</mat-icon>
+        <mat-icon class="full-size-icon">add_photo_alternate</mat-icon>
       </button>
       <button
         *ngIf="attachementCount > 0"
         mat-fab
+        class="full-size-button"
         color="primary"
         matBadgeColor="warn"
         [matBadge]="attachementCount"
         matTooltip="Prześlij informację do nauczyciela, że skończyłeś zadanie domowe"
         (click)="onSendHomework()"
       >
-        <mat-icon>send</mat-icon>
+        <mat-icon class="full-size-icon">send</mat-icon>
       </button>
     </div>
   </mat-card-content>

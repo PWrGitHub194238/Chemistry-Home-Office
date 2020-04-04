@@ -64,9 +64,18 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
       assignment
     );
 
+    const assignmentSpecificPartialSentHomeworkDocument: SentHomework = {
+      uid: sentHomeworkDocument.uid,
+      path_uid: sentHomeworkDocument.path_uid,
+      email: sentHomeworkDocument.email,
+      files: sentHomeworkDocument.files.filter(
+        file => file.assignment === assignment
+      )
+    };
+
     if (tempFilePaths.length > 0) {
       const teacherNotificationOption: Mail.Options = await getHomeworkSentToTeacherNotificationOptions(
-        sentHomeworkDocument,
+        assignmentSpecificPartialSentHomeworkDocument,
         homeworkPathDocument,
         sender,
         senderDetails,
@@ -75,7 +84,7 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
       );
 
       const studentConfirmationOption: Mail.Options = await getHomeworkSentToTeacherConfirmationOptions(
-        sentHomeworkDocument,
+        assignmentSpecificPartialSentHomeworkDocument,
         homeworkPathDocument,
         sender,
         senderDetails,

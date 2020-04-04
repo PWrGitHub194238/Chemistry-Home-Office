@@ -1,5 +1,6 @@
+import { SentHomeworkFile } from "src/app/models";
+
 export interface FirestorageBlob {
-  fullPath: string;
-  assignment: string;
+  sentHomeworkFileMetadata: SentHomeworkFile;
   data: Blob;
 }

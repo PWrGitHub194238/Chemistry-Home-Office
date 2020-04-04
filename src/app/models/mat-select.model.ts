@@ -1,4 +1,4 @@
-export interface Select {
+export interface MatSelect {
   key: string;
   value: string;
 }

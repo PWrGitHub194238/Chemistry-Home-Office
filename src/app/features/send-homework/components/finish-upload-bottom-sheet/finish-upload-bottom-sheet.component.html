@@ -14,21 +14,23 @@
     <div fxLayout="row" fxLayoutAlign="space-around streach">
       <button
         mat-fab
+        class="full-size-button"
         color="primary"
         matTooltip="Przesyłaj dalsze materiały, dopóki zadanie domowe nie będzie kompletne"
         (click)="onContinue()"
       >
-        <mat-icon>add_circle_outline</mat-icon>
+        <mat-icon class="full-size-icon">add_circle_outline</mat-icon>
       </button>
       <button
         mat-fab
+        class="full-size-button"
         color="primary"
         matBadgeColor="warn"
         [matBadge]="attachementCount"
         matTooltip="Prześlij informację do nauczyciela, że skończyłeś zadanie domowe"
         (click)="onSendHomework()"
       >
-        <mat-icon>send</mat-icon>
+        <mat-icon class="full-size-icon">send</mat-icon>
       </button>
     </div>
   </mat-card-content>

@@ -3,7 +3,8 @@
   [isLoading]="
     isLoading ||
     isFinishUploadBottomSheetOpen ||
-    isSelectSendTypeBottomSheetOpen
+    isSelectSendTypeBottomSheetOpen ||
+    isAddCommentForUploadDialogOpen
   "
   fullScreen="true"
 ></cho-spinner>
@@ -26,19 +27,44 @@
     (saveBlob)="onSaveBlob($event)"
   ></cho-upload-from-disk>
 
-  <button
+  <div
+    class="bottom-sheet-menu-buttons"
+    fxLayout="row"
+    fxLayoutAlign="center center"
+    fxLayoutGap="50px"
     *ngIf="
       !isLoading &&
       !isSelectSendTypeBottomSheetOpen &&
       !isFinishUploadBottomSheetOpen &&
+      !isAddCommentForUploadDialogOpen &&
       !isSending
     "
-    mat-fab
-    class="bottom-sheet-menu-button"
-    color="primary"
-    matTooltip="Przywołaj menu wyboru"
-    (click)="openSelectAttachmentSourceDialog()"
   >
-    <mat-icon>more_horiz</mat-icon>
-  </button>
+    <button
+      mat-mini-fab
+      class="action-button"
+      color="primary"
+      matTooltip=""
+      [style.visibility]="'hidden'"
+    >
+      <mat-icon class="action-icon">description</mat-icon>
+    </button>
+    <button
+      mat-fab
+      class="full-size-button"
+      color="primary"
+      matTooltip="Przywołaj menu wyboru"
+      (click)="openSelectAttachmentSourceDialog()"
+    >
+      <mat-icon class="full-size-icon">more_horiz</mat-icon>
+    </button>
+    <button
+      mat-mini-fab
+      color="primary"
+      matTooltip="Uzupełnij przesyłany plik o dowolny komentarz"
+      (click)="openAddCommentForUploadDialog()"
+    >
+      <mat-icon class="action-icon">description</mat-icon>
+    </button>
+  </div>
 </span>

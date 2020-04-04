@@ -33,11 +33,12 @@
         <div fxFlex></div>
         <button
           mat-mini-fab
+          class="full-size-button"
           color="primary"
           matTooltip="Dodaj lekcję"
           (click)="openAddHomeworkPathDialog()"
         >
-          <mat-icon>library_add</mat-icon>
+          <mat-icon class="full-size-icon">library_add</mat-icon>
         </button>
       </div>
       <div class="homework-paths-table">
@@ -142,7 +143,7 @@
                     homeworkPath === homeworkPathSelected
                   "
                 >
-                  <mat-icon>more_vert</mat-icon>
+                  <mat-icon class="full-size-icon">more_vert</mat-icon>
                   <div matTooltip="Edytuj lekcję">
                     <button mat-mini-fab class="action-button" color="primary">
                       <mat-icon class="action-icon">edit</mat-icon>

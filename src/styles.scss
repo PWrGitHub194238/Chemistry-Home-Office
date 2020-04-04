@@ -13,6 +13,20 @@ body,
   overflow: hidden;
 }
 
+fieldset {
+  border-radius: 10px;
+  padding: 20px;
+  border: 2px solid #673ab7;
+}
+
+legend {
+  color: #673ab7;
+}
+
+mat-dialog-actions {
+  margin-top: 25px;
+}
+
 .hidden-router {
   margin: 0;
 }
@@ -29,4 +43,28 @@ body,
 
 .hidden {
   display: none;
+}
+
+.small-icon {
+  transform: scale(1);
+}
+
+.small-button {
+  transform: scale(0.6);
+}
+
+.action-icon {
+  transform: scale(0.8);
+}
+
+.action-button {
+  transform: scale(0.8);
+}
+
+.full-size-icon {
+  transform: scale(1);
+}
+
+.full-size-button {
+  transform: scale(1);
 }

@@ -1,9 +1,11 @@
 import * as admin from "firebase-admin";
 import * as Mail from "nodemailer/lib/mailer";
 import * as stringFormat from "string-format";
-import { SentHomework } from "../../models/sent-homework.model";
 import { HomeworkPath } from "../../models/homework-path.model";
+import { SentHomeworkFile } from "../../models/sent-homework-file.model";
+import { SentHomework } from "../../models/sent-homework.model";
 import { UserDetails } from "../../models/user/user-details.model";
+const TableBuilder = require("table-builder");
 
 export async function getHomeworkSentToTeacherNotificationOptions(
   sentHomeworkDocument: SentHomework,
@@ -45,8 +47,8 @@ export async function getHomeworkSentToTeacherNotificationOptions(
         assignment
       ),
       attachments: await getTeacherNotificationAttachements(
-        tempFilePaths,
-        assignment
+        sentHomeworkDocument.files,
+        tempFilePaths
       )
     };
   }
@@ -90,6 +92,7 @@ function getTeacherNotificationHtmlBody(
         <p>{studentName} z klasy {studentClass} o numerze {studentNo} w dzienniku właście wysłał do Ciebie zdjęcia/dokumenty dotyczące kategorii: '{assignment}'!</p>
         <p>Załączniki dotyczą lekcji {subject}, której tematem było {topic}.</p>
         <p>Wysłane przez ucznia dokumenty ({attachmentsCount}) znajdziesz w załącznikach.</p>
+        {filesAdditionalDescription}
       </body>
     </html>`,
     {
@@ -99,24 +102,61 @@ function getTeacherNotificationHtmlBody(
       assignment: assignment,
       subject: homeworkPath.subject,
       topic: homeworkPath.topic,
-      attachmentsCount: sentHomeworkDocument.files.filter(
-        homeworkFile => homeworkFile.assignment === assignment
-      ).length,
-      studentEmail: sender.email
+      attachmentsCount: sentHomeworkDocument.files.length,
+      studentEmail: sender.email,
+      filesAdditionalDescription: getTeacherNotificationHtmlBodyFilesAdditionalDescription(
+        sender.displayName ? sender.displayName : sender.email,
+        sentHomeworkDocument.files
+      )
     }
   );
 }
 
+function getTeacherNotificationHtmlBodyFilesAdditionalDescription(
+  studentName: string | undefined,
+  sentHomeworkFiles: SentHomeworkFile[]
+): string {
+  if (sentHomeworkFiles.some(file => file.description)) {
+    return stringFormat(
+      `
+        <br />
+        <br />
+        Dodatkowo {studentName} zamieścił następujące komentarze do przesłanych przez siebie plików:<br />
+      {htmlTable}.
+    `,
+      {
+        studentName: studentName,
+        htmlTable: new TableBuilder({})
+          .setHeaders({
+            name: "Nazwa pliku",
+            description: "Komentarz do pliku"
+          })
+          .setData(
+            sentHomeworkFiles.map((file: SentHomeworkFile) => ({
+              name: file.fileName,
+              description: file.description
+            }))
+          )
+          .render()
+      }
+    );
+  }
+
+  return "";
+}
+
 async function getTeacherNotificationAttachements(
-  tempFilePaths: string[],
-  assignment: string
+  sentHomeworkFiles: SentHomeworkFile[],
+  tempFilePaths: string[]
 ): Promise<Mail.Attachment[]> {
   const attachements: Mail.Attachment[] = [];
 
   tempFilePaths.forEach((tempFilePath: string, i: number) => {
     attachements.push({
       path: tempFilePath,
-      filename: `${assignment} ${i + 1}.${tempFilePath.split(".").pop()}`,
+      filename: `${sentHomeworkFiles[i].fileName}.${tempFilePath
+        .split(".")
+        .pop()}`,
       contentDisposition: "attachment"
     });
   });

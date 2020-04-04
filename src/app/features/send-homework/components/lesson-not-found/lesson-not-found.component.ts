@@ -11,7 +11,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
 import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Select } from "src/app/models/select.model";
+import { MatSelect } from "src/app/models/mat-select.model";
 
 @UntilDestroy()
 @Component({
@@ -22,7 +22,7 @@ import { Select } from "src/app/models/select.model";
 export class LessonNotFoundComponent {
   lessonForm: FormGroup;
   returnUrl: string;
-  lessons: Select[];
+  lessons: MatSelect[];
 
   get lessonControl(): FormControl {
     return this.lessonForm.get("lesson") as FormControl;
