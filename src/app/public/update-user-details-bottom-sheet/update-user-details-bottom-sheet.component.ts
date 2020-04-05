@@ -11,10 +11,8 @@ import {
 } from "@angular/material/bottom-sheet";
 import { UserDetails } from "src/app/core/models/user/user-details.model";
 import { AuthService } from "src/app/core/services/auth.service";
-import {
-  StudentClass,
-  StudentNo
-} from "src/app/shared/validators/login-form.validator";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
 
 @Component({
   selector: "cho-update-user-details-bottom-sheet",
@@ -56,6 +54,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
+    private dictionaryService: DictionaryService,
     private bottomSheetRef: MatBottomSheetRef<
       UpdateUserDetailsBottomSheetComponent
     >,
@@ -81,14 +80,26 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
           value: this.studentClassDefaultValue,
           disabled: !!this.studentClassDefaultValue
         },
-        [Validators.required, StudentClass]
+        [
+          Validators.required,
+          LoginFormValidator.StudentClass(
+            this.dictionaryService,
+            () => this.studentNo
+          )
+        ]
       ],
       studentNo: [
         {
           value: this.studentNoDefaultValue,
           disabled: !!this.studentNoDefaultValue
         },
-        [Validators.required, StudentNo]
+        [
+          Validators.required,
+          LoginFormValidator.StudentNo(
+            this.dictionaryService,
+            () => this.studentClass.value
+          )
+        ]
       ]
     });
   }

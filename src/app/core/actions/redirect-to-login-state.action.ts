@@ -1,4 +1,5 @@
 export enum RedirectToLoginState {
+  UserRegisterSuccess,
   SentHomeworkSuccess,
   NoAdminRole,
   NoStudentRole,

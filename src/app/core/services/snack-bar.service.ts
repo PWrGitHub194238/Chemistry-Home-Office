@@ -17,6 +17,22 @@ export class SnackBarService {
 
   constructor(private snackBar: MatSnackBar) {}
 
+  showUserRegistered() {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Udało się zarejestrować",
+        color: "accent",
+        message: `Cześć, Twoje konto zostało utworzone<br />
+          i przypisane do klasy.<br />
+          Proszę zaloguj się teraz <br />
+          podanymi wcześniej adresem e-mail i hasłem.<br />
+          Miłego korzystania :).`
+      },
+      ...this.displayDefaultconfig,
+      duration: 10000
+    });
+  }
+
   showLoginError(reason: AuthResponse) {
     const message = this.getMessageFromAuthCode(reason.code);
     this.snackBar.openFromComponent(SnackBarComponent, {

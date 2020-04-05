@@ -3,19 +3,19 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  Validators
+  Validators,
+  AbstractControl
 } from "@angular/forms";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AuthService } from "src/app/core/services/auth.service";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
-import {
-  Name,
-  StudentClass,
-  StudentNo
-} from "src/app/shared/validators/login-form.validator";
+import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
+import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
+import { SubjectError, User, SubjectSuccess } from "src/app/core/models";
 
 @UntilDestroy()
 @Component({
@@ -30,8 +30,9 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private authService: AuthService,
     private route: ActivatedRoute,
+    private authService: AuthService,
+    private dictionaryService: DictionaryService,
     private snackBarService: SnackBarService,
     private spinnerService: SpinnerService
   ) {}
@@ -73,25 +74,47 @@ export class RegisterComponent implements OnInit {
         this.returnUrl = paramMap.get("returnUrl");
       });
 
-    this.authService.signedIn$.pipe(untilDestroyed(this)).subscribe(resp => {
-      if (resp["error"]) {
-        this.spinnerService.hideSpinner();
-        this.snackBarService.showRegistrationError(resp["error"]);
-      } else {
-        this.submitted = false;
-        this.spinnerService.hideSpinner();
-        this.authService.redirectToLogin(this.returnUrl, null);
-      }
-    });
+    this.authService.signedIn$
+      .pipe(untilDestroyed(this))
+      .subscribe((resp: SubjectSuccess | SubjectError) => {
+        if (resp["error"]) {
+          this.spinnerService.hideSpinner();
+          this.snackBarService.showRegistrationError(resp["error"]);
+        } else {
+          this.submitted = false;
+          this.spinnerService.hideSpinner();
+          const state = {};
+          state[RedirectToLoginState.UserRegisterSuccess] = true;
+          this.authService.logout(this.returnUrl, state);
+        }
+      });
   }
 
   createForm() {
     this.registerForm = this.formBuilder.group({
-      userLogin: ["", [Validators.required, Name]],
+      userLogin: ["", [Validators.required, LoginFormValidator.Name()]],
       userMail: ["", [Validators.required, Validators.email]],
       userPassword: ["", Validators.required],
-      studentClass: ["", [Validators.required, StudentClass]],
-      studentNo: ["", [Validators.required, StudentNo]]
+      studentClass: [
+        "",
+        [Validators.required],
+        [
+          LoginFormValidator.StudentClass(
+            this.dictionaryService,
+            () => this.studentNo
+          )
+        ]
+      ],
+      studentNo: [
+        { value: "", disabled: true },
+        [Validators.required],
+        [
+          LoginFormValidator.StudentNo(
+            this.dictionaryService,
+            () => this.studentClass.value
+          )
+        ]
+      ]
     });
   }
 

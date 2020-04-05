@@ -144,7 +144,9 @@ export class LoginComponent implements OnInit, AfterViewChecked {
 
   private showSnackBarOnLogout(state?: { [k: string]: any }) {
     if (state) {
-      if (state[RedirectToLoginState.SentHomeworkSuccess]) {
+      if (state[RedirectToLoginState.UserRegisterSuccess]) {
+        this.snackBarService.showUserRegistered();
+      } else if (state[RedirectToLoginState.SentHomeworkSuccess]) {
         this.authService.signOut();
         this.snackBarService.showHomeworkSent(
           state[RedirectToLoginState.SentHomeworkSuccess]
@@ -171,7 +173,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
           state[RedirectToLoginState.LessonInactive]
         );
       }
-      this.authService.onLogoutState = null;
     }
   }
 

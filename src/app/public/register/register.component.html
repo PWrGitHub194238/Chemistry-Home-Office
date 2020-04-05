@@ -84,10 +84,19 @@
             />
             <mat-error
               *ngIf="
-                studentClass.invalid && (studentClass.touched || submitted)
+                (studentClass.touched || submitted) &&
+                studentClass.errors?.required
               "
             >
               Podaj proszę swoją nazwę klasy
+            </mat-error>
+            <mat-error
+              *ngIf="
+                (studentClass.touched || submitted) &&
+                studentClass.errors?.class
+              "
+            >
+              Dana klasa nie istnieje, podaj proszę inną
             </mat-error>
           </mat-form-field>
           <mat-form-field class="full-width">
@@ -99,9 +108,16 @@
               type="number"
             />
             <mat-error
-              *ngIf="studentNo.invalid && (studentNo.touched || submitted)"
+              *ngIf="
+                (studentNo.touched || submitted) && studentNo.errors?.required
+              "
             >
-              Podaj proszę liczbę
+              Podaj proszę numer z dziennika
+            </mat-error>
+            <mat-error
+              *ngIf="(studentNo.touched || submitted) && studentNo.errors?.no"
+            >
+              Dany numer jest niepoprawny dla klasy {{ studentClass.value }}
             </mat-error>
           </mat-form-field>
         </div>

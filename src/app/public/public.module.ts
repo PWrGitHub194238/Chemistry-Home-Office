@@ -5,8 +5,6 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { firebase, firebaseui, FirebaseUIModule } from "firebaseui-angular";
 import { NgxSpinnerModule } from "ngx-spinner";
 import { MaterialDesignModule } from "../material-design.module";
-import { FooterComponent } from "./footer/footer.component";
-import { HeaderComponent } from "./header/header.component";
 import { LoginComponent } from "./login/login.component";
 import { RegisterComponent } from "./register/register.component";
 import { SnackBarComponent } from "./snack-bar/snack-bar.component";
@@ -30,8 +28,6 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
 @NgModule({
   declarations: [
     LoginComponent,
-    FooterComponent,
-    HeaderComponent,
     SpinnerComponent,
     RegisterComponent,
     SnackBarComponent,
@@ -46,6 +42,6 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     ReactiveFormsModule,
     NgxSpinnerModule
   ],
-  exports: [LoginComponent, FooterComponent, HeaderComponent, SpinnerComponent]
+  exports: [LoginComponent, SpinnerComponent]
 })
 export class PublicModule {}
