@@ -7,7 +7,8 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "prettier": "prettier \"src/{app,environments,assets}/**/*{.html,.scss,.ts}\""
   },
   "private": true,
   "dependencies": {
@@ -31,6 +32,8 @@
     "firebaseui": "^4.5.0",
     "firebaseui-angular": "^4.0.1",
     "mime": "^2.4.4",
+    "ngx-clipboard": "^13.0.0",
+    "ngx-scrollbar": "^7.2.1-beta.0",
     "ngx-spinner": "^9.0.1",
     "ngx-webcam": "^0.2.6",
     "prettier": "^1.19.1",

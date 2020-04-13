@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content>
+  {{ data.body }}
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <button mat-button (click)="onCancel()">{{ data.cancelLabel }}</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()">
+    {{ data.okLabel }}
+  </button>
+</mat-dialog-actions>

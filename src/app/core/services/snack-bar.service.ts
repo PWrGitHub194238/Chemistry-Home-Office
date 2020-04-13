@@ -4,6 +4,7 @@ import { UserDetails } from "functions/src/models/user/user-details.model";
 import { AuthResponse, HomeworkPath } from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
 import { User } from "../models/user/user.model";
+import { FirebaseError } from "firebase";
 
 @Injectable({
   providedIn: "root"
@@ -12,7 +13,7 @@ export class SnackBarService {
   private displayDefaultconfig: MatSnackBarConfig<any> = {
     horizontalPosition: "center",
     verticalPosition: "top",
-    duration: 3000
+    duration: 5000
   };
 
   constructor(private snackBar: MatSnackBar) {}
@@ -45,18 +46,6 @@ export class SnackBarService {
     });
   }
 
-  getMessageFromAuthCode(code: string) {
-    switch (code) {
-      case "auth/user-not-found":
-      case "auth/wrong-password":
-        return "Podany użytkownik nie istnieje lub podałeś złe dane logowania";
-      case "auth/email-already-in-use":
-        return "Podany adres e-mail jest już zarejestrowany";
-      default:
-        break;
-    }
-  }
-
   showRegistrationError(reason: AuthResponse) {
     const message = this.getMessageFromAuthCode(reason.code);
     this.snackBar.openFromComponent(SnackBarComponent, {
@@ -78,7 +67,7 @@ export class SnackBarService {
         Dotarło ono całe i zdrowe na skrzynkę pocztową nauczyciela.`
       },
       ...this.displayDefaultconfig,
-      duration: 5000
+      duration: 10000
     });
   }
 
@@ -90,8 +79,7 @@ export class SnackBarService {
         message: `Aby mieć dostęp do tego zasobu<br />
         potrzebujesz mieć przypisane do Twojego konta prawa ucznia.`
       },
-      ...this.displayDefaultconfig,
-      duration: 5000
+      ...this.displayDefaultconfig
     });
   }
 
@@ -103,8 +91,7 @@ export class SnackBarService {
         message: `Aby mieć dostęp do tego zasobu<br />
         potrzebujesz mieć przypisane do Twojego konta prawa administratora.`
       },
-      ...this.displayDefaultconfig,
-      duration: 5000
+      ...this.displayDefaultconfig
     });
   }
 
@@ -116,8 +103,7 @@ export class SnackBarService {
         message: `Wylogowano Cię, aby bezpiecznie zaktualizować Twoje dane.<br />
         Zaloguj się ponownie.`
       },
-      ...this.displayDefaultconfig,
-      duration: 5000
+      ...this.displayDefaultconfig
     });
   }
 
@@ -130,7 +116,7 @@ export class SnackBarService {
           Skontaktuj się z administratorem w celu ich nadania.`
       },
       ...this.displayDefaultconfig,
-      duration: 5000
+      duration: 10000
     });
   }
 
@@ -142,8 +128,7 @@ export class SnackBarService {
         message: `Lekcja '${homeworkPath.topic}' jest już nieaktywna<br />
         i nie można przesyłać już do niej zadań.`
       },
-      ...this.displayDefaultconfig,
-      duration: 5000
+      ...this.displayDefaultconfig
     });
   }
 
@@ -159,7 +144,7 @@ export class SnackBarService {
         })?`
       },
       ...this.displayDefaultconfig,
-      duration: 5000
+      duration: 10000
     });
   }
 
@@ -173,5 +158,105 @@ export class SnackBarService {
       },
       ...this.displayDefaultconfig
     });
+  }
+
+  showCreateHomeworkPathSuccess(homeworkPath: HomeworkPath) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Dodano lekcję!",
+        color: "primary",
+        message: `Lekcja '${homeworkPath.topic}' została dodana.`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showCreateHomeworkPathFailed(error: FirebaseError) {
+    const message = this.getMessageFromFirebaseErrorCode(error.code);
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Coś poszło nie tak :(",
+        color: "warn",
+        message: `Nie udało się dodać lekcji (${message})`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showEditHomeworkPathSuccess(homeworkPath: HomeworkPath) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Zmieniono lekcję!",
+        color: "primary",
+        message: `Lekcja '${homeworkPath.topic}' została zmieniona.`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showEditHomeworkPathFailed(error: FirebaseError) {
+    const message = this.getMessageFromFirebaseErrorCode(error.code);
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Coś poszło nie tak :(",
+        color: "warn",
+        message: `Nie udało się zmodyfikować lekcji (${message})`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showDeleteHomeworkPathSuccess(homeworkPath: HomeworkPath) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Usunięto lekcję!",
+        color: "primary",
+        message: `Lekcja '${homeworkPath.topic}' została usunięta.`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showDeleteHomeworkPathFailed(error: FirebaseError) {
+    const message = this.getMessageFromFirebaseErrorCode(error.code);
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Coś poszło nie tak :(",
+        color: "warn",
+        message: `Nie udało się usunąć lekcji (${message})`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showOnSelectedHomeworkPathLinkCopied() {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        color: "primary",
+        message: "Skopiowano link do lekcji!"
+      },
+      ...this.displayDefaultconfig,
+      duration: 2000
+    });
+  }
+
+  private getMessageFromAuthCode(code: string) {
+    switch (code) {
+      case "auth/user-not-found":
+      case "auth/wrong-password":
+        return "Podany użytkownik nie istnieje lub podałeś złe dane logowania";
+      case "auth/email-already-in-use":
+        return "Podany adres e-mail jest już zarejestrowany";
+      default:
+        break;
+    }
+  }
+
+  private getMessageFromFirebaseErrorCode(code: string) {
+    switch (code) {
+      case "permission-denied":
+      default:
+        return "brak uprawnień";
+    }
   }
 }

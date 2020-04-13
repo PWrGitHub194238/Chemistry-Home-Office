@@ -25,7 +25,6 @@ export class EmailSenderService {
       .pipe(untilDestroyed(this))
       .subscribe(
         resp => {
-          debugger;
           if (resp["error"]) {
             this.emailSentSubject$.next({ error: resp["error"] });
           } else {
@@ -33,7 +32,6 @@ export class EmailSenderService {
           }
         },
         err => {
-          debugger;
           this.emailSentSubject$.next({ error: err });
         }
       );

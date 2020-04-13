@@ -15,3 +15,20 @@ label {
   color: #673ab7;
   min-width: 100px;
 }
+
+.assignments-table {
+  min-height: 250px;
+  max-height: 250px;
+  min-width: 100%;
+}
+
+.mat-row td {
+  border-bottom: none;
+}
+
+ng-scrollbar {
+  --scrollbar-size: 8px;
+  --scrollbar-thumb-color: #e5d7fd;
+  --scrollbar-thumb-hover-color: #673ab7;
+  --scrollbar-border-radius: 4px;
+}

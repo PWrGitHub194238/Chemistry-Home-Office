@@ -46,7 +46,7 @@ export class HomeworkPathAuthGuard implements CanActivate {
       .pipe(
         untilDestroyed(this),
         tap((homeworkPath: HomeworkPath | null) => {
-          if (!homeworkPath || homeworkPath.class !== studentClassPefix) {
+          if (!homeworkPath || homeworkPath.classNo !== studentClassPefix) {
             const quardPayload = {};
             quardPayload[
               RedirectToLoginState.StudentNotAllowedForLesson

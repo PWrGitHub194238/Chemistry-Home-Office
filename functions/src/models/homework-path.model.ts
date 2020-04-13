@@ -5,7 +5,7 @@ export interface HomeworkPath {
   active: boolean;
   date: Date;
   subject: string;
-  class: number;
+  classNo: number;
   topic: string;
   assignments: Assignment[];
 }

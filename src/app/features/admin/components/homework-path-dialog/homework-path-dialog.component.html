@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Dodaj nową leckję</h2>
+<h2 mat-dialog-title>{{ editMode ? "Zmień lekcję" : "Dodaj nową leckję" }}</h2>
 <mat-dialog-content>
   <form
     class="form"
@@ -6,14 +6,14 @@
     fxLayoutAlign="space-between"
     fxLayoutGap="10px"
     [formGroup]="homeworkPathForm"
-    (ngSubmit)="onSubmit()"
   >
     <fieldset>
       <legend>Podstawowe dane</legend>
       <div fxLayoutAlign="end">
         <mat-slide-toggle
+          formControlName="active"
           color="primary"
-          [checked]="true"
+          [checked]="active.value"
           (change)="activeToggle($event)"
         >
           Czy lekcja jest aktywna
@@ -23,23 +23,26 @@
         <mat-form-field class="full-width">
           <mat-label>Przedmiot nauczania</mat-label>
           <mat-select formControlName="subject">
-            <mat-option *ngFor="let subject of subjectArray" [value]="subject">
-              {{ subject }}
+            <mat-option
+              *ngFor="let subject of subjects$ | async"
+              [value]="subject.name"
+            >
+              {{ subject.name }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="subject.invalid && (subject.touched || submitted)"
+          <mat-error *ngIf="subject.invalid && subject.touched"
             >Proszę wybierz nazwę przedmiotu
           </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width">
           <mat-label>Klasa</mat-label>
-          <mat-select formControlName="class">
-            <mat-option *ngFor="let class of classArray" [value]="class">
+          <mat-select formControlName="classNo">
+            <mat-option *ngFor="let class of classes$ | async" [value]="class">
               {{ class }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="class.invalid && (class.touched || submitted)"
+          <mat-error *ngIf="classNo.invalid && classNo.touched"
             >Proszę wybierz klasę
           </mat-error>
         </mat-form-field>
@@ -53,7 +56,7 @@
             placeholder="Temat lekcji"
             type="text"
           />
-          <mat-error *ngIf="topic.invalid && (topic.touched || submitted)">
+          <mat-error *ngIf="topic.invalid && topic.touched">
             Podaj proszę temat lekcji
           </mat-error>
         </mat-form-field>
@@ -61,63 +64,137 @@
     </fieldset>
     <fieldset>
       <legend>Zadania</legend>
-      <div
-        formArrayName="assignments"
-        *ngFor="let assignment of assignments.controls; index as idx"
-      >
-        <div
-          fxLayout="row"
-          fxLayoutGap="10px"
-          fxLayoutAlign="space-around center"
-          [formGroupName]="idx"
-        >
-          <label> Zadanie {{ idx + 1 }}:</label>
-          <mat-form-field class="full-width">
-            <mat-label>Zadanie</mat-label>
-            <input
-              matInput
-              formControlName="name"
-              placeholder="Nazwa zadania"
-              type="text"
-            />
-            <mat-error
-              *ngIf="
-                assignment.get('name').invalid &&
-                (assignment.get('name').touched || submitted)
-              "
-            >
-              Podaj proszę
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field fxFlex="80px">
-            <mat-label>Ikona</mat-label>
-            <mat-select formControlName="icon">
-              <mat-option
-                *ngFor="let matIcon of matIconArray"
-                [value]="matIcon.value"
+      <ng-scrollbar track="vertical" appearance="standard" [disabled]="false">
+        <div class="assignments-table">
+          <table
+            mat-table
+            [dataSource]="assignmentRows"
+            formArrayName="assignments"
+          >
+            <!-- Numer Column -->
+            <ng-container matColumnDef="no">
+              <th mat-header-cell *matHeaderCellDef>Numer</th>
+              <td mat-cell *matCellDef="let row; let index = index">
+                {{ index + 1 }}
+              </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Nazwa zadania</th>
+              <td
+                mat-cell
+                *matCellDef="let row; let index = index"
+                [formGroupName]="index"
               >
-                <mat-icon>{{ matIcon.key }}</mat-icon
-                >{{ matIcon.value }}
-              </mat-option>
-            </mat-select>
-            <mat-error
-              *ngIf="
-                assignment.get('icon').invalid &&
-                (assignment.get('icon').touched || submitted)
-              "
-              >Proszę wybierz</mat-error
-            >
-          </mat-form-field>
+                <mat-form-field class="full-width">
+                  <input
+                    matInput
+                    formControlName="name"
+                    placeholder="Nazwa zadania"
+                    aria-label="State"
+                    [matAutocomplete]="auto"
+                    (keyup)="
+                      onAssignmentNameInputChange(index, $event.target.value)
+                    "
+                    (blur)="onAssignmentNameBlur(index, $event.target.value)"
+                  />
+                  <mat-autocomplete
+                    #auto="matAutocomplete"
+                    (optionSelected)="
+                      onAutoCompleteAassignmentSelected(index, $event)
+                    "
+                  >
+                    <mat-option
+                      *ngFor="
+                        let assignment of assignmentRows[index]
+                          .filteredAssignments$ | async
+                      "
+                      [value]="assignment.name"
+                    >
+                      <mat-icon class="action-icon">{{
+                        assignment.icon
+                      }}</mat-icon>
+                      <span
+                        [innerHTML]="
+                          assignment.name
+                            | highlightSearch: assignmentName(index).value
+                        "
+                      ></span>
+                    </mat-option>
+                  </mat-autocomplete>
+                  <mat-error
+                    *ngIf="
+                      assignmentName(index).invalid &&
+                      assignmentName(index).touched
+                    "
+                  >
+                    Podaj proszę nazwę zadania
+                  </mat-error>
+                </mat-form-field>
+              </td>
+            </ng-container>
+
+            <!-- Icon Column -->
+            <ng-container matColumnDef="icon">
+              <th mat-header-cell *matHeaderCellDef>Ikona</th>
+              <td
+                mat-cell
+                *matCellDef="let row; let index = index"
+                [formGroupName]="index"
+              >
+                <div
+                  fxLayout="row"
+                  fxLayoutAlign="center center"
+                  fxLayoutGap="10px"
+                  [class.hidden]="isPlaceholderForNextAssignment(index)"
+                >
+                  <div matTooltip="Poprzednia ikona">
+                    <button
+                      mat-mini-fab
+                      class="small-button"
+                      color="primary"
+                      (click)="previousAssignmentIcon(index)"
+                    >
+                      <mat-icon class="small-icon">navigate_before</mat-icon>
+                    </button>
+                  </div>
+                  <mat-icon class="action-icon">{{
+                    getIconName(assignmentIconIdx(index).value)
+                  }}</mat-icon>
+                  <div matTooltip="Następna ikona">
+                    <button
+                      mat-mini-fab
+                      class="small-button"
+                      color="primary"
+                      (click)="nextAssignmentIcon(index)"
+                    >
+                      <mat-icon class="small-icon">navigate_next</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="assignmentColumns; sticky: true"
+            ></tr>
+
+            <tr mat-row *matRowDef="let row; columns: assignmentColumns"></tr>
+          </table>
         </div>
-      </div>
+      </ng-scrollbar>
     </fieldset>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions fxLayoutAlign="space-around center">
-  <a>Resetuj</a>
+  <button mat-button (click)="onReset()">Resetuj</button>
   <div fxFlex></div>
   <div>
-    <button mat-button mat-dialog-close>Anuluj</button>
-    <button mat-raised-button color="primary" type="submit">Dodaj</button>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{ editMode ? "Zmień lekcję" : "Dodaj lekcję" }}
+    </button>
   </div>
 </mat-dialog-actions>

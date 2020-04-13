@@ -13,6 +13,10 @@ body,
   overflow: hidden;
 }
 
+table {
+  min-width: 100%;
+}
+
 fieldset {
   border-radius: 10px;
   padding: 20px;
@@ -42,7 +46,7 @@ mat-dialog-actions {
 }
 
 .hidden {
-  display: none;
+  visibility: hidden;
 }
 
 .small-icon {
@@ -50,15 +54,15 @@ mat-dialog-actions {
 }
 
 .small-button {
-  transform: scale(0.6);
+  transform: scale(0.6) !important;
 }
 
 .action-icon {
-  transform: scale(0.8);
+  transform: scale(1.2);
 }
 
 .action-button {
-  transform: scale(0.8);
+  transform: scale(0.8) !important;
 }
 
 .full-size-icon {
@@ -66,5 +70,10 @@ mat-dialog-actions {
 }
 
 .full-size-button {
-  transform: scale(1);
+  transform: scale(1) !important;
+}
+
+mark {
+  background-color: white;
+  font-weight: bold;
 }

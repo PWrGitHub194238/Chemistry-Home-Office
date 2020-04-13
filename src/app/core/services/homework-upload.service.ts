@@ -34,7 +34,7 @@ export class HomeworkUploadService {
     };
 
     // Add UID
-    sentHomework = this.firestoreDocumenrService.createSentHomework(
+    sentHomework = await this.firestoreDocumenrService.createSentHomework(
       sentHomework
     );
 

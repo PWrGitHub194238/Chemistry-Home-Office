@@ -1,4 +1,5 @@
 import { NgModule } from "@angular/core";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatBadgeModule } from "@angular/material/badge";
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { MatButtonModule } from "@angular/material/button";
@@ -34,7 +35,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatAutocompleteModule
   ],
   exports: [
     MatToolbarModule,
@@ -52,7 +54,8 @@ import { MatTooltipModule } from "@angular/material/tooltip";
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatAutocompleteModule
   ]
 })
 export class MaterialDesignModule {}

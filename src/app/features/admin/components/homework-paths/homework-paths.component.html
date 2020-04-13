@@ -21,7 +21,7 @@
       fxLayoutGap="10px"
     >
       <div fxFlex></div>
-      <div>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
         <mat-form-field>
           <mat-label>Szukaj</mat-label>
           <input
@@ -31,15 +31,18 @@
           />
         </mat-form-field>
         <div fxFlex></div>
-        <button
-          mat-mini-fab
-          class="full-size-button"
-          color="primary"
-          matTooltip="Dodaj lekcję"
-          (click)="openAddHomeworkPathDialog()"
-        >
-          <mat-icon class="full-size-icon">library_add</mat-icon>
-        </button>
+        <fieldset>
+          <legend>Akcje</legend>
+          <button
+            mat-mini-fab
+            class="full-size-button"
+            color="primary"
+            matTooltip="Dodaj lekcję"
+            (click)="openAddHomeworkPathDialog()"
+          >
+            <mat-icon class="full-size-icon">library_add</mat-icon>
+          </button>
+        </fieldset>
       </div>
       <div class="homework-paths-table">
         <table mat-table [dataSource]="dataSource" matSort>
@@ -89,11 +92,11 @@
               </span>
             </td>
           </ng-container>
-          <ng-container matColumnDef="class">
+          <ng-container matColumnDef="classNo">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Klasa</th>
             <td mat-cell *matCellDef="let homeworkPath">
               <span>
-                {{ homeworkPath.class }}
+                {{ homeworkPath.classNo }}
               </span>
             </td>
           </ng-container>
@@ -144,13 +147,37 @@
                   "
                 >
                   <mat-icon class="full-size-icon">more_vert</mat-icon>
+                  <div matTooltip="Skopiuj link do lekcji">
+                    <button
+                      mat-mini-fab
+                      class="action-button"
+                      color="primary"
+                      ngxClipboard
+                      [cbContent]="getSelectedHomeworkPathLink(homeworkPath)"
+                      (cbOnSuccess)="onSelectedHomeworkPathLinkCopied()"
+                    >
+                      <mat-icon class="action-icon">link</mat-icon>
+                    </button>
+                  </div>
                   <div matTooltip="Edytuj lekcję">
-                    <button mat-mini-fab class="action-button" color="primary">
+                    <button
+                      mat-mini-fab
+                      class="action-button"
+                      color="primary"
+                      (click)="openEditHomeworkPathDialog(homeworkPathSelected)"
+                    >
                       <mat-icon class="action-icon">edit</mat-icon>
                     </button>
                   </div>
                   <div matTooltip="Usuń lekcję">
-                    <button mat-mini-fab class="action-button" color="warn">
+                    <button
+                      mat-mini-fab
+                      class="action-button"
+                      color="warn"
+                      (click)="
+                        openDeleteHomeworkPathDialog(homeworkPathSelected)
+                      "
+                    >
                       <mat-icon class="action-icon">delete_outline</mat-icon>
                     </button>
                   </div>
@@ -164,7 +191,7 @@
             mat-row
             *matRowDef="let homeworkPath; columns: columnsToDisplay"
             (mouseenter)="mouseEnter(homeworkPath)"
-            (mouseleave)="mouseLeave(homeworkPath)"
+            (mouseleave)="mouseLeave()"
           ></tr>
         </table>
 

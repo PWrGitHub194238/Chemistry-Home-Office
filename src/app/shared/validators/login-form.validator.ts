@@ -50,7 +50,7 @@ export class LoginFormValidator {
       return dictionaryService.getClasses$().pipe(
         map((classes: ClassDictEntry[]) => {
           const allowedClasses: string[] = classes.map(c =>
-            `${c.class}${c.subclass}`.toUpperCase()
+            `${c.classNo}${c.subclass}`.toUpperCase()
           );
           if (!allowedClasses.includes(value.toUpperCase())) {
             studentNoControl().setValue(null);
@@ -97,7 +97,7 @@ export class LoginFormValidator {
         map((classes: ClassDictEntry[]) => {
           const classDef: ClassDictEntry = classes.find(
             (c: ClassDictEntry) =>
-              studentClassValue === `${c.class}${c.subclass}`.toUpperCase()
+              studentClassValue === `${c.classNo}${c.subclass}`.toUpperCase()
           );
 
           if (!classDef) {

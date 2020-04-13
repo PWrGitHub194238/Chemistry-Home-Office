@@ -1,11 +1,8 @@
 import { MatTableDataSource } from "@angular/material/table";
 import { HomeworkPath } from "functions/src/models/homework-path.model";
-import { BehaviorSubject } from "rxjs";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 
 export class HomeworkPathsDataSource extends MatTableDataSource<HomeworkPath> {
-  private dataSubject$ = new BehaviorSubject<HomeworkPath[]>([]);
-
   constructor(private firestoreDocumentService: FirestoreDocumentService) {
     super();
 
@@ -23,6 +20,6 @@ export class HomeworkPathsDataSource extends MatTableDataSource<HomeworkPath> {
           data.assignments.some(assignment =>
             assignment.name.toLowerCase().includes(lowerCaseFilter)
           )
-      : data.class === Number(filter);
+      : data.classNo === Number(filter);
   };
 }

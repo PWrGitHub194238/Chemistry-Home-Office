@@ -1,5 +1,5 @@
 export interface ClassDictEntry {
-  class: number;
+  classNo: number;
   subclass: string;
   studentCount: number;
 }

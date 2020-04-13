@@ -8,6 +8,8 @@ import { map, switchMap } from "rxjs/operators";
 import { HomeworkPath, SentHomework } from "src/app/models";
 import { UserDetails, UserRoles } from "../models";
 import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
+import { SnackBarService } from "./snack-bar.service";
+import { FirebaseError } from "firebase";
 
 @UntilDestroy()
 @Injectable({
@@ -19,7 +21,10 @@ export class FirestoreDocumentService {
   private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
   private userRolesCollection: AngularFirestoreCollection<UserRoles>;
 
-  constructor(private fireStoreService: AngularFirestore) {
+  constructor(
+    private fireStoreService: AngularFirestore,
+    private snackBarService: SnackBarService
+  ) {
     this.homeworkPathCollection = this.fireStoreService.collection<
       HomeworkPath
     >("/homework-paths");
@@ -41,7 +46,7 @@ export class FirestoreDocumentService {
       .collection<HomeworkPath>("homework-paths", ref =>
         ref
           .where("active", "==", true)
-          .where("class", "==", studentClassNumber)
+          .where("classNo", "==", studentClassNumber)
           .orderBy("date")
       )
       .valueChanges()
@@ -64,23 +69,62 @@ export class FirestoreDocumentService {
       );
   }
 
-  createHomeworkPath(homeworkPath: HomeworkPath): HomeworkPath {
+  async createHomeworkPath(
+    homeworkPath: HomeworkPath
+  ): Promise<HomeworkPath | null> {
     homeworkPath.uid = this.fireStoreService.createId();
-    homeworkPath.date = new Date();
-    this.homeworkPathCollection
+    return this.homeworkPathCollection
       .doc<HomeworkPath>(homeworkPath.uid)
-      .set(homeworkPath);
-
-    return homeworkPath;
+      .set(homeworkPath)
+      .then(() => {
+        this.snackBarService.showCreateHomeworkPathSuccess(homeworkPath);
+        return homeworkPath;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showCreateHomeworkPathFailed(error);
+        return null;
+      });
   }
 
-  createSentHomework(sentHomework: SentHomework): SentHomework {
-    sentHomework.uid = this.fireStoreService.createId();
-    this.sentHomeworkCollection
-      .doc<SentHomework>(sentHomework.uid)
-      .set(sentHomework);
+  async editHomeworkPath(
+    homeworkPath: HomeworkPath
+  ): Promise<HomeworkPath | null> {
+    return this.homeworkPathCollection
+      .doc<HomeworkPath>(homeworkPath.uid)
+      .set(homeworkPath)
+      .then(() => {
+        this.snackBarService.showEditHomeworkPathSuccess(homeworkPath);
+        return homeworkPath;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showEditHomeworkPathFailed(error);
+        return null;
+      });
+  }
 
-    return sentHomework;
+  async deleteHomeworkPath(homeworkPath: HomeworkPath) {
+    this.homeworkPathCollection
+      .doc<HomeworkPath>(homeworkPath.uid)
+      .delete()
+      .then(() => {
+        this.snackBarService.showDeleteHomeworkPathSuccess(homeworkPath);
+        return homeworkPath;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showDeleteHomeworkPathFailed(error);
+        return null;
+      });
+  }
+
+  async createSentHomework(
+    sentHomework: SentHomework
+  ): Promise<SentHomework | null> {
+    sentHomework.uid = this.fireStoreService.createId();
+    return this.sentHomeworkCollection
+      .doc<SentHomework>(sentHomework.uid)
+      .set(sentHomework)
+      .then(() => sentHomework)
+      .catch((error: FirebaseError) => null);
   }
 
   getUserDetails$(uid: string): Observable<UserDetails | null> {
@@ -92,9 +136,7 @@ export class FirestoreDocumentService {
 
   setUserDetails$(uid: string, userDetails: UserDetails): Promise<void> {
     userDetails.uid = uid;
-    return this.userDetailsCollection
-      .doc<UserDetails>(uid)
-      .set({ ...userDetails });
+    return this.userDetailsCollection.doc<UserDetails>(uid).set(userDetails);
   }
 
   setUserRoles$(uid: string, userRoles: UserRoles): Promise<void> {
@@ -142,7 +184,7 @@ export class FirestoreDocumentService {
       active: document.get("active"),
       date: document.get("date"),
       subject: document.get("subject"),
-      class: document.get("class"),
+      classNo: document.get("classNo"),
       topic: document.get("topic"),
       assignments: document.get("assignments")
     };
