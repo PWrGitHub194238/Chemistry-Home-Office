@@ -5,6 +5,7 @@ import { IsStudentGuard } from "./core/guards/is-student.guard";
 import { LoginGuard } from "./core/guards/login.guard";
 import { LoginComponent } from "./public/login/login.component";
 import { RegisterComponent } from "./public/register/register.component";
+import { HomeComponent } from "./public/home/home.component";
 
 const routes: Routes = [
   {
@@ -22,16 +23,31 @@ const routes: Routes = [
     canActivate: [LoginGuard, IsStudentGuard]
   },
   {
-    path: "login",
-    component: LoginComponent
+    path: "faq",
+    loadChildren: () => import("./faq/faq.module").then(m => m.FaqModule)
   },
   {
-    path: "register",
-    component: RegisterComponent
+    path: "home",
+    component: HomeComponent,
+    children: [
+      {
+        path: "",
+        redirectTo: "login",
+        pathMatch: "full"
+      },
+      {
+        path: "login",
+        component: LoginComponent
+      },
+      {
+        path: "register",
+        component: RegisterComponent
+      }
+    ]
   },
   {
     path: "**",
-    redirectTo: "login"
+    redirectTo: "home"
   }
 ];
 

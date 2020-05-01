@@ -17,6 +17,7 @@ import { CoreModule } from "./core/core.module";
 import { MaterialDesignModule } from "./material-design.module";
 import { PublicModule } from "./public/public.module";
 import { SharedModule } from "./shared/shared.module";
+import { MatCarouselModule } from "@ngmodule/material-carousel";
 
 registerLocaleData(localePl, "pl");
 
@@ -36,6 +37,7 @@ registerLocaleData(localePl, "pl");
     MaterialDesignModule,
     FlexLayoutModule,
     HttpClientModule,
+    MatCarouselModule.forRoot(),
     AppRoutingModule
   ],
   providers: [

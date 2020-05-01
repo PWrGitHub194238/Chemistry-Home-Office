@@ -18,7 +18,7 @@ export class SpinnerComponent {
     }
   }
 
-  color: string = "#673ab7";
+  color: string = "#673ab7;";
 
   constructor(private spinner: NgxSpinnerService) {}
 }

@@ -1,0 +1,51 @@
+<div
+  fxLayout="row"
+  fxLayoutAlign="space-evenly center"
+  class="faq-point"
+  inViewport
+  [inViewportOptions]="{ threshold: [0] }"
+  (inViewportAction)="onViewportChanged($event)"
+>
+  <div fxFlex="15%" [fxFlexOrder]="fxFlexOrder[0]"></div>
+  <div
+    fxFlex="30%"
+    fxLayout="column"
+    fxLayoutAlign="center center"
+    [fxFlexOrder]="fxFlexOrder[1]"
+    [@slideInOut]="descriptionAnimationState"
+  >
+    <cho-for-description [faqPoint]="faqPoint"></cho-for-description>
+  </div>
+  <div fxFlex="10%" [fxFlexOrder]="fxFlexOrder[2]"></div>
+  <div
+    fxFlex="40%"
+    [fxFlexOrder]="fxFlexOrder[3]"
+    [@slideInOut]="carouselAnimationState"
+  >
+    <div fxFlex="40%" [fxFlexOrder]="fxFlexCarouselOrder[1]"></div>
+    <mat-carousel
+      fxFlex="60%"
+      [fxFlexOrder]="fxFlexCarouselOrder[0]"
+      timings="250ms ease-in"
+      [autoplay]="true"
+      interval="5000"
+      color="primary"
+      proportion="75"
+      [slides]="faqPoint.slideImages.length"
+      [loop]="true"
+      [hideArrows]="true"
+      [hideIndicators]="false"
+      [useKeyboard]="true"
+      [useMouseWheel]="false"
+      orientation="ltr"
+    >
+      <mat-carousel-slide
+        #matCarouselSlide
+        *ngFor="let slide of faqPoint.slideImages; let i = index"
+        [image]="slide"
+        [hideOverlay]="true"
+      ></mat-carousel-slide>
+    </mat-carousel>
+  </div>
+  <div fxFlex="5%" [fxFlexOrder]="fxFlexOrder[4]"></div>
+</div>

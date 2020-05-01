@@ -10,7 +10,6 @@ import { sendMail } from "./emails/email";
 import { getHomeworkSentToTeacherConfirmationOptions } from "./emails/homework-sent/to-student";
 import { getHomeworkSentToTeacherNotificationOptions } from "./emails/homework-sent/to-teacher";
 import {
-  createMatIcon,
   createUserRoles,
   deleteUserDetails,
   deleteUserRoles,

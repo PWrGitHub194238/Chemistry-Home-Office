@@ -10,6 +10,8 @@ import { RegisterComponent } from "./register/register.component";
 import { SnackBarComponent } from "./snack-bar/snack-bar.component";
 import { SpinnerComponent } from "./spinner/spinner.component";
 import { UpdateUserDetailsBottomSheetComponent } from "./update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
+import { HomeComponent } from "./home/home.component";
+import { RouterModule } from "@angular/router";
 
 const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
   signInFlow: "popup",
@@ -31,10 +33,12 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     SpinnerComponent,
     RegisterComponent,
     SnackBarComponent,
-    UpdateUserDetailsBottomSheetComponent
+    UpdateUserDetailsBottomSheetComponent,
+    HomeComponent
   ],
   imports: [
     CommonModule,
+    RouterModule,
     MaterialDesignModule,
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
     FlexLayoutModule,

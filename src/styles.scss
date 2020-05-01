@@ -1,4 +1,11 @@
 @import "~firebaseui/dist/firebaseui.css";
+@import "~@angular/material/theming";
+
+$primary: mat-palette($mat-deep-purple);
+
+.primary-color {
+  color: mat-color($primary, default);
+}
 
 img.avatar {
   border-radius: 50%;
@@ -20,11 +27,11 @@ table {
 fieldset {
   border-radius: 10px;
   padding: 20px;
-  border: 2px solid #673ab7;
+  border: 2px solid mat-color($primary, default);
 }
 
 legend {
-  color: #673ab7;
+  color: mat-color($primary, default);
 }
 
 mat-dialog-actions {
@@ -49,12 +56,26 @@ mat-dialog-actions {
   visibility: hidden;
 }
 
+.font-bolder {
+  font-weight: bolder !important;
+}
+
+.bottom-menu-buttons {
+  position: fixed;
+  bottom: 5vh;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
 .small-icon {
   transform: scale(1);
 }
 
 .small-button {
   transform: scale(0.6) !important;
+  font-size: x-large;
+  font-weight: bold;
 }
 
 .action-icon {
@@ -71,6 +92,14 @@ mat-dialog-actions {
 
 .full-size-button {
   transform: scale(1) !important;
+}
+
+.big-icon {
+  transform: scale(2);
+}
+
+.disabled {
+  pointer-events: none;
 }
 
 mark {

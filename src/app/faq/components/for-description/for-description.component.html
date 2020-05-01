@@ -1,0 +1,17 @@
+<div fxLayout="column" fxLayoutAlign="space-evenly">
+  <div
+    fxLayout="row"
+    fxLayoutAlign="start"
+    fxLayoutGap="20px"
+    class="primary-color"
+  >
+    <mat-icon class="big-icon">{{ faqPoint.icon }}</mat-icon>
+    <h3 class="font-bolder" [innerHTML]="faqPoint.header"></h3>
+  </div>
+  <cho-for-description-point
+    *ngFor="let bulletText of faqPoint.bulletPoints; let i = index"
+    [number]="i"
+    [body]="bulletText"
+  >
+  </cho-for-description-point>
+</div>

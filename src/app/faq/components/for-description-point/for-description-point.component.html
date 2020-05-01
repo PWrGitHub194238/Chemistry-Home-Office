@@ -1,0 +1,17 @@
+<div
+  fxLayout="row"
+  fxLayoutAlign="start center"
+  fxLayoutGap="10px"
+  class="primary-color"
+>
+  <button
+    mat-mini-fab
+    color="primary"
+    [fxFlexOrder]="fxFlexOrder[0]"
+    class="small-button"
+  >
+    {{ number + 1 }}
+  </button>
+  <p [fxFlexOrder]="fxFlexOrder[1]" [innerHTML]="body"></p>
+  <div fxFlex="10%" [fxFlexOrder]="fxFlexOrder[2]"></div>
+</div>

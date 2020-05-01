@@ -153,7 +153,11 @@ export class HomeworkPathDialogComponent implements OnInit {
   }
 
   onAssignmentNameBlur(index: number, inputValue: string) {
-    if (inputValue === "" && index <= this.assignments.length - 3) {
+    if (
+      inputValue === "" &&
+      this.assignments.length != 2 &&
+      index <= this.assignments.length - 2
+    ) {
       this.removeAssignment(index);
     }
   }

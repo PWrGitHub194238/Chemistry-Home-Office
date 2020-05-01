@@ -168,11 +168,11 @@ export class AuthService {
   ) {
     this.onLogoutState = redirectPayload;
     if (returnUrl) {
-      this.router.navigate(["login"], {
+      this.router.navigate(["home", "login"], {
         queryParams: { returnUrl: returnUrl }
       });
     } else {
-      this.router.navigate(["login"], {
+      this.router.navigate(["home", "login"], {
         state: redirectPayload
       });
     }
@@ -184,11 +184,11 @@ export class AuthService {
   ) {
     this.onLogoutState = redirectPayload;
     if (returnUrl) {
-      this.router.navigate(["register"], {
+      this.router.navigate(["home", "register"], {
         queryParams: { returnUrl: returnUrl }
       });
     } else {
-      this.router.navigate(["register"]);
+      this.router.navigate(["home", "register"]);
     }
   }
 }

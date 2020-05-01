@@ -1,0 +1,12 @@
+<ng-scrollbar
+  track="vertical"
+  appearance="standard"
+  [disabled]="false"
+  class="scrollbar"
+>
+  <cho-for-point
+    *ngFor="let faqPoint of faqPoints; let i = index"
+    [number]="i"
+    [faqPoint]="faqPoint"
+  ></cho-for-point>
+</ng-scrollbar>
