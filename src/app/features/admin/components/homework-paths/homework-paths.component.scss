@@ -37,6 +37,7 @@ div.row-action-hover {
 .homework-paths-table {
   min-width: 100%;
   min-height: 300px;
+  max-height: 300px;
 }
 
 .action-row-padding {
@@ -87,4 +88,11 @@ div.row-action-hover {
 
 .mat-row:hover td::before {
   background-color: #e5d7fd;
+}
+
+ng-scrollbar {
+  --scrollbar-size: 8px;
+  --scrollbar-thumb-color: #e5d7fd;
+  --scrollbar-thumb-hover-color: #673ab7;
+  --scrollbar-border-radius: 4px;
 }

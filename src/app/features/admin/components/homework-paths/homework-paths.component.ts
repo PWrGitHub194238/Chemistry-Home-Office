@@ -12,6 +12,7 @@ import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog
 import { HomeworkPathDialogComponent } from "../homework-path-dialog/homework-path-dialog.component";
 import { HomeworkPathsDataSource } from "./homework-paths.data-source";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { AuthService } from "src/app/core/services/auth.service";
 
 @UntilDestroy()
 @Component({
@@ -36,6 +37,7 @@ export class HomeworkPathsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private authService: AuthService,
     private firestoreDocumentService: FirestoreDocumentService,
     private snackBarService: SnackBarService,
     private matDialog: MatDialog
@@ -48,6 +50,7 @@ export class HomeworkPathsComponent implements OnInit {
   private matIconsDict: MatIconDictEntry[];
 
   ngOnInit() {
+    this.dataSource.loadData();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
 
@@ -85,6 +88,10 @@ export class HomeworkPathsComponent implements OnInit {
         matIconsDict: this.matIconsDict
       }
     });
+  }
+
+  logout() {
+    this.authService.logout();
   }
 
   onSelectedHomeworkPathLinkCopied() {

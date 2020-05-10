@@ -1,0 +1,10 @@
+<div [matTooltip]="tooltip">
+  <button
+    mat-mini-fab
+    class="action-button"
+    [color]="color"
+    (click)="action.emit()"
+  >
+    <mat-icon class="action-icon">{{ icon }}</mat-icon>
+  </button>
+</div>

@@ -15,7 +15,6 @@ const routes: Routes = [
         component: ForStudentComponent,
         data: { animation: faqChildStudentPath }
       },
-
       {
         path: faqChildTeacherPath,
         component: ForTeacherComponent,

@@ -138,7 +138,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
 
   errorCallback(errorData: FirebaseUISignInFailure) {
-    console.log("LOGIN FAILED: " + JSON.stringify(errorData));
     this.spinnerService.hideSpinner();
   }
 

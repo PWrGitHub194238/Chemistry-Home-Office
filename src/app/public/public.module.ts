@@ -2,16 +2,15 @@ import { CommonModule } from "@angular/common";
 import { NgModule } from "@angular/core";
 import { FlexLayoutModule } from "@angular/flex-layout";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
 import { firebase, firebaseui, FirebaseUIModule } from "firebaseui-angular";
-import { NgxSpinnerModule } from "ngx-spinner";
 import { MaterialDesignModule } from "../material-design.module";
+import { SharedModule } from "../shared/shared.module";
+import { HomeComponent } from "./home/home.component";
 import { LoginComponent } from "./login/login.component";
 import { RegisterComponent } from "./register/register.component";
 import { SnackBarComponent } from "./snack-bar/snack-bar.component";
-import { SpinnerComponent } from "./spinner/spinner.component";
 import { UpdateUserDetailsBottomSheetComponent } from "./update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
-import { HomeComponent } from "./home/home.component";
-import { RouterModule } from "@angular/router";
 
 const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
   signInFlow: "popup",
@@ -30,7 +29,6 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
 @NgModule({
   declarations: [
     LoginComponent,
-    SpinnerComponent,
     RegisterComponent,
     SnackBarComponent,
     UpdateUserDetailsBottomSheetComponent,
@@ -43,9 +41,8 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
     FlexLayoutModule,
     FormsModule,
-    ReactiveFormsModule,
-    NgxSpinnerModule
-  ],
-  exports: [LoginComponent, SpinnerComponent]
+    SharedModule,
+    ReactiveFormsModule
+  ]
 })
 export class PublicModule {}

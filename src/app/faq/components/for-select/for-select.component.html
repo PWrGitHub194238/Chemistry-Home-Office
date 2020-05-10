@@ -7,22 +7,14 @@
   fxLayoutAlign="center center"
   fxLayoutGap="50px"
 >
-  <a
-    mat-fab
-    class="full-size-button"
-    color="primary"
-    matTooltip="Jestem studentem - rozwiń pomoc dla mnie"
-    routerLink="student"
-  >
-    <mat-icon class="full-size-icon">face</mat-icon>
-  </a>
-  <a
-    mat-fab
-    class="full-size-button"
-    color="primary"
-    matTooltip="Jestem nauczycielem - rozwiń pomoc dla mnie"
-    routerLink="teacher"
-  >
-    <mat-icon class="full-size-icon">assignment_ind</mat-icon>
-  </a>
+  <cho-bottom-action-button
+    icon="school"
+    tooltip="Jestem studentem - rozwiń pomoc dla mnie"
+    (action)="navigateStudentHelp()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="assignment_ind"
+    tooltip="Jestem nauczycielem - rozwiń pomoc dla mnie"
+    (action)="navigateTeacherHelp()"
+  ></cho-bottom-action-button>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { NgxSpinnerService } from "ngx-spinner";
 
 @Component({
@@ -17,8 +17,6 @@ export class SpinnerComponent {
       this.spinner.hide();
     }
   }
-
-  color: string = "#673ab7;";
 
   constructor(private spinner: NgxSpinnerService) {}
 }

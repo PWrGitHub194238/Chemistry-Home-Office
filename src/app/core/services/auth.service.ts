@@ -2,11 +2,11 @@ import { Injectable, NgZone } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UserRoles } from "functions/src/models/user/user-roles.model";
 import { BehaviorSubject, Observable, of, Subject, zip } from "rxjs";
-import { filter, map, switchMap } from "rxjs/operators";
+import { map, switchMap } from "rxjs/operators";
 import { SubjectError, SubjectSuccess, User, UserDetails } from "../models";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
-import { UserRoles } from "functions/src/models/user/user-roles.model";
 
 @UntilDestroy()
 @Injectable({

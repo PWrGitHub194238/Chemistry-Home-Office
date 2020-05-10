@@ -1,11 +1,12 @@
 import { trigger } from "@angular/animations";
 import { Component } from "@angular/core";
-import { RouterOutlet } from "@angular/router";
+import { RouterOutlet, ActivatedRoute, Router } from "@angular/router";
 import { slideInOutRouteOutletAnimation } from "src/app/shared/animations/router-animations";
 import {
   faqChildStudentPath,
   faqChildTeacherPath
 } from "../../faq-routing.const";
+import { AnimatedOutletComponent } from "src/app/shared/components/animated-outlet/animated-outlet.component";
 
 @Component({
   selector: "cho-for-select",
@@ -28,12 +29,16 @@ import {
     ])
   ]
 })
-export class ForSelectComponent {
-  getRouteAnimation(outlet: RouterOutlet) {
-    return (
-      outlet &&
-      outlet.activatedRouteData &&
-      outlet.activatedRouteData["animation"]
-    );
+export class ForSelectComponent extends AnimatedOutletComponent {
+  constructor(private router: Router) {
+    super();
+  }
+
+  navigateStudentHelp() {
+    this.router.navigate(["faq", "student"]);
+  }
+
+  navigateTeacherHelp() {
+    this.router.navigate(["faq", "teacher"]);
   }
 }

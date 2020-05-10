@@ -40,31 +40,18 @@
       !isSending
     "
   >
-    <button
-      mat-mini-fab
-      class="action-button"
-      color="primary"
-      matTooltip=""
+    <cho-bottom-action-mini-button
       [style.visibility]="'hidden'"
-    >
-      <mat-icon class="action-icon">description</mat-icon>
-    </button>
-    <button
-      mat-fab
-      class="full-size-button"
-      color="primary"
-      matTooltip="Przywołaj menu wyboru"
-      (click)="openSelectAttachmentSourceDialog()"
-    >
-      <mat-icon class="full-size-icon">more_horiz</mat-icon>
-    </button>
-    <button
-      mat-mini-fab
-      color="primary"
-      matTooltip="Uzupełnij przesyłany plik o dowolny komentarz"
-      (click)="openAddCommentForUploadDialog()"
-    >
-      <mat-icon class="action-icon">description</mat-icon>
-    </button>
+    ></cho-bottom-action-mini-button>
+    <cho-bottom-action-button
+      icon="more_horiz"
+      tooltip="Przywołaj menu wyboru"
+      (action)="openSelectAttachmentSourceDialog()"
+    ></cho-bottom-action-button>
+    <cho-bottom-action-mini-button
+      icon="description"
+      tooltip="Uzupełnij przesyłany plik o dowolny komentarz"
+      (action)="openAddCommentForUploadDialog()"
+    ></cho-bottom-action-mini-button>
   </div>
 </span>

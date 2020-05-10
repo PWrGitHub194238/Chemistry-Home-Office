@@ -207,7 +207,7 @@ export class HomeworkPathDialogComponent implements OnInit {
       let homeworkPath: HomeworkPath = {
         uid: this.data.homeworkPath ? this.data.homeworkPath.uid : "",
         active: this.active.value,
-        date: new Date(),
+        date: this.editMode ? this.data.homeworkPath.date : new Date(),
         subject: this.subject.value,
         classNo: this.classNo.value,
         topic: this.topic.value,

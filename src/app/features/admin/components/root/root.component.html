@@ -1,0 +1,50 @@
+<div
+  class="container"
+  fxLayout="column"
+  fxLayoutAlign="center center"
+  [@slideInOut]="getRouteAnimation(outlet)"
+>
+  <router-outlet #outlet="outlet"></router-outlet>
+</div>
+<div
+  class="bottom-menu-buttons"
+  fxLayout="row"
+  fxLayoutAlign="center center"
+  fxLayoutGap="50px"
+>
+  <cho-bottom-action-button
+    icon="assignment"
+    tooltip="Zdefiniowane zadania domowe"
+    (action)="navigateAssignments()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="school"
+    tooltip="Zdefiniowane klasy"
+    (action)="navigateClasses()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="color_lens"
+    tooltip="Zdefiniowane ikony zadań"
+    (action)="navigateIcons()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="work_outline"
+    tooltip="Zdefiniowane lekcje"
+    (action)="navigateHomeworkPaths()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="beenhere"
+    tooltip="Prace uczniów"
+    (action)="navigateSentHomeworks()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="menu_book"
+    tooltip="Przedmioty lekcji"
+    (action)="navigateSubjects()"
+  ></cho-bottom-action-button>
+  <cho-bottom-action-button
+    icon="account_circle"
+    tooltip="Uczniowie"
+    (action)="navigateUsers()"
+  ></cho-bottom-action-button>
+</div>
