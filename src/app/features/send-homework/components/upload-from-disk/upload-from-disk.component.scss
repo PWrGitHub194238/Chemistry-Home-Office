@@ -1,6 +1,9 @@
 .file-upload-container {
-  height: 80%;
-  width: 60%;
+  position: fixed;
+  top: 10vh;
+  bottom: 10vh;
+  left: 10vh;
+  right: 10vh;
   border: 5px dashed #673ab7;
   border-radius: 10px;
 

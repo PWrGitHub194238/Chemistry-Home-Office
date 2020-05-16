@@ -13,6 +13,7 @@ import { SendHomeworkComponent } from "./components/send-homework/send-homework.
 import { UploadFromCameraComponent } from "./components/upload-from-camera/upload-from-camera.component";
 import { UploadFromDiskComponent } from "./components/upload-from-disk/upload-from-disk.component";
 import { SendHomeworkRoutingModule } from "./send-homework-routing.module";
+import { RootComponent } from "./components/root/root.component";
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { SendHomeworkRoutingModule } from "./send-homework-routing.module";
     UploadFromDiskComponent,
     FinishUploadBottomSheetComponent,
     LessonNotFoundComponent,
-    AddCommentForUploadDialogComponent
+    AddCommentForUploadDialogComponent,
+    RootComponent
   ],
   imports: [
     CommonModule,

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from "@angular/core";
 import { FaqPoint } from "../../model/faq-point.model";
 
 @Component({
@@ -9,4 +15,5 @@ import { FaqPoint } from "../../model/faq-point.model";
 })
 export class ForDescriptionComponent {
   @Input() faqPoint: FaqPoint;
+  @Output() pointClick = new EventEmitter<number>();
 }

@@ -4,7 +4,8 @@ import {
   Component,
   Input,
   OnInit,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  ViewChild
 } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { InViewportMetadata } from "ng-in-viewport";
@@ -12,6 +13,7 @@ import { of } from "rxjs";
 import { delay, startWith } from "rxjs/operators";
 import { slideInOutAnimation } from "src/app/shared/animations/animations";
 import { FaqPoint } from "../../model/faq-point.model";
+import { MatCarouselComponent } from "@ngmodule/material-carousel";
 
 @UntilDestroy()
 @Component({
@@ -39,6 +41,8 @@ export class ForPointComponent implements OnInit {
 
   @Input() number: number;
   @Input() faqPoint: FaqPoint;
+
+  @ViewChild(MatCarouselComponent) private carousel: MatCarouselComponent;
 
   constructor(private changeDetector: ChangeDetectorRef) {}
 
@@ -107,6 +111,10 @@ export class ForPointComponent implements OnInit {
     } = event;
 
     this.faqPoint.visible = visible;
+  }
+
+  onPointClick(index: number) {
+    this.carousel.slideTo(index);
   }
 
   private isEven() {

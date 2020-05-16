@@ -14,7 +14,10 @@
     [fxFlexOrder]="fxFlexOrder[1]"
     [@slideInOut]="descriptionAnimationState"
   >
-    <cho-for-description [faqPoint]="faqPoint"></cho-for-description>
+    <cho-for-description
+      [faqPoint]="faqPoint"
+      (pointClick)="onPointClick($event)"
+    ></cho-for-description>
   </div>
   <div fxFlex="10%" [fxFlexOrder]="fxFlexOrder[2]"></div>
   <div
@@ -35,7 +38,7 @@
       [loop]="true"
       [hideArrows]="true"
       [hideIndicators]="false"
-      [useKeyboard]="true"
+      [useKeyboard]="false"
       [useMouseWheel]="false"
       orientation="ltr"
     >

@@ -9,11 +9,13 @@ import {
   MatBottomSheetRef,
   MAT_BOTTOM_SHEET_DATA
 } from "@angular/material/bottom-sheet";
+import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UserDetails } from "src/app/core/models/user/user-details.model";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
 
+@UntilDestroy()
 @Component({
   selector: "cho-update-user-details-bottom-sheet",
   templateUrl: "./update-user-details-bottom-sheet.component.html",
@@ -64,6 +66,12 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
 
   ngOnInit() {
     this.createForm();
+
+    this.studentClass.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value: string) =>
+        this.studentClass.setValue(value.toUpperCase(), { emitEvent: false })
+      );
   }
 
   createForm() {
@@ -80,8 +88,8 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
           value: this.studentClassDefaultValue,
           disabled: !!this.studentClassDefaultValue
         },
+        [Validators.required],
         [
-          Validators.required,
           LoginFormValidator.StudentClass(
             this.dictionaryService,
             () => this.studentNo
@@ -93,8 +101,8 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
           value: this.studentNoDefaultValue,
           disabled: !!this.studentNoDefaultValue
         },
+        [Validators.required],
         [
-          Validators.required,
           LoginFormValidator.StudentNo(
             this.dictionaryService,
             () => this.studentClass.value

@@ -12,7 +12,7 @@ import {
   adminChildUserDetailsPath
 } from "./admin-routing.const";
 import { AssignmentDictComponent } from "./components/assignment-dict/assignment-dict.component";
-import { ClassDictDialogComponent } from "./components/class-dict-dialog/class-dict-dialog.component";
+import { ClassDictComponent } from "./components/class-dict/class-dict.component";
 import { HomeworkPathsComponent } from "./components/homework-paths/homework-paths.component";
 import { MatIconsComponent } from "./components/mat-icons/mat-icons.component";
 import { RootComponent } from "./components/root/root.component";
@@ -33,7 +33,7 @@ const routes: Routes = [
       },
       {
         path: adminChildClassDictPath,
-        component: ClassDictDialogComponent,
+        component: ClassDictComponent,
         resolve: {},
         data: { animation: adminChildClassDictPath }
       },

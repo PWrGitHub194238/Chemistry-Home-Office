@@ -9,9 +9,10 @@
     color="primary"
     [fxFlexOrder]="fxFlexOrder[0]"
     class="small-button"
+    (click)="pointClick.emit(body.slideIndex)"
   >
     {{ number + 1 }}
   </button>
-  <p [fxFlexOrder]="fxFlexOrder[1]" [innerHTML]="body"></p>
+  <p [fxFlexOrder]="fxFlexOrder[1]" [innerHTML]="body.description"></p>
   <div fxFlex="10%" [fxFlexOrder]="fxFlexOrder[2]"></div>
 </div>

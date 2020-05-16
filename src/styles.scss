@@ -34,6 +34,11 @@ legend {
   color: mat-color($primary, default);
 }
 
+a {
+  color: mat-color($primary, default);
+  font-weight: bold;
+}
+
 mat-dialog-actions {
   margin-top: 25px;
 }
@@ -66,6 +71,21 @@ mat-dialog-actions {
   left: 0;
   right: 0;
   z-index: 999;
+}
+
+.logout-menu-button {
+  position: fixed;
+  bottom: 2vh;
+  left: 2vh;
+  right: 0;
+  z-index: 999;
+}
+
+.inline-text-icon {
+  position: relative;
+  top: 7px;
+  margin-top: -7px;
+  transform: scale(0.8);
 }
 
 .small-icon {

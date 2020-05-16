@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  Output
+} from "@angular/core";
+import { BulletPoint } from "../../model/bullet-point.model";
 
 @Component({
   selector: "cho-for-description-point",
@@ -11,7 +18,8 @@ export class ForDescriptionPointComponent {
   private fxFlexOrderRevertedAray: number[] = [2, 3, 1];
 
   @Input() number: number;
-  @Input() body: number;
+  @Input() body: BulletPoint;
+  @Output() pointClick = new EventEmitter<number>();
 
   get fxFlexOrder(): number[] {
     if (this.isEven()) {

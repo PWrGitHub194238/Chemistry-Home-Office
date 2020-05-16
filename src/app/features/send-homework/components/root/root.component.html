@@ -1,0 +1,19 @@
+<div class="container" fxLayout="column" fxLayoutAlign="center center">
+  <div fxLayout="row">
+    <router-outlet #outlet="outlet"></router-outlet>
+  </div>
+</div>
+<div
+  class="logout-menu-button"
+  fxLayout="row"
+  fxLayoutAlign="start"
+  fxLayoutGap="50px"
+>
+  <cho-row-action-button
+    icon="keyboard_arrow_left"
+    tooltip="Wyloguj"
+    color="primary"
+    (action)="logout()"
+  >
+  </cho-row-action-button>
+</div>

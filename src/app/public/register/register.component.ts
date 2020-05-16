@@ -88,6 +88,12 @@ export class RegisterComponent implements OnInit {
           this.authService.logout(this.returnUrl, state);
         }
       });
+
+    this.studentClass.valueChanges
+      .pipe(untilDestroyed(this))
+      .subscribe((value: string) =>
+        this.studentClass.setValue(value.toUpperCase(), { emitEvent: false })
+      );
   }
 
   createForm() {

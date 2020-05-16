@@ -1,4 +1,4 @@
-import { trigger } from "@angular/animations";
+import { trigger, AnimationMetadata } from "@angular/animations";
 import { Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { slideInOutRouteOutletAnimation } from "src/app/shared/animations/router-animations";
@@ -13,267 +13,52 @@ import {
   adminChildUserDetailsPath
 } from "../../admin-routing.const";
 
+function getAnimations(): AnimationMetadata[] {
+  const slideInOut: AnimationMetadata[] = [];
+  const componentStates: string[] = [
+    adminChildAssignmentDictPath,
+    adminChildClassDictPath,
+    adminChildMatIconsPath,
+    adminChildHomeworkPathsPath,
+    adminChildSentHomeworksPath,
+    adminChildSubjectDictPath,
+    adminChildUserDetailsPath
+  ];
+
+  for (let i = 0; i < componentStates.length; i += 1) {
+    for (let j = i + 1; j < componentStates.length; j += 1) {
+      slideInOut.push(
+        slideInOutRouteOutletAnimation(
+          componentStates[i],
+          componentStates[j],
+          false
+        )
+      );
+    }
+  }
+
+  const componentReverseStates = [...componentStates].reverse();
+
+  for (let i = 0; i < componentReverseStates.length; i += 1) {
+    for (let j = i + 1; j < componentReverseStates.length; j += 1) {
+      slideInOut.push(
+        slideInOutRouteOutletAnimation(
+          componentReverseStates[i],
+          componentReverseStates[j],
+          true
+        )
+      );
+    }
+  }
+
+  return slideInOut;
+}
+
 @Component({
   selector: "cho-root",
   templateUrl: "./root.component.html",
   styleUrls: ["./root.component.scss"],
-  animations: [
-    trigger("slideInOut", [
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildClassDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildMatIconsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildHomeworkPathsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildSentHomeworksPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildSubjectDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildAssignmentDictPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildMatIconsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildHomeworkPathsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildSentHomeworksPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildSubjectDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildHomeworkPathsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildSentHomeworksPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildSubjectDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildSentHomeworksPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildSubjectDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildSubjectDictPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildUserDetailsPath,
-        false,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildSubjectDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildSentHomeworksPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildHomeworkPathsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildMatIconsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildClassDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildUserDetailsPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildSentHomeworksPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildHomeworkPathsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildMatIconsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildClassDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSubjectDictPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildHomeworkPathsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildMatIconsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildClassDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildSentHomeworksPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildMatIconsPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildClassDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildHomeworkPathsPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildClassDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildMatIconsPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div"
-      ),
-      slideInOutRouteOutletAnimation(
-        adminChildClassDictPath,
-        adminChildAssignmentDictPath,
-        true,
-        "div",
-        "div"
-      )
-    ])
-  ]
+  animations: [trigger("slideInOut", getAnimations())]
 })
 export class RootComponent extends AnimatedOutletComponent {
   constructor(private router: Router) {

@@ -35,3 +35,10 @@ export const translateRightAnimation: AnimationStyleMetadata = style({
   transform: "translateX(100%)",
   opacity: 0
 });
+
+export const translateVisibleAnimation: AnimationStyleMetadata = style({
+  opacity: 1
+});
+export const translateInvisibleAnimation: AnimationStyleMetadata = style({
+  opacity: 0
+});

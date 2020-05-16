@@ -12,6 +12,7 @@
     *ngFor="let bulletText of faqPoint.bulletPoints; let i = index"
     [number]="i"
     [body]="bulletText"
+    (pointClick)="pointClick.emit($event)"
   >
   </cho-for-description-point>
 </div>

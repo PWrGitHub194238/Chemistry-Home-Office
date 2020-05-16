@@ -4,12 +4,12 @@
     <mat-card fxFlex>
       <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
         <!-- <cho-row-action-button
-            icon="library_add"
-            tooltip="Dodaj lekcję"
-            color="primary"
-            (action)="openAddHomeworkPathDialog()"
-          >
-          </cho-row-action-button> -->
+          icon="library_add"
+          tooltip="Dodaj lekcję"
+          color="primary"
+          (action)="openAddHomeworkPathDialog()"
+        >
+        </cho-row-action-button> -->
         <div fxFlex></div>
         <!-- <cho-row-action-button
           icon="keyboard_arrow_left"
@@ -23,13 +23,13 @@
   </div>
   <mat-card>
     <mat-card-header>
-      <div mat-card-avatar class="homework-paths-key-mat-avatar"></div>
+      <div mat-card-avatar class="to-do-key-mat-avatar"></div>
       <mat-card-title>TODO</mat-card-title>
       <mat-card-subtitle>TODO</mat-card-subtitle>
     </mat-card-header>
-    <mat-divider class="homework-paths-divider"></mat-divider>
+    <mat-divider class="to-do-divider"></mat-divider>
     <mat-card-content
-      class="homework-paths-card"
+      class="to-do-card"
       fxLayout="column"
       fxLayoutAlign="space-between"
       fxLayoutGap="10px"
@@ -46,7 +46,7 @@
         </mat-form-field> -->
       </div>
       <ng-scrollbar track="vertical" appearance="standard" [disabled]="false">
-        <div class="homework-paths-table">
+        <div class="to-do-table">
           <!-- <table mat-table [dataSource]="dataSource" matSort>
             <ng-container matColumnDef="active">
               <th mat-header-cell *matHeaderCellDef mat-sort-header>Aktywna</th>
@@ -198,7 +198,7 @@
     <mat-card-actions
       fxLayoutAlign="space-between"
       fxLayoutGap="10px"
-      class="homework-paths-card-actions"
+      class="to-do-card-actions"
     >
     </mat-card-actions>
     <!-- <cho-spinner
