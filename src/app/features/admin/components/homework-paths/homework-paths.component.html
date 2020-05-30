@@ -39,7 +39,8 @@
     >
       <div fxFlex></div>
       <div fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>search</mat-icon>
           <mat-label>Szukaj</mat-label>
           <input
             matInput
@@ -206,7 +207,7 @@
     </mat-card-actions>
     <cho-spinner
       [loadingMessage]="loadingMessage"
-      [isLoading]="isLoading"
+      [isLoading]="dataSource.isLoading$ | async"
     ></cho-spinner>
   </mat-card>
 </div>

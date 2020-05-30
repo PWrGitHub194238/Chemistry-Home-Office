@@ -5,6 +5,7 @@ import { AuthResponse, HomeworkPath } from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
 import { User } from "../models/user/user.model";
 import { FirebaseError } from "firebase";
+import { Assignment } from "functions/src/models/assignment.model";
 
 @Injectable({
   providedIn: "root"
@@ -161,72 +162,45 @@ export class SnackBarService {
   }
 
   showCreateHomeworkPathSuccess(homeworkPath: HomeworkPath) {
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Dodano lekcję!",
-        color: "primary",
-        message: `Lekcja '${homeworkPath.topic}' została dodana.`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano lekcję!",
+      `Lekcja '${homeworkPath.topic}' została dodana.`
+    );
   }
 
   showCreateHomeworkPathFailed(error: FirebaseError) {
-    const message = this.getMessageFromFirebaseErrorCode(error.code);
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Coś poszło nie tak :(",
-        color: "warn",
-        message: `Nie udało się dodać lekcji (${message})`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać lekcji",
+      error
+    );
   }
 
   showEditHomeworkPathSuccess(homeworkPath: HomeworkPath) {
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Zmieniono lekcję!",
-        color: "primary",
-        message: `Lekcja '${homeworkPath.topic}' została zmieniona.`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono lekcję!",
+      `Lekcja '${homeworkPath.topic}' została zmieniona.`
+    );
   }
 
   showEditHomeworkPathFailed(error: FirebaseError) {
-    const message = this.getMessageFromFirebaseErrorCode(error.code);
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Coś poszło nie tak :(",
-        color: "warn",
-        message: `Nie udało się zmodyfikować lekcji (${message})`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmodyfikować lekcji",
+      error
+    );
   }
 
   showDeleteHomeworkPathSuccess(homeworkPath: HomeworkPath) {
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Usunięto lekcję!",
-        color: "primary",
-        message: `Lekcja '${homeworkPath.topic}' została usunięta.`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto lekcję!",
+      `Lekcja '${homeworkPath.topic}' została usunięta.`
+    );
   }
 
   showDeleteHomeworkPathFailed(error: FirebaseError) {
-    const message = this.getMessageFromFirebaseErrorCode(error.code);
-    this.snackBar.openFromComponent(SnackBarComponent, {
-      data: {
-        header: "Coś poszło nie tak :(",
-        color: "warn",
-        message: `Nie udało się usunąć lekcji (${message})`
-      },
-      ...this.displayDefaultconfig
-    });
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć lekcji",
+      error
+    );
   }
 
   showOnSelectedHomeworkPathLinkCopied() {
@@ -237,6 +211,74 @@ export class SnackBarService {
       },
       ...this.displayDefaultconfig,
       duration: 2000
+    });
+  }
+
+  showCreateAssignmentSuccess(assignment: Assignment) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano zadanie!",
+      `Zadanie '${assignment.name}' zostało dodane.`
+    );
+  }
+
+  showCreateAssignmentFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać zadania",
+      error
+    );
+  }
+
+  showEditAssignmentSuccess(assignment: Assignment) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zadanie zmienione!",
+      `Zadanie '${assignment.name}' zostało zmienione.`
+    );
+  }
+
+  showEditAssignmentFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmienić zadania",
+      error
+    );
+  }
+
+  showDeleteAssignmentSuccess(assignment: Assignment) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zadanie usunięte!",
+      `Zadanie '${assignment.name}' zostało usunięte.`
+    );
+  }
+
+  showDeleteAssignmentFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć zadania",
+      error
+    );
+  }
+
+  private showFirebaseDocumentActionSuccess(header: string, message: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header,
+        color: "primary",
+        message
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  private showFirebaseDocumentActionFailed(
+    action: string,
+    error: FirebaseError
+  ) {
+    const message = this.getMessageFromFirebaseErrorCode(error.code);
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Coś poszło nie tak :(",
+        color: "warn",
+        message: `${action} (${message})`
+      },
+      ...this.displayDefaultconfig
     });
   }
 

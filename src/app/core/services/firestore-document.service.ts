@@ -5,17 +5,19 @@ import {
 } from "@angular/fire/firestore";
 import { Observable, of } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
-import { HomeworkPath, SentHomework } from "src/app/models";
+import { HomeworkPath, SentHomework, Assignment } from "src/app/models";
 import { UserDetails, UserRoles } from "../models";
 import { untilDestroyed, UntilDestroy } from "@ngneat/until-destroy";
 import { SnackBarService } from "./snack-bar.service";
 import { FirebaseError } from "firebase";
+import { Entity } from "src/app/models/entity.model";
 
 @UntilDestroy()
 @Injectable({
   providedIn: "root"
 })
 export class FirestoreDocumentService {
+  private assignmentPathCollection: AngularFirestoreCollection<Assignment>;
   private homeworkPathCollection: AngularFirestoreCollection<HomeworkPath>;
   private sentHomeworkCollection: AngularFirestoreCollection<SentHomework>;
   private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
@@ -25,6 +27,9 @@ export class FirestoreDocumentService {
     private fireStoreService: AngularFirestore,
     private snackBarService: SnackBarService
   ) {
+    this.assignmentPathCollection = this.fireStoreService.collection<
+      Assignment
+    >("/assignment-dict");
     this.homeworkPathCollection = this.fireStoreService.collection<
       HomeworkPath
     >("/homework-paths");
@@ -38,6 +43,59 @@ export class FirestoreDocumentService {
       "/user-roles"
     );
   }
+
+  // /assignment-dict
+
+  getAllAssignments$(): Observable<Assignment[]> {
+    return this.assignmentPathCollection
+      .valueChanges()
+      .pipe(untilDestroyed(this));
+  }
+
+  async createAssignment(assignment: Assignment): Promise<Assignment | null> {
+    assignment.uid = this.fireStoreService.createId();
+    return this.assignmentPathCollection
+      .doc<Assignment>(assignment.uid)
+      .set(assignment)
+      .then(() => {
+        this.snackBarService.showCreateAssignmentSuccess(assignment);
+        return assignment;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showCreateAssignmentFailed(error);
+        return null;
+      });
+  }
+
+  async editAssignment(assignment: Assignment): Promise<Assignment | null> {
+    return this.assignmentPathCollection
+      .doc<Assignment>(assignment.uid)
+      .set(assignment)
+      .then(() => {
+        this.snackBarService.showEditAssignmentSuccess(assignment);
+        return assignment;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showEditAssignmentFailed(error);
+        return null;
+      });
+  }
+
+  async deleteAssignment(assignment: Assignment) {
+    this.assignmentPathCollection
+      .doc<Assignment>(assignment.uid)
+      .delete()
+      .then(() => {
+        this.snackBarService.showDeleteAssignmentSuccess(assignment);
+        return assignment;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showDeleteAssignmentFailed(error);
+        return null;
+      });
+  }
+
+  // /homework-paths
 
   getActiveHomeworkPathsForClass$(
     studentClassNumber: number
@@ -116,6 +174,8 @@ export class FirestoreDocumentService {
       });
   }
 
+  // /sent-homeworks
+
   async createSentHomework(
     sentHomework: SentHomework
   ): Promise<SentHomework | null> {
@@ -126,6 +186,8 @@ export class FirestoreDocumentService {
       .then(() => sentHomework)
       .catch((error: FirebaseError) => null);
   }
+
+  // /user-details
 
   getUserDetails$(uid: string): Observable<UserDetails | null> {
     return this.userDetailsCollection
@@ -139,10 +201,7 @@ export class FirestoreDocumentService {
     return this.userDetailsCollection.doc<UserDetails>(uid).set(userDetails);
   }
 
-  setUserRoles$(uid: string, userRoles: UserRoles): Promise<void> {
-    userRoles.uid = uid;
-    return this.userRolesCollection.doc<UserRoles>(uid).set({ ...userRoles });
-  }
+  // /user-roles
 
   getUserRoles$(uid: string): Observable<UserRoles | null> {
     return this.userRolesCollection
@@ -171,6 +230,13 @@ export class FirestoreDocumentService {
       )
     );
   }
+
+  setUserRoles$(uid: string, userRoles: UserRoles): Promise<void> {
+    userRoles.uid = uid;
+    return this.userRolesCollection.doc<UserRoles>(uid).set({ ...userRoles });
+  }
+
+  // private
 
   private getHomeworkPaths(
     document: firebase.firestore.DocumentData

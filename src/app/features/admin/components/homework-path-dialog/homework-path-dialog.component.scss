@@ -10,6 +10,10 @@ form {
   width: 100%;
 }
 
+fieldset {
+  min-width: 600px;
+}
+
 label {
   font-weight: bold;
   color: #673ab7;
@@ -19,7 +23,6 @@ label {
 .assignments-table {
   min-height: 250px;
   max-height: 250px;
-  min-width: 100%;
 }
 
 .mat-row td {

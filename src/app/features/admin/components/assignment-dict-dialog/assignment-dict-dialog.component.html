@@ -1,1 +1,65 @@
-<p>assignment-dict-dialog works!</p>
+<h2 mat-dialog-title>
+  {{ editMode ? "Zmień zadanie" : "Dodaj nowe zadanie" }}
+</h2>
+<mat-dialog-content>
+  <form
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="space-between"
+    fxLayoutGap="10px"
+    [formGroup]="form"
+  >
+    <fieldset>
+      <legend>Podstawowe dane</legend>
+
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-form-field class="full-width">
+          <mat-label>Nazwa zadania</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Zadanie domowe"
+            type="text"
+          />
+          <mat-error *ngIf="name.invalid && name.touched">
+            Podaj proszę nazwę zadania domowego
+          </mat-error>
+        </mat-form-field>
+
+        <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
+          <div matTooltip="Poprzednia ikona">
+            <button
+              mat-mini-fab
+              class="small-button"
+              color="primary"
+              (click)="previousAssignmentIcon()"
+            >
+              <mat-icon class="small-icon">navigate_before</mat-icon>
+            </button>
+          </div>
+          <mat-icon class="action-icon">{{ getIconName() }}</mat-icon>
+          <div matTooltip="Następna ikona">
+            <button
+              mat-mini-fab
+              class="small-button"
+              color="primary"
+              (click)="nextAssignmentIcon()"
+            >
+              <mat-icon class="small-icon">navigate_next</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <button mat-button (click)="onReset()">Resetuj</button>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{ editMode ? "Zmień zadanie" : "Dodaj zadanie" }}
+    </button>
+  </div>
+</mat-dialog-actions>

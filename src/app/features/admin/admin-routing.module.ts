@@ -28,7 +28,9 @@ const routes: Routes = [
       {
         path: adminChildAssignmentDictPath,
         component: AssignmentDictComponent,
-        resolve: {},
+        resolve: {
+          matIconDict: MatIconDictResolver
+        },
         data: { animation: adminChildAssignmentDictPath }
       },
       {

@@ -205,7 +205,7 @@ export class HomeworkPathDialogComponent implements OnInit {
     this.homeworkPathForm.markAllAsTouched();
     if (this.homeworkPathForm.valid) {
       let homeworkPath: HomeworkPath = {
-        uid: this.data.homeworkPath ? this.data.homeworkPath.uid : "",
+        uid: this.data.homeworkPath ? this.data.homeworkPath.uid : null,
         active: this.active.value,
         date: this.editMode ? this.data.homeworkPath.date : new Date(),
         subject: this.subject.value,
@@ -214,6 +214,7 @@ export class HomeworkPathDialogComponent implements OnInit {
         assignments: this.assignments.controls
           .slice(0, this.assignments.controls.length - 1)
           .map((assignment: FormGroup) => ({
+            uid: assignment.get("uid").value,
             name: assignment.get("name").value,
             icon: this.getIconName(assignment.get("iconIdx").value)
           }))

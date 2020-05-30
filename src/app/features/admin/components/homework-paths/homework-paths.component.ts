@@ -31,9 +31,8 @@ export class HomeworkPathsComponent implements OnInit {
   ];
 
   loadingMessage = "temp";
-  isLoading = false;
   homeworkPathSelected: HomeworkPath;
-  dataSource = new HomeworkPathsDataSource(this.firestoreDocumentService);
+  dataSource: HomeworkPathsDataSource;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,7 +40,11 @@ export class HomeworkPathsComponent implements OnInit {
     private firestoreDocumentService: FirestoreDocumentService,
     private snackBarService: SnackBarService,
     private matDialog: MatDialog
-  ) {}
+  ) {
+    this.dataSource = new HomeworkPathsDataSource(
+      this.firestoreDocumentService
+    );
+  }
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
@@ -60,6 +63,7 @@ export class HomeworkPathsComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    const data = this.dataSource.data;
   }
 
   mouseEnter(homeworkPath: HomeworkPath) {
@@ -78,8 +82,8 @@ export class HomeworkPathsComponent implements OnInit {
 
   openAddHomeworkPathDialog() {
     this.matDialog.open(HomeworkPathDialogComponent, {
-      height: "700px",
-      width: "700px",
+      height: "auto",
+      width: "auto",
       disableClose: true,
       closeOnNavigation: false,
       data: {
@@ -100,8 +104,8 @@ export class HomeworkPathsComponent implements OnInit {
 
   openEditHomeworkPathDialog(selectedHomeworkPath: HomeworkPath) {
     this.matDialog.open(HomeworkPathDialogComponent, {
-      height: "700px",
-      width: "700px",
+      height: "auto",
+      width: "auto",
       disableClose: true,
       closeOnNavigation: false,
       data: {

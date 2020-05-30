@@ -26,12 +26,14 @@ mat-cell,
   padding-right: 20px;
 }
 
-div.row-action {
-  opacity: 0.2;
-}
+div {
+  &.row-action {
+    opacity: 0.2;
+  }
 
-div.row-action-hover {
-  opacity: 1;
+  &.row-action-hover {
+    opacity: 1;
+  }
 }
 
 .homework-paths-table {
@@ -44,50 +46,52 @@ div.row-action-hover {
   padding-left: 80px;
 }
 
-.mat-row span {
-  position: relative;
-}
+.mat-row {
+  span {
+    position: relative;
+  }
 
-.mat-row td {
-  height: 100%;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-bottom: none;
-  position: relative;
-  z-index: 1;
-}
+  td {
+    height: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: none;
+    position: relative;
+    z-index: 1;
+  }
 
-.mat-row td::before {
-  content: "";
-  background-color: white;
-  width: 100%;
-  height: calc(100% - 0.5rem);
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  border-bottom: 1px solid #673ab7;
-  border-top: 1px solid #673ab7;
-}
+  td::before {
+    content: "";
+    background-color: white;
+    width: 100%;
+    height: calc(100% - 0.5rem);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border-bottom: 1px solid #673ab7;
+    border-top: 1px solid #673ab7;
+  }
 
-.mat-row td:first-child:before {
-  border-left: 1px solid #673ab7;
-  border-top-left-radius: 1px solid #673ab7;
-  border-top-left-radius: 20px;
-  border-bottom-left-radius: 20px;
-}
+  td:first-child:before {
+    border-left: 1px solid #673ab7;
+    border-top-left-radius: 1px solid #673ab7;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+  }
 
-.mat-row td:last-child:before {
-  border-right: 1px solid #673ab7;
-  border-top-right-radius: 1px solid #673ab7;
-  border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px;
-}
+  td:last-child:before {
+    border-right: 1px solid #673ab7;
+    border-top-right-radius: 1px solid #673ab7;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+  }
 
-.mat-row:hover td::before {
-  background-color: #e5d7fd;
+  &:hover td::before {
+    background-color: #e5d7fd;
+  }
 }
 
 ng-scrollbar {
