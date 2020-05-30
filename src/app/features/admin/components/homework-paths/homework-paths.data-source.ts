@@ -5,9 +5,8 @@ import { catchError, tap } from "rxjs/operators";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 
 export class HomeworkPathsDataSource extends MatTableDataSource<HomeworkPath> {
-  public isLoading$: Observable<boolean>;
+  isLoading$: Observable<boolean>;
 
-  private dataSubject$ = new BehaviorSubject<HomeworkPath[]>([]);
   private isLoadingSubject$ = new BehaviorSubject<boolean>(true);
 
   constructor(private firestoreDocumentService: FirestoreDocumentService) {
@@ -23,22 +22,13 @@ export class HomeworkPathsDataSource extends MatTableDataSource<HomeworkPath> {
         catchError(() => of([]))
       )
       .subscribe(data => {
+        this.data = data;
         this.isLoadingSubject$.next(false);
-        this.dataSubject$.next(data);
       });
-  }
-
-  connect(): BehaviorSubject<HomeworkPath[]> {
-    return this.dataSubject$;
-  }
-
-  disconnect() {
-    this.dataSubject$.complete();
   }
 
   filterPredicate = (data: HomeworkPath, filter: string) => {
     const lowerCaseFilter = filter.toLowerCase();
-    debugger;
     return isNaN(Number(filter))
       ? data.topic.toLowerCase().includes(lowerCaseFilter) ||
           data.assignments.some(assignment =>

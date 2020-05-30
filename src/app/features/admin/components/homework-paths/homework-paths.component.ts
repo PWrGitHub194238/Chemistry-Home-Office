@@ -30,7 +30,7 @@ export class HomeworkPathsComponent implements OnInit {
     "uid"
   ];
 
-  loadingMessage = "temp";
+  loadingMessage = "Ładowanie listy lekcji...";
   homeworkPathSelected: HomeworkPath;
   dataSource: HomeworkPathsDataSource;
 

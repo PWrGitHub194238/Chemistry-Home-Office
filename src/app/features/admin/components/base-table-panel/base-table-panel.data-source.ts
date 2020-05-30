@@ -5,9 +5,8 @@ import { catchError, tap } from "rxjs/operators";
 export abstract class BaseTablePanelDataSource<T> extends MatTableDataSource<
   T
 > {
-  public isLoading$: Observable<boolean>;
+  isLoading$: Observable<boolean>;
 
-  private dataSubject$ = new BehaviorSubject<T[]>([]);
   private isLoadingSubject$ = new BehaviorSubject<boolean>(true);
 
   constructor() {
@@ -28,16 +27,8 @@ export abstract class BaseTablePanelDataSource<T> extends MatTableDataSource<
         catchError(() => of([]))
       )
       .subscribe(data => {
+        this.data = data;
         this.isLoadingSubject$.next(false);
-        this.dataSubject$.next(data);
       });
-  }
-
-  connect(): BehaviorSubject<T[]> {
-    return this.dataSubject$;
-  }
-
-  disconnect() {
-    this.dataSubject$.complete();
   }
 }
