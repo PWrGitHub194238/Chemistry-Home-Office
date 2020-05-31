@@ -36,6 +36,7 @@ export abstract class BaseTablePanelDialogComponent<T>
 
   ngOnInit() {
     this.createForm();
+    this.afterOnInit();
   }
 
   ngOnDestroy() {
@@ -44,7 +45,9 @@ export abstract class BaseTablePanelDialogComponent<T>
     }
   }
 
-  createForm() {
+  protected afterOnInit() {}
+
+  private createForm() {
     if (this.editMode) {
       this.loadForm(this.selectedRow);
     } else {
@@ -103,9 +106,9 @@ export abstract class BaseTablePanelDialogComponent<T>
     }
   }
 
-  abstract buildItem(editMode: boolean, item: T): T;
+  protected abstract buildItem(editMode: boolean, item: T): T;
 
-  abstract async performEdit(item: T): Promise<T>;
+  protected abstract async performEdit(item: T): Promise<T>;
 
-  abstract async performAdd(item: T): Promise<T>;
+  protected abstract async performAdd(item: T): Promise<T>;
 }

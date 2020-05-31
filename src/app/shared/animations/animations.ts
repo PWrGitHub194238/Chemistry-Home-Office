@@ -23,22 +23,12 @@ export function slideInOutAnimation(
   ];
 }
 
-export const translateCenterAnimation: AnimationStyleMetadata = style({
-  transform: "translateX(0%)",
-  opacity: 1
+const translateCenterAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(0%)"
 });
-export const translateLeftAnimation: AnimationStyleMetadata = style({
-  transform: "translateX(-100%)",
-  opacity: 0
+const translateLeftAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(-100%)"
 });
-export const translateRightAnimation: AnimationStyleMetadata = style({
-  transform: "translateX(100%)",
-  opacity: 0
-});
-
-export const translateVisibleAnimation: AnimationStyleMetadata = style({
-  opacity: 1
-});
-export const translateInvisibleAnimation: AnimationStyleMetadata = style({
-  opacity: 0
+const translateRightAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(100%)"
 });

@@ -1,1 +1,54 @@
-<p>class-dict-dialog works!</p>
+<h2 mat-dialog-title>
+  {{ editMode ? "Zmień klasę" : "Dodaj nową klasę" }}
+</h2>
+<mat-dialog-content>
+  <form
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="space-between"
+    fxLayoutGap="10px"
+    [formGroup]="form"
+  >
+    <fieldset>
+      <legend>Podstawowe dane</legend>
+
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-form-field class="full-width">
+          <mat-label>Nazwa klasy</mat-label>
+          <input
+            matInput
+            formControlName="className"
+            placeholder="Nazwa klasy np. 1A"
+            type="text"
+          />
+          <mat-error *ngIf="className.invalid && className.touched">
+            Podaj proszę nazwę klasy
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Liczba uczniów</mat-label>
+          <input
+            matInput
+            formControlName="studentCount"
+            placeholder="Liczba uczniów"
+            type="number"
+          />
+          <mat-error *ngIf="studentCount.invalid && studentCount.touched">
+            Podaj proszę liczbę uczniów danej klasy
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <button mat-button (click)="onReset()">Resetuj</button>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{ editMode ? "Zmień klasę" : "Dodaj klasę" }}
+    </button>
+  </div>
+</mat-dialog-actions>

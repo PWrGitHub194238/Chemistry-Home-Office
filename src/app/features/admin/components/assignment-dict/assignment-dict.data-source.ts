@@ -1,5 +1,5 @@
 import { Assignment } from "functions/src/models/assignment.model";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
 

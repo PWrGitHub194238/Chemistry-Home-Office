@@ -1,11 +1,11 @@
 import { Injectable } from "@angular/core";
 import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
-import { UserDetails } from "functions/src/models/user/user-details.model";
-import { AuthResponse, HomeworkPath } from "src/app/models";
-import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
-import { User } from "../models/user/user.model";
 import { FirebaseError } from "firebase";
 import { Assignment } from "functions/src/models/assignment.model";
+import { UserDetails } from "functions/src/models/user/user-details.model";
+import { AuthResponse, Class, HomeworkPath, MatIcon } from "src/app/models";
+import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
+import { User } from "../models/user/user.model";
 
 @Injectable({
   providedIn: "root"
@@ -214,6 +214,8 @@ export class SnackBarService {
     });
   }
 
+  // /assignment-dict
+
   showCreateAssignmentSuccess(assignment: Assignment) {
     return this.showFirebaseDocumentActionSuccess(
       "Dodano zadanie!",
@@ -230,7 +232,7 @@ export class SnackBarService {
 
   showEditAssignmentSuccess(assignment: Assignment) {
     return this.showFirebaseDocumentActionSuccess(
-      "Zadanie zmienione!",
+      "Zmieniono zadanie!",
       `Zadanie '${assignment.name}' zostało zmienione.`
     );
   }
@@ -244,7 +246,7 @@ export class SnackBarService {
 
   showDeleteAssignmentSuccess(assignment: Assignment) {
     return this.showFirebaseDocumentActionSuccess(
-      "Zadanie usunięte!",
+      "Usunięto zadanie!",
       `Zadanie '${assignment.name}' zostało usunięte.`
     );
   }
@@ -252,6 +254,66 @@ export class SnackBarService {
   showDeleteAssignmentFailed(error: FirebaseError) {
     return this.showFirebaseDocumentActionFailed(
       "Nie udało się usunąć zadania",
+      error
+    );
+  }
+
+  // /class-dict
+
+  showCreateClassSuccess(classObject: Class) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano klasę!",
+      `Klasa '${classObject.classNo}${classObject.subclass}' została dodana.`
+    );
+  }
+
+  showCreateClassFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać klasy",
+      error
+    );
+  }
+
+  showEditClassSuccess(classObject: Class) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono klasę!",
+      `Klasa '${classObject.classNo}${classObject.subclass}' została zmieniona.`
+    );
+  }
+
+  showEditClassFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmienić klasy",
+      error
+    );
+  }
+
+  showDeleteClassSuccess(classObject: Class) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto klasę!",
+      `Klasa '${classObject.classNo}${classObject.subclass}' została usunięta.`
+    );
+  }
+
+  showDeleteClassFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć klasy",
+      error
+    );
+  }
+
+  showEditMatIconSuccess(matIcon: MatIcon) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono ikonę!",
+      `Ikona '${matIcon.name}' została zmieniona na ${
+        matIcon.active ? "aktywną" : "nieaktywną"
+      }.`
+    );
+  }
+
+  showEditMatIconFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć klasy",
       error
     );
   }

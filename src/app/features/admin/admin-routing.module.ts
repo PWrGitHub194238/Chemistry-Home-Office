@@ -14,7 +14,7 @@ import {
 import { AssignmentDictComponent } from "./components/assignment-dict/assignment-dict.component";
 import { ClassDictComponent } from "./components/class-dict/class-dict.component";
 import { HomeworkPathsComponent } from "./components/homework-paths/homework-paths.component";
-import { MatIconsComponent } from "./components/mat-icons/mat-icons.component";
+import { MatIconDictComponent } from "./components/mat-icon-dict/mat-icon-dict.component";
 import { RootComponent } from "./components/root/root.component";
 import { SentHomeworksComponent } from "./components/sent-homeworks/sent-homeworks.component";
 import { SubjectDictComponent } from "./components/subject-dict/subject-dict.component";
@@ -41,7 +41,7 @@ const routes: Routes = [
       },
       {
         path: adminChildMatIconsPath,
-        component: MatIconsComponent,
+        component: MatIconDictComponent,
         resolve: {},
         data: { animation: adminChildMatIconsPath }
       },

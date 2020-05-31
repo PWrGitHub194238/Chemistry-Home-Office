@@ -15,7 +15,7 @@ import { ClassDictDialogComponent } from "./components/class-dict-dialog/class-d
 import { ClassDictComponent } from "./components/class-dict/class-dict.component";
 import { HomeworkPathDialogComponent } from "./components/homework-path-dialog/homework-path-dialog.component";
 import { HomeworkPathsComponent } from "./components/homework-paths/homework-paths.component";
-import { MatIconsComponent } from "./components/mat-icons/mat-icons.component";
+import { MatIconDictComponent } from "./components/mat-icon-dict/mat-icon-dict.component";
 import { RootComponent } from "./components/root/root.component";
 import { SentHomeworksDialogComponent } from "./components/sent-homeworks-dialog/sent-homeworks-dialog.component";
 import { SentHomeworksComponent } from "./components/sent-homeworks/sent-homeworks.component";
@@ -31,7 +31,7 @@ import { UserDetailsComponent } from "./components/user-details/user-details.com
     RootComponent,
     AssignmentDictComponent,
     ClassDictComponent,
-    MatIconsComponent,
+    MatIconDictComponent,
     SentHomeworksComponent,
     SubjectDictComponent,
     UserDetailsComponent,

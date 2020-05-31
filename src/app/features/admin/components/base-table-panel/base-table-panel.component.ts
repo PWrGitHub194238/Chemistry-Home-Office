@@ -1,5 +1,12 @@
 import { ComponentType } from "@angular/cdk/portal";
-import { Component, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  AfterViewInit
+} from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
 import { Subscription } from "rxjs";
@@ -15,7 +22,7 @@ import { BaseTablePanelDataSource } from "./base-table-panel.data-source";
   styleUrls: ["./base-table-panel.component.scss"]
 })
 export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
-  implements OnInit, OnDestroy {
+  implements OnInit, AfterViewInit, OnDestroy {
   @Input() panelIcon: string;
   @Input() panelTitle: string;
   @Input() panelSubtitle: string;
@@ -24,7 +31,7 @@ export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
   @Input() dataSource: BaseTablePanelDataSource<T>;
 
   selectedRow: T;
-  addEditDialog: ComponentType<U>;
+  addEditDialog: ComponentType<U> | null;
 
   private subscription: Subscription;
 
@@ -34,6 +41,9 @@ export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
 
   ngOnInit() {
     this.dataSource.loadData();
+  }
+
+  ngAfterViewInit() {
     this.dataSource.sort = this.sort;
   }
 
@@ -61,6 +71,10 @@ export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
   }
 
   openAddSelectedItemDialog() {
+    if (!this.addEditDialog) {
+      return;
+    }
+
     this.matDialog.open(this.addEditDialog, {
       height: "auto",
       width: "auto",
@@ -78,6 +92,10 @@ export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
   }
 
   openEditSelectedItemDialog() {
+    if (!this.addEditDialog) {
+      return;
+    }
+
     this.matDialog.open(this.addEditDialog, {
       height: "auto",
       width: "auto",

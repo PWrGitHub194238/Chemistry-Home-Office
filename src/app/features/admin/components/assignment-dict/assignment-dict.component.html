@@ -3,7 +3,7 @@
   panelTitle="Zdefiniowane zadania"
   panelSubtitle="tutaj znajdziesz listę wszystkich predefiniowanych zadań, które można przypisać do lekcji do wykonania przez uczniów"
   searchPlaceholder="Nazwa zadania"
-  loadingMessage="Ładowanie listy zadań..."
+  loadingMessage="Ładowanie zadań..."
   [dataSource]="dataSource"
 >
   <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
@@ -23,7 +23,7 @@
     >
     </cho-row-action-button>
   </mat-card-content>
-  <table mat-table [dataSource]="dataSource" matSort>
+  <table mat-table [dataSource]="dataSource">
     <ng-container matColumnDef="name">
       <td
         mat-cell

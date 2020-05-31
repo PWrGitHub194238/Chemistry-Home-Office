@@ -4,15 +4,10 @@ import {
   AnimationTransitionMetadata,
   group,
   query,
-  transition
+  transition,
+  AnimationStyleMetadata,
+  style
 } from "@angular/animations";
-import {
-  translateCenterAnimation,
-  translateLeftAnimation,
-  translateRightAnimation,
-  translateVisibleAnimation,
-  translateInvisibleAnimation
-} from "./animations";
 
 export function slideInOutRouteOutletAnimation(
   enterComponentState: string,
@@ -26,18 +21,45 @@ export function slideInOutRouteOutletAnimation(
   }
   return transition(`${enterComponentState} => ${leaveComponentState}`, [
     query(":enter " + enterComponentSelector, [
-      leftToRight ? translateLeftAnimation : translateRightAnimation
+      leftToRight
+        ? style({
+            transform: "translateX(-150%)",
+            opacity: 0
+          })
+        : style({
+            transform: "translateX(50%)",
+            opacity: 0
+          })
     ]),
-    query(":leave " + leaveComponentSelector, [translateCenterAnimation]),
+    query(":leave " + leaveComponentSelector, [
+      style({
+        transform: "translateX(50%)",
+        opacity: 1
+      })
+    ]),
     query(":leave " + leaveComponentSelector, animateChild()),
     group([
       query(":enter " + enterComponentSelector, [
-        animate("300ms ease-out", translateCenterAnimation)
+        animate(
+          "300ms ease-out",
+          style({
+            transform: "translateX(-50%)",
+            opacity: 1
+          })
+        )
       ]),
       query(":leave " + leaveComponentSelector, [
         animate(
           "300ms ease-out",
-          leftToRight ? translateRightAnimation : translateLeftAnimation
+          leftToRight
+            ? style({
+                transform: "translateX(150%)",
+                opacity: 0
+              })
+            : style({
+                transform: "translateX(-50%)",
+                opacity: 0
+              })
         )
       ])
     ]),
@@ -45,25 +67,19 @@ export function slideInOutRouteOutletAnimation(
   ]);
 }
 
-export function opaticyRouteOutletAnimation(
-  enterComponentSelector = "",
-  leaveComponentSelector = ""
-): AnimationTransitionMetadata {
-  if (leaveComponentSelector === undefined) {
-    enterComponentSelector = leaveComponentSelector;
-  }
-  return transition("* <=> *", [
-    query(":enter " + enterComponentSelector, [translateVisibleAnimation]),
-    query(":leave " + leaveComponentSelector, [translateInvisibleAnimation]),
-    query(":leave " + leaveComponentSelector, animateChild()),
-    group([
-      query(":enter " + enterComponentSelector, [
-        animate("300ms ease-out", translateVisibleAnimation)
-      ]),
-      query(":leave " + leaveComponentSelector, [
-        animate("300ms ease-out", translateInvisibleAnimation)
-      ])
-    ]),
-    query(":enter " + enterComponentSelector, animateChild())
-  ]);
-}
+const translateCenterAnimation1: AnimationStyleMetadata = style({
+  transform: "translateX(50%)",
+  opacity: 1
+});
+const translateCenterAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(0%)",
+  opacity: 1
+});
+const translateLeftAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(-100%)",
+  opacity: 0
+});
+const translateRightAnimation: AnimationStyleMetadata = style({
+  transform: "translateX(100%)",
+  opacity: 0
+});

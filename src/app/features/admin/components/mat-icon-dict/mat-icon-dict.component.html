@@ -1,0 +1,43 @@
+<cho-base-table-panel
+  panelIcon="/assets/adm/mat-icons.jpg"
+  panelTitle="Zdefiniowane ikony"
+  panelSubtitle="tutaj znajdziesz listę ikon dostępnych w aplikacji, które można przypisać zadaniom"
+  searchPlaceholder="Nazwa ikony"
+  loadingMessage="Ładowanie ikon..."
+  [dataSource]="dataSource"
+>
+  <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
+    <div fxFlex></div>
+    <cho-row-action-button
+      icon="keyboard_arrow_left"
+      tooltip="Wyloguj"
+      color="primary"
+      (action)="logout()"
+    >
+    </cho-row-action-button>
+  </mat-card-content>
+  <table mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+      <td mat-cell fxLayout="row" fxLayoutAlign="center" *matCellDef="let icon">
+        <mat-icon
+          class="tile-icon"
+          [matTooltip]="icon.name"
+          [class.tile-icon-hover]="icon === selectedRow"
+        >
+          {{ icon.name }}
+        </mat-icon>
+      </td>
+    </ng-container>
+
+    <tr
+      mat-row
+      fxLayout="column"
+      fxLayoutAlign="center"
+      *matRowDef="let icon; columns: columnsToDisplay"
+      [class.tile-icon-active]="icon.active"
+      (click)="mouseClick(icon)"
+      (mouseenter)="mouseEnter(icon)"
+      (mouseleave)="mouseLeave()"
+    ></tr>
+  </table>
+</cho-base-table-panel>
