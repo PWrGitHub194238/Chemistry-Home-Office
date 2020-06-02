@@ -3,7 +3,13 @@ import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
 import { FirebaseError } from "firebase";
 import { Assignment } from "functions/src/models/assignment.model";
 import { UserDetails } from "functions/src/models/user/user-details.model";
-import { AuthResponse, Class, HomeworkPath, MatIcon } from "src/app/models";
+import {
+  AuthResponse,
+  Class,
+  HomeworkPath,
+  MatIcon,
+  Subject
+} from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
 import { User } from "../models/user/user.model";
 
@@ -161,6 +167,8 @@ export class SnackBarService {
     });
   }
 
+  // /homework-paths
+
   showCreateHomeworkPathSuccess(homeworkPath: HomeworkPath) {
     return this.showFirebaseDocumentActionSuccess(
       "Dodano lekcję!",
@@ -302,6 +310,8 @@ export class SnackBarService {
     );
   }
 
+  // /mat-icons-dict
+
   showEditMatIconSuccess(matIcon: MatIcon) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono ikonę!",
@@ -314,6 +324,52 @@ export class SnackBarService {
   showEditMatIconFailed(error: FirebaseError) {
     return this.showFirebaseDocumentActionFailed(
       "Nie udało się usunąć klasy",
+      error
+    );
+  }
+
+  // /sent-homeworks
+
+  // /subject-dict
+
+  showCreateSubjectSuccess(subject: Subject) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano przedmiot lekcji!",
+      `Przedmiot lekcji '${subject.name}' został dodany.`
+    );
+  }
+
+  showCreateSubjectFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać przedmiotu lekcji",
+      error
+    );
+  }
+
+  showEditSubjectSuccess(subject: Subject) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono przedmiot lekcji!",
+      `Przedmiot lekcji '${subject.name}' został zmieniony.`
+    );
+  }
+
+  showEditSubjectFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmienić przedmiotu lekcji",
+      error
+    );
+  }
+
+  showDeleteSubjectSuccess(subject: Subject) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto przedmiot lekcji!",
+      `Przedmiot lekcji '${subject.name}' został usunięty.`
+    );
+  }
+
+  showDeleteSubjectFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć przedmiotu lekcji",
       error
     );
   }

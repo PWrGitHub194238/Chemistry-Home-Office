@@ -13,10 +13,16 @@ export class ClassDictsDataSource extends BaseTablePanelDataSource<Class> {
   }
 
   filterPredicate = (data: Class, filter: string) => {
-    const lowerCaseFilter = filter.toLowerCase();
-    return (
-      data.subclass.toLowerCase().includes(lowerCaseFilter) ||
-      String(data.classNo).includes(lowerCaseFilter)
-    );
+    const lowerCaseFilter: string[] = filter.split(" ");
+    let result = true;
+
+    lowerCaseFilter.forEach((searchKey: string) => {
+      const lowerCaseSearchKey = searchKey.toLowerCase();
+      result =
+        (result && data.subclass.toLowerCase().includes(lowerCaseSearchKey)) ||
+        String(data.classNo).includes(lowerCaseSearchKey);
+    });
+
+    return result;
   };
 }

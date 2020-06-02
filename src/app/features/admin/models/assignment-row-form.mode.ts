@@ -4,6 +4,7 @@ import { AssignmentDictEntry } from "src/app/core/models/dictionaries/assignment
 
 export interface AssignmentRowForm {
   filteredAssignments$: Observable<AssignmentDictEntry[]>;
+  uid: FormControl;
   name: FormControl;
   iconIdx: FormControl;
 }

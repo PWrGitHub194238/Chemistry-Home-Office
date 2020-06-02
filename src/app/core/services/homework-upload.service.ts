@@ -27,7 +27,10 @@ export class HomeworkUploadService {
     let sentHomework: SentHomework = {
       uid: "",
       path_uid: homeworkPath.uid,
+      subject: homeworkPath.subject,
+      topic: homeworkPath.topic,
       email: this.authService.user.auth.email,
+      displayName: this.authService.user.auth.displayName,
       files: firestorageUploadStatus.uploadedFiles.map(
         uploadTaskSnapshot => uploadTaskSnapshot.sentHomeworkFileMetadata
       )

@@ -12,7 +12,8 @@ import {
   Class,
   HomeworkPath,
   MatIcon,
-  SentHomework
+  SentHomework,
+  Subject
 } from "src/app/models";
 import { UserDetails, UserRoles } from "../models";
 import { SnackBarService } from "./snack-bar.service";
@@ -27,6 +28,7 @@ export class FirestoreDocumentService {
   private classPathCollection: AngularFirestoreCollection<Class>;
   private homeworkPathCollection: AngularFirestoreCollection<HomeworkPath>;
   private sentHomeworkCollection: AngularFirestoreCollection<SentHomework>;
+  private subjectCollection: AngularFirestoreCollection<Subject>;
   private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
   private userRolesCollection: AngularFirestoreCollection<UserRoles>;
 
@@ -49,6 +51,9 @@ export class FirestoreDocumentService {
     this.sentHomeworkCollection = this.fireStoreService.collection<
       SentHomework
     >("/sent-homeworks");
+    this.subjectCollection = this.fireStoreService.collection<Subject>(
+      "/subject-dict"
+    );
     this.userDetailsCollection = this.fireStoreService.collection<UserDetails>(
       "/user-details"
     );
@@ -283,6 +288,55 @@ export class FirestoreDocumentService {
       .set(sentHomework)
       .then(() => sentHomework)
       .catch((error: FirebaseError) => null);
+  }
+
+  // /subject-dict
+
+  getAllSubjects$(): Observable<Subject[]> {
+    return this.subjectCollection.valueChanges().pipe(untilDestroyed(this));
+  }
+
+  async createSubject(classObject: Subject): Promise<Subject | null> {
+    classObject.uid = this.fireStoreService.createId();
+    return this.subjectCollection
+      .doc<Subject>(classObject.uid)
+      .set(classObject)
+      .then(() => {
+        this.snackBarService.showCreateSubjectSuccess(classObject);
+        return classObject;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showCreateSubjectFailed(error);
+        return null;
+      });
+  }
+
+  async editSubject(classObject: Subject): Promise<Subject | null> {
+    return this.subjectCollection
+      .doc<Subject>(classObject.uid)
+      .set(classObject)
+      .then(() => {
+        this.snackBarService.showEditSubjectSuccess(classObject);
+        return classObject;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showEditSubjectFailed(error);
+        return null;
+      });
+  }
+
+  async deleteSubject(classObject: Subject) {
+    this.subjectCollection
+      .doc<Subject>(classObject.uid)
+      .delete()
+      .then(() => {
+        this.snackBarService.showDeleteSubjectSuccess(classObject);
+        return classObject;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showDeleteSubjectFailed(error);
+        return null;
+      });
   }
 
   // /user-details

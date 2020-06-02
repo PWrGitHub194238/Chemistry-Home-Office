@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import {
   FormArray,
   FormBuilder,
@@ -8,90 +8,131 @@ import {
 } from "@angular/forms";
 import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import {
+  MatDialog,
   MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatDialog
+  MAT_DIALOG_DATA
 } from "@angular/material/dialog";
 import { MatSlideToggleChange } from "@angular/material/slide-toggle";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { MatIconDictEntry } from "functions/src/models/mat-icon-dict-entry.model";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { MatIconDictEntry } from "src/app/core/models";
-import { AssignmentDictEntry } from "src/app/core/models/dictionaries/assignment-dict-entry.model";
-import { SubjectDictEntry } from "src/app/core/models/dictionaries/subject-dict-entry.model";
+import { AssignmentDictEntry, SubjectDictEntry } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { HomeworkPath, Assignment } from "src/app/models";
+import { Assignment, HomeworkPath } from "src/app/models";
 import { AssignmentRowForm } from "../../models/assignment-row-form.mode";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
-import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
+import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
-@UntilDestroy()
 @Component({
   selector: "cho-homework-path-dialog",
   templateUrl: "./homework-path-dialog.component.html",
   styleUrls: ["./homework-path-dialog.component.scss"]
 })
-export class HomeworkPathDialogComponent implements OnInit {
+export class HomeworkPathDialogComponent extends BaseTablePanelDialogComponent<
+  HomeworkPath
+> {
   assignmentColumns = ["no", "name", "icon"];
   assignmentRows: AssignmentRowForm[] = [];
-  homeworkPathForm: FormGroup;
-  submitted: boolean;
 
   subjects$: Observable<SubjectDictEntry[]>;
   classes$: Observable<number[]>;
 
   get active(): FormControl {
-    return this.homeworkPathForm.get("active") as FormControl;
+    return this.form.get("active") as FormControl;
   }
 
   get subject(): FormControl {
-    return this.homeworkPathForm.get("subject") as FormControl;
+    return this.form.get("subject") as FormControl;
   }
 
   get classNo(): FormControl {
-    return this.homeworkPathForm.get("classNo") as FormControl;
+    return this.form.get("classNo") as FormControl;
   }
 
   get topic(): FormControl {
-    return this.homeworkPathForm.get("topic") as FormControl;
+    return this.form.get("topic") as FormControl;
   }
 
   get assignments(): FormArray {
-    return this.homeworkPathForm.get("assignments") as FormArray;
+    return this.form.get("assignments") as FormArray;
   }
 
-  get editMode(): boolean {
-    return this.data.homeworkPath !== null;
+  get assignmentsDict(): AssignmentDictEntry[] {
+    return this.data["assignmentsDict"] as AssignmentDictEntry[];
+  }
+
+  get matIconsDict(): MatIconDictEntry[] {
+    return this.data["matIconsDict"] as MatIconDictEntry[];
   }
 
   constructor(
     private formBuilder: FormBuilder,
     private firestoreDocumentService: FirestoreDocumentService,
     private dictionaryService: DictionaryService,
-    private dialogRef: MatDialogRef<HomeworkPathDialogComponent>,
-    private matDialog: MatDialog,
+    dialogRef: MatDialogRef<HomeworkPathDialogComponent>,
+    matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA)
-    private data: {
-      homeworkPath: HomeworkPath | null;
-      assignmentsDict: AssignmentDictEntry[];
-      matIconsDict: MatIconDictEntry[];
+    data: {
+      selectedRow: HomeworkPath | null;
     }
   ) {
+    super(dialogRef, matDialog, data);
     this.subjects$ = this.dictionaryService.getSubjects$();
     this.classes$ = this.dictionaryService.getClassesByClassOnly$();
   }
 
-  ngOnInit() {
-    this.createForm();
+  createNewForm() {
+    this.form = this.formBuilder.group({
+      active: true,
+      subject: ["", Validators.required],
+      classNo: ["", Validators.required],
+      topic: ["", Validators.required],
+      assignments: this.formBuilder.array([])
+    });
+
+    this.createNewAssignment();
+    this.createNewAssignment();
   }
 
-  createForm() {
-    if (this.editMode) {
-      this.loadForm(this.data.homeworkPath);
-    } else {
-      this.createNewForm();
-    }
+  loadForm(selectedRow: HomeworkPath) {
+    this.form = this.formBuilder.group({
+      active: selectedRow.active,
+      subject: [selectedRow.subject, Validators.required],
+      classNo: [selectedRow.classNo, Validators.required],
+      topic: [selectedRow.topic, Validators.required],
+      assignments: this.formBuilder.array([])
+    });
+
+    selectedRow.assignments.forEach((assignment: Assignment) => {
+      this.loadAssignment(assignment);
+    });
+    this.createNewAssignment();
+  }
+
+  buildItem(editMode: boolean, item: HomeworkPath): HomeworkPath {
+    return {
+      uid: editMode ? item.uid : null,
+      active: this.active.value,
+      date: editMode ? item.date : new Date(),
+      subject: this.subject.value,
+      classNo: this.classNo.value,
+      topic: this.topic.value,
+      assignments: this.assignments.controls
+        .slice(0, this.assignments.controls.length - 1)
+        .map((assignment: FormGroup) => ({
+          uid: assignment.get("uid").value,
+          name: assignment.get("name").value,
+          icon: this.getIconName(assignment.get("iconIdx").value)
+        }))
+    };
+  }
+
+  performAdd(item: HomeworkPath): Promise<HomeworkPath> {
+    return this.firestoreDocumentService.createHomeworkPath(item);
+  }
+
+  performEdit(item: HomeworkPath): Promise<HomeworkPath> {
+    return this.firestoreDocumentService.editHomeworkPath(item);
   }
 
   assignmentName(formArrayindex: number): FormControl {
@@ -103,7 +144,7 @@ export class HomeworkPathDialogComponent implements OnInit {
   }
 
   getIconName(iconIdx: number): string {
-    return this.data.matIconsDict[iconIdx].name;
+    return this.matIconsDict[iconIdx].name;
   }
 
   previousAssignmentIcon(formArrayindex: number) {
@@ -111,7 +152,7 @@ export class HomeworkPathDialogComponent implements OnInit {
       .value as number;
 
     if (iconIndex === 0) {
-      iconIndex = this.data.matIconsDict.length - 1;
+      iconIndex = this.matIconsDict.length - 1;
     } else {
       iconIndex -= 1;
     }
@@ -123,7 +164,7 @@ export class HomeworkPathDialogComponent implements OnInit {
     let iconIndex: number = this.assignmentIconIdx(formArrayindex)
       .value as number;
 
-    if (iconIndex === this.data.matIconsDict.length - 1) {
+    if (iconIndex === this.matIconsDict.length - 1) {
       iconIndex = 0;
     } else {
       iconIndex += 1;
@@ -169,103 +210,9 @@ export class HomeworkPathDialogComponent implements OnInit {
     this.onAssignmentNameInputChange(index, event.option.value);
   }
 
-  onReset() {
-    this.assignmentRows = [];
-    this.createForm();
-    this.homeworkPathForm.markAsUntouched();
-    this.homeworkPathForm.markAsPristine();
-  }
-
-  onCancel() {
-    if (this.homeworkPathForm.pristine) {
-      this.dialogRef.close();
-    } else {
-      const alertData: AlertDialog = {
-        title: "Niezapisane zmiany",
-        body: `Czy na pewno chcesz zamknąć okno mimo niezapisanych zmian?`,
-        cancelLabel: "Nie, nie zamykaj",
-        okLabel: "Tak, zamknij!"
-      };
-      const dialogRef = this.matDialog.open(AlertDialogComponent, {
-        data: alertData
-      });
-
-      dialogRef
-        .afterClosed()
-        .pipe(untilDestroyed(this))
-        .subscribe((closeDialog: boolean) => {
-          if (closeDialog) {
-            this.dialogRef.close();
-          }
-        });
-    }
-  }
-
-  async onSubmit() {
-    this.homeworkPathForm.markAllAsTouched();
-    if (this.homeworkPathForm.valid) {
-      let homeworkPath: HomeworkPath = {
-        uid: this.data.homeworkPath ? this.data.homeworkPath.uid : null,
-        active: this.active.value,
-        date: this.editMode ? this.data.homeworkPath.date : new Date(),
-        subject: this.subject.value,
-        classNo: this.classNo.value,
-        topic: this.topic.value,
-        assignments: this.assignments.controls
-          .slice(0, this.assignments.controls.length - 1)
-          .map((assignment: FormGroup) => ({
-            uid: assignment.get("uid").value,
-            name: assignment.get("name").value,
-            icon: this.getIconName(assignment.get("iconIdx").value)
-          }))
-      };
-
-      if (this.editMode) {
-        homeworkPath = await this.firestoreDocumentService.editHomeworkPath(
-          homeworkPath
-        );
-      } else {
-        homeworkPath = await this.firestoreDocumentService.createHomeworkPath(
-          homeworkPath
-        );
-      }
-
-      if (homeworkPath) {
-        this.dialogRef.close();
-      }
-    }
-  }
-
-  private createNewForm() {
-    this.homeworkPathForm = this.formBuilder.group({
-      active: true,
-      subject: ["", Validators.required],
-      classNo: ["", Validators.required],
-      topic: ["", Validators.required],
-      assignments: this.formBuilder.array([])
-    });
-
-    this.createNewAssignment();
-    this.createNewAssignment();
-  }
-
-  private loadForm(homeworkPath: HomeworkPath) {
-    this.homeworkPathForm = this.formBuilder.group({
-      active: homeworkPath.active,
-      subject: [homeworkPath.subject, Validators.required],
-      classNo: [homeworkPath.classNo, Validators.required],
-      topic: [homeworkPath.topic, Validators.required],
-      assignments: this.formBuilder.array([])
-    });
-
-    homeworkPath.assignments.forEach((assignment: Assignment) => {
-      this.loadAssignment(assignment);
-    });
-    this.createNewAssignment();
-  }
-
   private createNewAssignment() {
     const newGroup: FormGroup = this.formBuilder.group({
+      uid: "",
       name: "",
       iconIdx: 0
     });
@@ -275,8 +222,9 @@ export class HomeworkPathDialogComponent implements OnInit {
 
   private loadAssignment(assignment: Assignment) {
     const newGroup: FormGroup = this.formBuilder.group({
+      uid: assignment.uid,
       name: assignment.name,
-      iconIdx: this.data.matIconsDict.findIndex(
+      iconIdx: this.matIconsDict.findIndex(
         (matIcon: MatIconDictEntry) => matIcon.name === assignment.icon
       )
     });
@@ -293,6 +241,7 @@ export class HomeworkPathDialogComponent implements OnInit {
           .valueChanges.pipe(
             map((input: string) => this.filterAssignments(input))
           ),
+        uid: assignmentGroup.get("uid") as FormControl,
         name: assignmentGroup.get("name") as FormControl,
         iconIdx: assignmentGroup.get("iconIdx") as FormControl
       }
@@ -321,7 +270,7 @@ export class HomeworkPathDialogComponent implements OnInit {
     if (!filterValue) {
       return [];
     }
-    return this.data.assignmentsDict.filter((assignment: AssignmentDictEntry) =>
+    return this.assignmentsDict.filter((assignment: AssignmentDictEntry) =>
       assignment.name.toLowerCase().includes(filterValue)
     );
   }
@@ -333,12 +282,12 @@ export class HomeworkPathDialogComponent implements OnInit {
   }
 
   private getIconFromAssignmentName(inputValue: string): number | null {
-    const assignment: AssignmentDictEntry = this.data.assignmentsDict.find(
+    const assignment: AssignmentDictEntry = this.assignmentsDict.find(
       (assignment: AssignmentDictEntry) => assignment.name === inputValue
     );
 
     if (assignment) {
-      return this.data.matIconsDict.findIndex(
+      return this.matIconsDict.findIndex(
         (icon: MatIconDictEntry) => icon.name === assignment.icon
       );
     }

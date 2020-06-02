@@ -23,7 +23,14 @@ export class MatIconDictsDataSource extends BaseTablePanelDataSource<MatIcon> {
   }
 
   filterPredicate = (data: MatIcon, filter: string) => {
-    const lowerCaseFilter = filter.toLowerCase();
-    return data.name.toLowerCase().includes(lowerCaseFilter);
+    const lowerCaseFilter: string[] = filter.split(" ");
+    let result = true;
+
+    lowerCaseFilter.forEach((searchKey: string) => {
+      result =
+        result && data.name.toLowerCase().includes(searchKey.toLowerCase());
+    });
+
+    return result;
   };
 }

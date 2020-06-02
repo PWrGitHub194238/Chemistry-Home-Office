@@ -7,3 +7,5 @@ export * from "./mat-icon.model";
 export * from "./mat-select.model";
 export * from "./sent-homework.model";
 export * from "./sent-homework-file.model";
+export * from "./student.model";
+export * from "./subject.model";

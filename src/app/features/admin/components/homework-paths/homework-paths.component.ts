@@ -1,26 +1,24 @@
-import { Component, OnInit, ViewChild } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { MatPaginator } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
 import { ActivatedRoute } from "@angular/router";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { HomeworkPath } from "functions/src/models/homework-path.model";
 import { AssignmentDictEntry, MatIconDictEntry } from "src/app/core/models";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
-import { HomeworkPathDialogComponent } from "../homework-path-dialog/homework-path-dialog.component";
-import { HomeworkPathsDataSource } from "./homework-paths.data-source";
-import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { AuthService } from "src/app/core/services/auth.service";
+import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
+import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { HomeworkPath } from "src/app/models";
+import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
+import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
+import { HomeworkPathDialogComponent } from "../homework-path-dialog/homework-path-dialog.component";
+import { HomeworkPathsDataSource } from "../homework-paths/homework-paths.data-source";
 
-@UntilDestroy()
 @Component({
   selector: "cho-homework-paths",
   templateUrl: "./homework-paths.component.html",
   styleUrls: ["./homework-paths.component.scss"]
 })
-export class HomeworkPathsComponent implements OnInit {
+export class HomeworkPathsComponent
+  extends BaseTablePanelComponent<HomeworkPath, HomeworkPathDialogComponent>
+  implements OnInit {
   columnsToDisplay = [
     "active",
     "date",
@@ -29,49 +27,54 @@ export class HomeworkPathsComponent implements OnInit {
     "assignments",
     "uid"
   ];
-
-  loadingMessage = "Ładowanie listy lekcji...";
-  homeworkPathSelected: HomeworkPath;
-  dataSource: HomeworkPathsDataSource;
-
-  constructor(
-    private route: ActivatedRoute,
-    private authService: AuthService,
-    private firestoreDocumentService: FirestoreDocumentService,
-    private snackBarService: SnackBarService,
-    private matDialog: MatDialog
-  ) {
-    this.dataSource = new HomeworkPathsDataSource(
-      this.firestoreDocumentService
-    );
-  }
-
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  addEditDialog = HomeworkPathDialogComponent;
 
   private assignmentsDict: AssignmentDictEntry[];
   private matIconsDict: MatIconDictEntry[];
 
+  constructor(
+    private route: ActivatedRoute,
+    private snackBarService: SnackBarService,
+    authService: AuthService,
+    matDialog: MatDialog,
+    private firestoreDocumentService: FirestoreDocumentService
+  ) {
+    super(authService, matDialog);
+  }
+
   ngOnInit() {
-    this.dataSource.loadData();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource = new HomeworkPathsDataSource(
+      this.firestoreDocumentService
+    );
 
     this.loadResolvedData();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-    const data = this.dataSource.data;
+  getAddDialogData() {
+    return {
+      assignmentsDict: this.assignmentsDict,
+      matIconsDict: this.matIconsDict
+    };
   }
 
-  mouseEnter(homeworkPath: HomeworkPath) {
-    this.homeworkPathSelected = homeworkPath;
+  getEditDialogData() {
+    return {
+      assignmentsDict: this.assignmentsDict,
+      matIconsDict: this.matIconsDict
+    };
   }
 
-  mouseLeave() {
-    this.homeworkPathSelected = null;
+  getOnDeleteAlertDialogOptions(selectedRow: HomeworkPath): AlertDialog {
+    return {
+      title: "Usuwanie lekcji",
+      body: `Czy na pewno chcesz usunąć lekcję '${selectedRow.topic}'?`,
+      cancelLabel: "Nie, nie usuwaj",
+      okLabel: "Tak, usuwamy!"
+    };
+  }
+
+  onDeleteAction(selectedRow: HomeworkPath) {
+    this.firestoreDocumentService.deleteHomeworkPath(selectedRow);
   }
 
   getSelectedHomeworkPathLink(homeworkPath: HomeworkPath): string {
@@ -80,63 +83,8 @@ export class HomeworkPathsComponent implements OnInit {
       : "";
   }
 
-  openAddHomeworkPathDialog() {
-    this.matDialog.open(HomeworkPathDialogComponent, {
-      height: "auto",
-      width: "auto",
-      disableClose: true,
-      closeOnNavigation: false,
-      data: {
-        homeworkPath: null,
-        assignmentsDict: this.assignmentsDict,
-        matIconsDict: this.matIconsDict
-      }
-    });
-  }
-
-  logout() {
-    this.authService.logout();
-  }
-
   onSelectedHomeworkPathLinkCopied() {
     this.snackBarService.showOnSelectedHomeworkPathLinkCopied();
-  }
-
-  openEditHomeworkPathDialog(selectedHomeworkPath: HomeworkPath) {
-    this.matDialog.open(HomeworkPathDialogComponent, {
-      height: "auto",
-      width: "auto",
-      disableClose: true,
-      closeOnNavigation: false,
-      data: {
-        homeworkPath: selectedHomeworkPath,
-        assignmentsDict: this.assignmentsDict,
-        matIconsDict: this.matIconsDict
-      }
-    });
-  }
-
-  openDeleteHomeworkPathDialog(selectedHomeworkPath: HomeworkPath) {
-    const alertData: AlertDialog = {
-      title: "Usuwanie lekcji",
-      body: `Czy na pewno chcesz usunąć lekcję '${selectedHomeworkPath.topic}'?`,
-      cancelLabel: "Nie, nie usuwaj",
-      okLabel: "Tak, usuwamy!"
-    };
-    const dialogRef = this.matDialog.open(AlertDialogComponent, {
-      data: alertData
-    });
-
-    dialogRef
-      .afterClosed()
-      .pipe(untilDestroyed(this))
-      .subscribe((deleteSelection: boolean) => {
-        if (deleteSelection) {
-          this.firestoreDocumentService.deleteHomeworkPath(
-            selectedHomeworkPath
-          );
-        }
-      });
   }
 
   private loadResolvedData() {

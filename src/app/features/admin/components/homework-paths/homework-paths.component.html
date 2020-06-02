@@ -1,213 +1,161 @@
-<div fxLayoutGap="20px">
-  <div fxFlex fxLayout="column">
-    <div fxFlex="30%"></div>
-    <mat-card fxFlex>
-      <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
-        <cho-row-action-button
-          icon="library_add"
-          tooltip="Dodaj lekcję"
-          color="primary"
-          (action)="openAddHomeworkPathDialog()"
-        >
-        </cho-row-action-button>
-        <div fxFlex></div>
-        <cho-row-action-button
-          icon="keyboard_arrow_left"
-          tooltip="Wyloguj"
-          color="primary"
-          (action)="logout()"
-        >
-        </cho-row-action-button>
-      </mat-card-content>
-    </mat-card>
-  </div>
-  <mat-card>
-    <mat-card-header>
-      <div mat-card-avatar class="homework-paths-key-mat-avatar"></div>
-      <mat-card-title>Zdefiniowane lekcje</mat-card-title>
-      <mat-card-subtitle
-        >tutaj znajdziesz wszystkie informacje niezbędne do zarządzania
-        zadaniami domowymi</mat-card-subtitle
+<cho-base-table-panel
+  panelIcon="/assets/adm/sent-homeworks.jpg"
+  panelTitle="Zdefiniowane lekcje"
+  panelSubtitle="tutaj znajdziesz wszystkie informacje niezbędne do zarządzania zadaniami domowymi"
+  searchPlaceholder="Klasa, nazwa lekcji lub rodzaj przypisanego zadania"
+  loadingMessage="Ładowanie listy klas..."
+  [dataSource]="dataSource"
+>
+  <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
+    <cho-row-action-button
+      icon="library_add"
+      tooltip="Dodaj lekcję"
+      color="primary"
+      (action)="openAddSelectedItemDialog()"
+    >
+    </cho-row-action-button>
+    <div fxFlex></div>
+    <cho-row-action-button
+      icon="keyboard_arrow_left"
+      tooltip="Wyloguj"
+      color="primary"
+      (action)="logout()"
+    >
+    </cho-row-action-button>
+  </mat-card-content>
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="active">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Aktywna</th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          <div
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            *ngIf="homeworkPath.active; then thenBlock; else elseBlock"
+          ></div>
+          <ng-template #thenBlock
+            ><mat-icon
+              matTooltip="Uczeń może przesyłać zadania do aktywnej lekcji"
+              >lock_open</mat-icon
+            ></ng-template
+          >
+          <ng-template #elseBlock
+            ><mat-icon matTooltip="Lekcja nie jest widoczna dla uczniów"
+              >lock</mat-icon
+            ></ng-template
+          >
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="assignments">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Zadania</th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          <div
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            fxLayoutGap="-15px"
+          >
+            <div
+              *ngFor="let assignment of homeworkPath.assignments"
+              [matTooltip]="assignment.name"
+            >
+              <button mat-mini-fab disabled class="small-button">
+                <mat-icon class="small-icon">{{ assignment.icon }}</mat-icon>
+              </button>
+            </div>
+          </div>
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="classNo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>Klasa</th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          {{ homeworkPath.classNo }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Zdefiniowana
+      </th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          {{ homeworkPath.date.toDate() | date: "fullDate" }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="subject">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Przedmiot
+      </th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          {{ homeworkPath.subject }}
+        </span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="topic">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Temat lekcji
+      </th>
+      <td mat-cell *matCellDef="let homeworkPath">
+        <span>
+          {{ homeworkPath.topic }}
+        </span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="uid">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td
+        mat-cell
+        *matCellDef="let homeworkPath"
+        fxLayout="row"
+        fxLayoutAlign="end"
       >
-    </mat-card-header>
-    <mat-divider class="homework-paths-divider"></mat-divider>
-    <mat-card-content
-      class="homework-paths-card"
-      fxLayout="column"
-      fxLayoutAlign="space-between"
-      fxLayoutGap="10px"
-    >
-      <div fxFlex></div>
-      <div fxLayout="row" fxLayoutAlign="space-between center">
-        <mat-form-field appearance="outline">
-          <mat-icon matPrefix>search</mat-icon>
-          <mat-label>Szukaj</mat-label>
-          <input
-            matInput
-            (keyup)="applyFilter($event)"
-            placeholder="Klasa, nazwa lekcji lub rodzaj przypisanego zadania"
-          />
-        </mat-form-field>
-      </div>
-      <ng-scrollbar track="vertical" appearance="standard" [disabled]="false">
-        <div class="homework-paths-table">
-          <table mat-table [dataSource]="dataSource" matSort>
-            <ng-container matColumnDef="active">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Aktywna</th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  <div
-                    fxLayout="row"
-                    fxLayoutAlign="space-between center"
-                    *ngIf="homeworkPath.active; then thenBlock; else elseBlock"
-                  ></div>
-                  <ng-template #thenBlock
-                    ><mat-icon
-                      matTooltip="Uczeń może przesyłać zadania do aktywnej lekcji"
-                      >lock_open</mat-icon
-                    ></ng-template
-                  >
-                  <ng-template #elseBlock
-                    ><mat-icon matTooltip="Lekcja nie jest widoczna dla uczniów"
-                      >lock</mat-icon
-                    ></ng-template
-                  >
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="assignments">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Zadania</th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  <div
-                    fxLayout="row"
-                    fxLayoutAlign="space-between center"
-                    fxLayoutGap="-15px"
-                  >
-                    <div
-                      *ngFor="let assignment of homeworkPath.assignments"
-                      [matTooltip]="assignment.name"
-                    >
-                      <button mat-mini-fab disabled class="small-button">
-                        <mat-icon class="small-icon">{{
-                          assignment.icon
-                        }}</mat-icon>
-                      </button>
-                    </div>
-                  </div>
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="classNo">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>Klasa</th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  {{ homeworkPath.classNo }}
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="date">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Zdefiniowana
-              </th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  {{ homeworkPath.date.toDate() | date: "fullDate" }}
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="subject">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Przedmiot
-              </th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  {{ homeworkPath.subject }}
-                </span>
-              </td>
-            </ng-container>
-            <ng-container matColumnDef="topic">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header>
-                Temat lekcji
-              </th>
-              <td mat-cell *matCellDef="let homeworkPath">
-                <span>
-                  {{ homeworkPath.topic }}
-                </span>
-              </td>
-            </ng-container>
+        <span>
+          <div
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            fxLayoutGap="5px"
+            class="row-action"
+            [class.row-action-hover]="homeworkPath === selectedRow"
+          >
+            <mat-icon class="full-size-icon">more_vert</mat-icon>
+            <cho-row-action-button
+              tooltip="Skopiuj link do lekcji"
+              icon="link"
+              color="primary"
+              ngxClipboard
+              [cbContent]="getSelectedHomeworkPathLink(homeworkPath)"
+              (cbOnSuccess)="onSelectedHomeworkPathLinkCopied()"
+            ></cho-row-action-button>
 
-            <ng-container matColumnDef="uid">
-              <th mat-header-cell *matHeaderCellDef></th>
-              <td
-                mat-cell
-                *matCellDef="let homeworkPath"
-                class="action-row-padding"
-              >
-                <span>
-                  <div
-                    fxLayout="row"
-                    fxLayoutAlign="space-between center"
-                    fxLayoutGap="5px"
-                    class="row-action"
-                    [class.row-action-hover]="
-                      homeworkPath === homeworkPathSelected
-                    "
-                  >
-                    <mat-icon class="full-size-icon">more_vert</mat-icon>
-                    <cho-row-action-button
-                      tooltip="Skopiuj link do lekcji"
-                      icon="link"
-                      color="primary"
-                      ngxClipboard
-                      [cbContent]="getSelectedHomeworkPathLink(homeworkPath)"
-                      (cbOnSuccess)="onSelectedHomeworkPathLinkCopied()"
-                    ></cho-row-action-button>
+            <cho-row-action-button
+              tooltip="Edytuj lekcję"
+              icon="edit"
+              color="primary"
+              (action)="openEditSelectedItemDialog()"
+            ></cho-row-action-button>
+            <cho-row-action-button
+              tooltip="Usuń lekcję"
+              icon="delete_outline"
+              color="warn"
+              (action)="openDeleteSelectedItemDialog()"
+            ></cho-row-action-button>
+          </div>
+        </span>
+      </td>
+    </ng-container>
 
-                    <cho-row-action-button
-                      tooltip="Edytuj lekcję"
-                      icon="edit"
-                      color="primary"
-                      (action)="
-                        openEditHomeworkPathDialog(homeworkPathSelected)
-                      "
-                    ></cho-row-action-button>
-                    <cho-row-action-button
-                      tooltip="Usuń lekcję"
-                      icon="delete_outline"
-                      color="warn"
-                      (action)="
-                        openDeleteHomeworkPathDialog(homeworkPathSelected)
-                      "
-                    ></cho-row-action-button>
-                  </div>
-                </span>
-              </td>
-            </ng-container>
-
-            <tr
-              mat-header-row
-              *matHeaderRowDef="columnsToDisplay; sticky: true"
-            ></tr>
-            <tr
-              mat-row
-              *matRowDef="let homeworkPath; columns: columnsToDisplay"
-              (mouseenter)="mouseEnter(homeworkPath)"
-              (mouseleave)="mouseLeave()"
-            ></tr>
-          </table>
-        </div>
-      </ng-scrollbar>
-    </mat-card-content>
-    <mat-card-actions
-      fxLayoutAlign="space-between"
-      fxLayoutGap="10px"
-      class="homework-paths-card-actions"
-    >
-    </mat-card-actions>
-    <cho-spinner
-      [loadingMessage]="loadingMessage"
-      [isLoading]="dataSource.isLoading$ | async"
-    ></cho-spinner>
-  </mat-card>
-</div>
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></tr>
+    <tr
+      mat-row
+      *matRowDef="let homeworkPath; columns: columnsToDisplay"
+      (mouseenter)="mouseEnter(homeworkPath)"
+      (mouseleave)="mouseLeave()"
+    ></tr>
+  </table>
+</cho-base-table-panel>

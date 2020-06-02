@@ -1,1 +1,41 @@
-<p>subject-dict-dialog works!</p>
+<h2 mat-dialog-title>
+  {{ editMode ? "Zmień przedmiot lekcji" : "Dodaj nowy przedmiot lekcji" }}
+</h2>
+<mat-dialog-content>
+  <form
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="space-between"
+    fxLayoutGap="10px"
+    [formGroup]="form"
+  >
+    <fieldset>
+      <legend>Podstawowe dane</legend>
+
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-form-field class="full-width">
+          <mat-label>Nazwa lekcji</mat-label>
+          <input
+            matInput
+            formControlName="name"
+            placeholder="Nazwa lekcji"
+            type="text"
+          />
+          <mat-error *ngIf="name.invalid && name.touched">
+            Podaj proszę nazwę lekcji
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <button mat-button (click)="onReset()">Resetuj</button>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{ editMode ? "Zmień przedmiot lekcji" : "Dodaj przedmiot lekcji" }}
+    </button>
+  </div>
+</mat-dialog-actions>

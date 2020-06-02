@@ -108,7 +108,15 @@ export abstract class BaseTablePanelDialogComponent<T>
 
   protected abstract buildItem(editMode: boolean, item: T): T;
 
-  protected abstract async performEdit(item: T): Promise<T>;
+  protected async performEdit(item: T): Promise<T> {
+    return new Promise((resolve, reject) => {
+      reject();
+    });
+  }
 
-  protected abstract async performAdd(item: T): Promise<T>;
+  protected async performAdd(item: T): Promise<T> {
+    return new Promise((resolve, reject) => {
+      reject();
+    });
+  }
 }

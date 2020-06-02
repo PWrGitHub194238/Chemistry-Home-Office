@@ -1,23 +1,17 @@
-.mat-icon-option-panel {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 form {
   min-width: 100%;
   max-width: 100%;
   width: 100%;
 }
 
-fieldset {
-  min-width: 600px;
-}
-
 label {
   font-weight: bold;
   color: #673ab7;
   min-width: 100px;
+}
+
+fieldset {
+  min-width: 600px;
 }
 
 .assignments-table {
