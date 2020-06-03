@@ -5,8 +5,8 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Subject } from "src/app/models";
+import { SubjectDictEntry } from "src/app/core/models";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @Component({
@@ -15,7 +15,7 @@ import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-t
   styleUrls: ["./subject-dict-dialog.component.scss"]
 })
 export class SubjectDictDialogComponent extends BaseTablePanelDialogComponent<
-  Subject
+  SubjectDictEntry
 > {
   get name(): FormControl {
     return this.form.get("name") as FormControl;
@@ -23,12 +23,12 @@ export class SubjectDictDialogComponent extends BaseTablePanelDialogComponent<
 
   constructor(
     private formBuilder: FormBuilder,
-    private firestoreDocumentService: FirestoreDocumentService,
+    private dictionaryService: DictionaryService,
     dialogRef: MatDialogRef<SubjectDictDialogComponent>,
     matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA)
     data: {
-      selectedRow: Subject | null;
+      selectedRow: SubjectDictEntry | null;
     }
   ) {
     super(dialogRef, matDialog, data);
@@ -40,24 +40,24 @@ export class SubjectDictDialogComponent extends BaseTablePanelDialogComponent<
     });
   }
 
-  loadForm(selectedRow: Subject) {
+  loadForm(selectedRow: SubjectDictEntry) {
     this.form = this.formBuilder.group({
       name: [selectedRow.name, [Validators.required]]
     });
   }
 
-  buildItem(editMode: boolean, item: Subject): Subject {
+  buildItem(editMode: boolean, item: SubjectDictEntry): SubjectDictEntry {
     return {
       uid: this.editMode ? item.uid : null,
       name: this.name.value
     };
   }
 
-  performAdd(item: Subject): Promise<Subject> {
-    return this.firestoreDocumentService.createSubject(item);
+  performAdd(item: SubjectDictEntry): Promise<SubjectDictEntry> {
+    return this.dictionaryService.createSubject(item);
   }
 
-  performEdit(item: Subject): Promise<Subject> {
-    return this.firestoreDocumentService.editSubject(item);
+  performEdit(item: SubjectDictEntry): Promise<SubjectDictEntry> {
+    return this.dictionaryService.editSubject(item);
   }
 }

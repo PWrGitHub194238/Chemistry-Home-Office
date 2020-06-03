@@ -3,14 +3,9 @@ import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
 import { FirebaseError } from "firebase";
 import { Assignment } from "functions/src/models/assignment.model";
 import { UserDetails } from "functions/src/models/user/user-details.model";
-import {
-  AuthResponse,
-  Class,
-  HomeworkPath,
-  MatIcon,
-  Subject
-} from "src/app/models";
+import { AuthResponse, HomeworkPath } from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
+import { ClassDictEntry, MatIconDictEntry, SubjectDictEntry } from "../models";
 import { User } from "../models/user/user.model";
 
 @Injectable({
@@ -268,7 +263,7 @@ export class SnackBarService {
 
   // /class-dict
 
-  showCreateClassSuccess(classObject: Class) {
+  showCreateClassSuccess(classObject: ClassDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Dodano klasę!",
       `Klasa '${classObject.classNo}${classObject.subclass}' została dodana.`
@@ -282,7 +277,7 @@ export class SnackBarService {
     );
   }
 
-  showEditClassSuccess(classObject: Class) {
+  showEditClassSuccess(classObject: ClassDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono klasę!",
       `Klasa '${classObject.classNo}${classObject.subclass}' została zmieniona.`
@@ -296,7 +291,7 @@ export class SnackBarService {
     );
   }
 
-  showDeleteClassSuccess(classObject: Class) {
+  showDeleteClassSuccess(classObject: ClassDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Usunięto klasę!",
       `Klasa '${classObject.classNo}${classObject.subclass}' została usunięta.`
@@ -312,7 +307,7 @@ export class SnackBarService {
 
   // /mat-icons-dict
 
-  showEditMatIconSuccess(matIcon: MatIcon) {
+  showEditMatIconSuccess(matIcon: MatIconDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono ikonę!",
       `Ikona '${matIcon.name}' została zmieniona na ${
@@ -332,7 +327,7 @@ export class SnackBarService {
 
   // /subject-dict
 
-  showCreateSubjectSuccess(subject: Subject) {
+  showCreateSubjectSuccess(subject: SubjectDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Dodano przedmiot lekcji!",
       `Przedmiot lekcji '${subject.name}' został dodany.`
@@ -346,7 +341,7 @@ export class SnackBarService {
     );
   }
 
-  showEditSubjectSuccess(subject: Subject) {
+  showEditSubjectSuccess(subject: SubjectDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono przedmiot lekcji!",
       `Przedmiot lekcji '${subject.name}' został zmieniony.`
@@ -360,7 +355,7 @@ export class SnackBarService {
     );
   }
 
-  showDeleteSubjectSuccess(subject: Subject) {
+  showDeleteSubjectSuccess(subject: SubjectDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Usunięto przedmiot lekcji!",
       `Przedmiot lekcji '${subject.name}' został usunięty.`

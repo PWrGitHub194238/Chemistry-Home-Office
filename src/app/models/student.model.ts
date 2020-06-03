@@ -1,4 +1,4 @@
-import { Entity } from "./entity.model";
+import { Entity } from "../core/models";
 
 export interface Student extends Entity {
   email: string;

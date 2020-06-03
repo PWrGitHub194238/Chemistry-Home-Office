@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   MatDialog,
@@ -6,8 +6,8 @@ import {
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Class } from "src/app/models";
+import { ClassDictEntry } from "src/app/core/models";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @UntilDestroy()
@@ -17,7 +17,7 @@ import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-t
   styleUrls: ["./class-dict-dialog.component.scss"]
 })
 export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
-  Class
+  ClassDictEntry
 > {
   get className(): FormControl {
     return this.form.get("className") as FormControl;
@@ -29,12 +29,12 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
 
   constructor(
     private formBuilder: FormBuilder,
-    private firestoreDocumentService: FirestoreDocumentService,
+    private dictionaryService: DictionaryService,
     dialogRef: MatDialogRef<ClassDictDialogComponent>,
     matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA)
     data: {
-      selectedRow: Class | null;
+      selectedRow: ClassDictEntry | null;
     }
   ) {
     super(dialogRef, matDialog, data);
@@ -58,7 +58,7 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
     });
   }
 
-  loadForm(selectedRow: Class) {
+  loadForm(selectedRow: ClassDictEntry) {
     this.form = this.formBuilder.group({
       className: [
         selectedRow.classNo + selectedRow.subclass,
@@ -68,7 +68,7 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
     });
   }
 
-  buildItem(editMode: boolean, item: Class): Class {
+  buildItem(editMode: boolean, item: ClassDictEntry): ClassDictEntry {
     return {
       uid: this.editMode ? item.uid : null,
       classNo: this.className.value[0],
@@ -77,11 +77,11 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
     };
   }
 
-  performAdd(item: Class): Promise<Class> {
-    return this.firestoreDocumentService.createClass(item);
+  performAdd(item: ClassDictEntry): Promise<ClassDictEntry> {
+    return this.dictionaryService.createClass(item);
   }
 
-  performEdit(item: Class): Promise<Class> {
-    return this.firestoreDocumentService.editClass(item);
+  performEdit(item: ClassDictEntry): Promise<ClassDictEntry> {
+    return this.dictionaryService.editClass(item);
   }
 }

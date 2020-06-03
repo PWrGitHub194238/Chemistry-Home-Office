@@ -23,6 +23,7 @@ export class HomeworkPathsComponent
     "active",
     "date",
     "classNo",
+    // "subject",
     "topic",
     "assignments",
     "uid"

@@ -1,5 +1,6 @@
 export * from "./dictionaries";
 export * from "./user";
+export * from "./entity.model";
 export * from "./firestorage-blob.model";
 export * from "./firestorage-homework-file.model";
 export * from "./firestorage-upload-status";

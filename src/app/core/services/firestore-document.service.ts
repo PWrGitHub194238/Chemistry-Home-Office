@@ -7,15 +7,16 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FirebaseError } from "firebase";
 import { Observable, of } from "rxjs";
 import { map, switchMap } from "rxjs/operators";
+import { HomeworkPath, SentHomework } from "src/app/models";
 import {
-  Assignment,
-  Class,
-  HomeworkPath,
-  MatIcon,
-  SentHomework,
-  Subject
-} from "src/app/models";
-import { UserDetails, UserRoles } from "../models";
+  AssignmentDictEntry,
+  ClassDictEntry,
+  MatIconDictEntry,
+  SubjectDictEntry,
+  UserDetails,
+  UserRoles
+} from "../models";
+import { DictionaryService } from "./dictionary.service";
 import { SnackBarService } from "./snack-bar.service";
 
 @UntilDestroy()
@@ -23,37 +24,23 @@ import { SnackBarService } from "./snack-bar.service";
   providedIn: "root"
 })
 export class FirestoreDocumentService {
-  private dictionariesCollection: AngularFirestoreCollection;
-  private assignmentPathCollection: AngularFirestoreCollection<Assignment>;
-  private classPathCollection: AngularFirestoreCollection<Class>;
   private homeworkPathCollection: AngularFirestoreCollection<HomeworkPath>;
   private sentHomeworkCollection: AngularFirestoreCollection<SentHomework>;
-  private subjectCollection: AngularFirestoreCollection<Subject>;
   private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
   private userRolesCollection: AngularFirestoreCollection<UserRoles>;
 
   constructor(
     private fireStoreService: AngularFirestore,
+    private dictionaryService: DictionaryService,
     private snackBarService: SnackBarService
   ) {
-    this.dictionariesCollection = this.fireStoreService.collection(
-      "/dictionaries"
-    );
-    this.assignmentPathCollection = this.fireStoreService.collection<
-      Assignment
-    >("/assignment-dict");
-    this.classPathCollection = this.fireStoreService.collection<Class>(
-      "/class-dict"
-    );
     this.homeworkPathCollection = this.fireStoreService.collection<
       HomeworkPath
     >("/homework-paths");
     this.sentHomeworkCollection = this.fireStoreService.collection<
       SentHomework
     >("/sent-homeworks");
-    this.subjectCollection = this.fireStoreService.collection<Subject>(
-      "/subject-dict"
-    );
+
     this.userDetailsCollection = this.fireStoreService.collection<UserDetails>(
       "/user-details"
     );
@@ -63,143 +50,26 @@ export class FirestoreDocumentService {
   }
 
   // /assignment-dict
-
-  getAllAssignments$(): Observable<Assignment[]> {
-    return this.assignmentPathCollection
-      .valueChanges()
-      .pipe(untilDestroyed(this));
-  }
-
-  async createAssignment(assignment: Assignment): Promise<Assignment | null> {
-    assignment.uid = this.fireStoreService.createId();
-    return this.assignmentPathCollection
-      .doc<Assignment>(assignment.uid)
-      .set(assignment)
-      .then(() => {
-        this.snackBarService.showCreateAssignmentSuccess(assignment);
-        return assignment;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showCreateAssignmentFailed(error);
-        return null;
-      });
-  }
-
-  async editAssignment(assignment: Assignment): Promise<Assignment | null> {
-    return this.assignmentPathCollection
-      .doc<Assignment>(assignment.uid)
-      .set(assignment)
-      .then(() => {
-        this.snackBarService.showEditAssignmentSuccess(assignment);
-        return assignment;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showEditAssignmentFailed(error);
-        return null;
-      });
-  }
-
-  async deleteAssignment(assignment: Assignment) {
-    this.assignmentPathCollection
-      .doc<Assignment>(assignment.uid)
-      .delete()
-      .then(() => {
-        this.snackBarService.showDeleteAssignmentSuccess(assignment);
-        return assignment;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showDeleteAssignmentFailed(error);
-        return null;
-      });
+  getAllAssignments$(): Observable<AssignmentDictEntry[]> {
+    return this.dictionaryService.getAllAssignments$();
   }
 
   // /class-dict
-
-  getAllClasses$(): Observable<Class[]> {
-    return this.classPathCollection.valueChanges().pipe(untilDestroyed(this));
-  }
-
-  async createClass(classObject: Class): Promise<Class | null> {
-    classObject.uid = this.fireStoreService.createId();
-    return this.classPathCollection
-      .doc<Class>(classObject.uid)
-      .set(classObject)
-      .then(() => {
-        this.snackBarService.showCreateClassSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showCreateClassFailed(error);
-        return null;
-      });
-  }
-
-  async editClass(classObject: Class): Promise<Class | null> {
-    return this.classPathCollection
-      .doc<Class>(classObject.uid)
-      .set(classObject)
-      .then(() => {
-        this.snackBarService.showEditClassSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showEditClassFailed(error);
-        return null;
-      });
-  }
-
-  async deleteClass(classObject: Class) {
-    this.classPathCollection
-      .doc<Class>(classObject.uid)
-      .delete()
-      .then(() => {
-        this.snackBarService.showDeleteClassSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showDeleteClassFailed(error);
-        return null;
-      });
+  getAllClasses$(): Observable<ClassDictEntry[]> {
+    return this.dictionaryService.getAllClasses$();
   }
 
   // /mat-icons-dict
-
-  getAllActiveIcons$(): Observable<MatIcon[]> {
-    return this.dictionariesCollection
-      .doc("mat-icons")
-      .valueChanges()
-      .pipe(
-        untilDestroyed(this),
-        map(doc => {
-          return Object.keys(doc).map((key: string) => ({
-            active: doc[key]["active"] as boolean,
-            name: doc[key]["name"] as string
-          }));
-        })
-      );
+  getAllIcons$(): Observable<MatIconDictEntry[]> {
+    return this.dictionaryService.getAllIcons$();
   }
 
-  setAllActiveIcons$(editedMatIcon: MatIcon, matIcons: MatIcon[]) {
-    const doc = {};
-    matIcons.forEach((matIcon: MatIcon) => {
-      doc[matIcon.name] = {};
-      doc[matIcon.name]["active"] = matIcon.active;
-      doc[matIcon.name]["name"] = matIcon.name;
-    });
-
-    this.dictionariesCollection
-      .doc("mat-icons")
-      .set(doc)
-      .then(() => {
-        this.snackBarService.showEditMatIconSuccess(editedMatIcon);
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showEditMatIconFailed(error);
-      });
+  // /subject-dict
+  getAllSubjects$(): Observable<SubjectDictEntry[]> {
+    return this.dictionaryService.getAllSubjects$();
   }
 
   // /homework-paths
-
   getActiveHomeworkPathsForClass$(
     studentClassNumber: number
   ): Observable<HomeworkPath[]> {
@@ -278,7 +148,6 @@ export class FirestoreDocumentService {
   }
 
   // /sent-homeworks
-
   async createSentHomework(
     sentHomework: SentHomework
   ): Promise<SentHomework | null> {
@@ -290,57 +159,7 @@ export class FirestoreDocumentService {
       .catch((error: FirebaseError) => null);
   }
 
-  // /subject-dict
-
-  getAllSubjects$(): Observable<Subject[]> {
-    return this.subjectCollection.valueChanges().pipe(untilDestroyed(this));
-  }
-
-  async createSubject(classObject: Subject): Promise<Subject | null> {
-    classObject.uid = this.fireStoreService.createId();
-    return this.subjectCollection
-      .doc<Subject>(classObject.uid)
-      .set(classObject)
-      .then(() => {
-        this.snackBarService.showCreateSubjectSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showCreateSubjectFailed(error);
-        return null;
-      });
-  }
-
-  async editSubject(classObject: Subject): Promise<Subject | null> {
-    return this.subjectCollection
-      .doc<Subject>(classObject.uid)
-      .set(classObject)
-      .then(() => {
-        this.snackBarService.showEditSubjectSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showEditSubjectFailed(error);
-        return null;
-      });
-  }
-
-  async deleteSubject(classObject: Subject) {
-    this.subjectCollection
-      .doc<Subject>(classObject.uid)
-      .delete()
-      .then(() => {
-        this.snackBarService.showDeleteSubjectSuccess(classObject);
-        return classObject;
-      })
-      .catch((error: FirebaseError) => {
-        this.snackBarService.showDeleteSubjectFailed(error);
-        return null;
-      });
-  }
-
   // /user-details
-
   getUserDetails$(uid: string): Observable<UserDetails | null> {
     return this.userDetailsCollection
       .doc<UserDetails>(uid)
@@ -354,7 +173,6 @@ export class FirestoreDocumentService {
   }
 
   // /user-roles
-
   getUserRoles$(uid: string): Observable<UserRoles | null> {
     return this.userRolesCollection
       .doc<UserRoles>(uid)
@@ -389,7 +207,6 @@ export class FirestoreDocumentService {
   }
 
   // private
-
   private getHomeworkPaths(
     document: firebase.firestore.DocumentData
   ): HomeworkPath | null {

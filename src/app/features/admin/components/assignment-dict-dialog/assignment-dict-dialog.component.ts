@@ -7,7 +7,7 @@ import {
 } from "@angular/material/dialog";
 import { Assignment } from "functions/src/models/assignment.model";
 import { MatIconDictEntry } from "src/app/core/models";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @Component({
@@ -32,7 +32,7 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
 
   constructor(
     private formBuilder: FormBuilder,
-    private firestoreDocumentService: FirestoreDocumentService,
+    private dictionaryService: DictionaryService,
     dialogRef: MatDialogRef<AssignmentDictDialogComponent>,
     matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA)
@@ -72,11 +72,11 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
   }
 
   performAdd(item: Assignment): Promise<Assignment> {
-    return this.firestoreDocumentService.createAssignment(item);
+    return this.dictionaryService.createAssignment(item);
   }
 
   performEdit(item: Assignment): Promise<Assignment> {
-    return this.firestoreDocumentService.editAssignment(item);
+    return this.dictionaryService.editAssignment(item);
   }
 
   getIconName(): string {

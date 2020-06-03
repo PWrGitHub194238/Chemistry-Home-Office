@@ -1,12 +1,12 @@
-import { Assignment } from "functions/src/models/assignment.model";
 import { Observable } from "rxjs";
+import { AssignmentDictEntry } from "src/app/core/models";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
 
 export class AssignmentDictsDataSource extends BaseTablePanelDataSource<
-  Assignment
+  AssignmentDictEntry
 > {
-  protected getData(): Observable<Assignment[]> {
+  protected getData(): Observable<AssignmentDictEntry[]> {
     return this.firestoreDocumentService.getAllAssignments$();
   }
 
@@ -14,7 +14,7 @@ export class AssignmentDictsDataSource extends BaseTablePanelDataSource<
     super();
   }
 
-  filterPredicate = (data: Assignment, filter: string) => {
+  filterPredicate = (data: AssignmentDictEntry, filter: string) => {
     const lowerCaseFilter: string[] = filter.split(" ");
     let result = true;
 

@@ -1,28 +1,20 @@
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { MatIconDictEntry } from "src/app/core/models";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { MatIcon, MAT_ICONS } from "src/app/models";
 import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
 
-export class MatIconDictsDataSource extends BaseTablePanelDataSource<MatIcon> {
-  protected getData(): Observable<MatIcon[]> {
-    return this.firestoreDocumentService.getAllActiveIcons$().pipe(
-      map((activeIcons: MatIcon[]) =>
-        MAT_ICONS.map((icon: MatIcon) => ({
-          active: activeIcons.some(
-            (activeIcon: MatIcon) => activeIcon.name === icon.name
-          ),
-          name: icon.name
-        }))
-      )
-    );
+export class MatIconDictsDataSource extends BaseTablePanelDataSource<
+  MatIconDictEntry
+> {
+  protected getData(): Observable<MatIconDictEntry[]> {
+    return this.firestoreDocumentService.getAllIcons$();
   }
 
   constructor(private firestoreDocumentService: FirestoreDocumentService) {
     super();
   }
 
-  filterPredicate = (data: MatIcon, filter: string) => {
+  filterPredicate = (data: MatIconDictEntry, filter: string) => {
     const lowerCaseFilter: string[] = filter.split(" ");
     let result = true;
 

@@ -2,11 +2,12 @@ import { Component, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Class } from "src/app/models";
 import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { ClassDictDialogComponent } from "../class-dict-dialog/class-dict-dialog.component";
 import { ClassDictsDataSource } from "./class-dict.data-source";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { ClassDictEntry } from "src/app/core/models";
 
 @Component({
   selector: "cho-class-dict",
@@ -14,7 +15,7 @@ import { ClassDictsDataSource } from "./class-dict.data-source";
   styleUrls: ["./class-dict.component.scss"]
 })
 export class ClassDictComponent
-  extends BaseTablePanelComponent<Class, ClassDictDialogComponent>
+  extends BaseTablePanelComponent<ClassDictEntry, ClassDictDialogComponent>
   implements OnInit {
   columnsToDisplay = ["classNo", "subclass", "studentCount", "uid"];
   addEditDialog = ClassDictDialogComponent;
@@ -22,6 +23,7 @@ export class ClassDictComponent
   constructor(
     authService: AuthService,
     matDialog: MatDialog,
+    private dictionaryService: DictionaryService,
     private firestoreDocumentService: FirestoreDocumentService
   ) {
     super(authService, matDialog);
@@ -31,7 +33,7 @@ export class ClassDictComponent
     this.dataSource = new ClassDictsDataSource(this.firestoreDocumentService);
   }
 
-  getOnDeleteAlertDialogOptions(selectedRow: Class): AlertDialog {
+  getOnDeleteAlertDialogOptions(selectedRow: ClassDictEntry): AlertDialog {
     return {
       title: "Usuwanie klasy",
       body: `Czy na pewno chcesz usunąć klasę '${selectedRow.classNo}${selectedRow.subclass}'?`,
@@ -40,7 +42,7 @@ export class ClassDictComponent
     };
   }
 
-  onDeleteAction(selectedRow: Class) {
-    this.firestoreDocumentService.deleteClass(selectedRow);
+  onDeleteAction(selectedRow: ClassDictEntry) {
+    this.dictionaryService.deleteClass(selectedRow);
   }
 }

@@ -1,10 +1,12 @@
 import { Observable } from "rxjs";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
-import { Subject } from "src/app/models";
+import { SubjectDictEntry } from "src/app/core/models";
 
-export class SubjectDictsDataSource extends BaseTablePanelDataSource<Subject> {
-  protected getData(): Observable<Subject[]> {
+export class SubjectDictsDataSource extends BaseTablePanelDataSource<
+  SubjectDictEntry
+> {
+  protected getData(): Observable<SubjectDictEntry[]> {
     return this.firestoreDocumentService.getAllSubjects$();
   }
 
@@ -12,7 +14,7 @@ export class SubjectDictsDataSource extends BaseTablePanelDataSource<Subject> {
     super();
   }
 
-  filterPredicate = (data: Subject, filter: string) => {
+  filterPredicate = (data: SubjectDictEntry, filter: string) => {
     const lowerCaseFilter: string[] = filter.split(" ");
     let result = true;
 

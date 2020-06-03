@@ -19,7 +19,7 @@ import { map } from "rxjs/operators";
 import { AssignmentDictEntry, SubjectDictEntry } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Assignment, HomeworkPath } from "src/app/models";
+import { HomeworkPath } from "src/app/models";
 import { AssignmentRowForm } from "../../models/assignment-row-form.mode";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
@@ -77,7 +77,7 @@ export class HomeworkPathDialogComponent extends BaseTablePanelDialogComponent<
     }
   ) {
     super(dialogRef, matDialog, data);
-    this.subjects$ = this.dictionaryService.getSubjects$();
+    this.subjects$ = this.dictionaryService.getAllSubjects$();
     this.classes$ = this.dictionaryService.getClassesByClassOnly$();
   }
 
@@ -103,7 +103,7 @@ export class HomeworkPathDialogComponent extends BaseTablePanelDialogComponent<
       assignments: this.formBuilder.array([])
     });
 
-    selectedRow.assignments.forEach((assignment: Assignment) => {
+    selectedRow.assignments.forEach((assignment: AssignmentDictEntry) => {
       this.loadAssignment(assignment);
     });
     this.createNewAssignment();
@@ -220,7 +220,7 @@ export class HomeworkPathDialogComponent extends BaseTablePanelDialogComponent<
     this.pushAssignment(newGroup);
   }
 
-  private loadAssignment(assignment: Assignment) {
+  private loadAssignment(assignment: AssignmentDictEntry) {
     const newGroup: FormGroup = this.formBuilder.group({
       uid: assignment.uid,
       name: assignment.name,

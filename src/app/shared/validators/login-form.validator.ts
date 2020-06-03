@@ -47,7 +47,7 @@ export class LoginFormValidator {
         return of(null);
       }
 
-      return dictionaryService.getClasses$().pipe(
+      return dictionaryService.getAllClasses$().pipe(
         map((classes: ClassDictEntry[]) => {
           const allowedClasses: string[] = classes.map(c =>
             `${c.classNo}${c.subclass}`.toUpperCase()
@@ -93,7 +93,7 @@ export class LoginFormValidator {
         });
       }
 
-      return dictionaryService.getClasses$().pipe(
+      return dictionaryService.getAllClasses$().pipe(
         map((classes: ClassDictEntry[]) => {
           const classDef: ClassDictEntry = classes.find(
             (c: ClassDictEntry) =>

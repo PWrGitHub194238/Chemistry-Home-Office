@@ -1,4 +1,5 @@
-import { Entity, SentHomeworkFile } from ".";
+import { SentHomeworkFile } from ".";
+import { Entity } from "../core/models";
 
 export interface SentHomework extends Entity {
   path_uid: string;

@@ -1,10 +1,12 @@
 import { Observable } from "rxjs";
+import { ClassDictEntry } from "src/app/core/models";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Class } from "src/app/models/class.model";
 import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
 
-export class ClassDictsDataSource extends BaseTablePanelDataSource<Class> {
-  protected getData(): Observable<Class[]> {
+export class ClassDictsDataSource extends BaseTablePanelDataSource<
+  ClassDictEntry
+> {
+  protected getData(): Observable<ClassDictEntry[]> {
     return this.firestoreDocumentService.getAllClasses$();
   }
 
@@ -12,7 +14,7 @@ export class ClassDictsDataSource extends BaseTablePanelDataSource<Class> {
     super();
   }
 
-  filterPredicate = (data: Class, filter: string) => {
+  filterPredicate = (data: ClassDictEntry, filter: string) => {
     const lowerCaseFilter: string[] = filter.split(" ");
     let result = true;
 

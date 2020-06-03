@@ -1,16 +1,16 @@
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
-import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Class, Student } from "src/app/models";
-import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
-import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
+import { untilDestroyed } from "@ngneat/until-destroy";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
+import { Student } from "src/app/models";
+import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
+import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @Component({
   selector: "cho-user-details-dialog",

@@ -14,7 +14,7 @@ export class AssignmentDictResolver {
 
   resolve(): Observable<AssignmentDictEntry[]> {
     return this.dictionaryService
-      .getAssignments$()
+      .getAllAssignments$()
       .pipe(untilDestroyed(this), first());
   }
 }

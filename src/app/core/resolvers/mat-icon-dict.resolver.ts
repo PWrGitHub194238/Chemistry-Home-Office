@@ -14,7 +14,7 @@ export class MatIconDictResolver {
 
   resolve(): Observable<MatIconDictEntry[]> {
     return this.dictionaryService
-      .getActiveMatIcons$()
+      .getAllActiveIcons$()
       .pipe(untilDestroyed(this), first());
   }
 }

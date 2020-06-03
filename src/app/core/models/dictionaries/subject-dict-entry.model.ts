@@ -1,3 +1,5 @@
-export interface SubjectDictEntry {
+import { Entity } from "..";
+
+export interface SubjectDictEntry extends Entity {
   name: string;
 }
