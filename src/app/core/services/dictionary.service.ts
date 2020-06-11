@@ -7,7 +7,8 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FirebaseError } from "firebase";
 import { interval, Observable, of, Subscription } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map, take, takeUntil, tap } from "rxjs/operators";
+import { SubjectDictEntry } from "../models";
 import { AssignmentDictEntry } from "../models/dictionaries/assignment-dict-entry.model";
 import { ClassDictEntry } from "../models/dictionaries/class-dict-entry.model";
 import {
@@ -15,7 +16,6 @@ import {
   MAT_ICONS
 } from "../models/dictionaries/mat-icon-dict-entry.model";
 import { SnackBarService } from "./snack-bar.service";
-import { SubjectDictEntry } from "../models";
 
 @UntilDestroy()
 @Injectable({
@@ -64,7 +64,6 @@ export class DictionaryService {
     this.assignmentDictCollection = this.fireStoreService.collection<
       AssignmentDictEntry
     >("assignment-dict");
-
     this.assignments$ = interval(this.timeout).pipe(
       untilDestroyed(this),
       tap(_ => (this.assignments = null)),
@@ -75,7 +74,6 @@ export class DictionaryService {
     this.classDictCollection = this.fireStoreService.collection<ClassDictEntry>(
       "/class-dict"
     );
-
     this.classes$ = interval(this.timeout).pipe(
       untilDestroyed(this),
       tap(_ => (this.classes = null)),
@@ -106,8 +104,9 @@ export class DictionaryService {
 
   // /assignment-dict
   getAllAssignments$(sync?: boolean): Observable<AssignmentDictEntry[]> {
-    return sync || !this.assignments
+    return !!sync || !this.assignments
       ? this.assignmentDictCollection.valueChanges().pipe(
+          takeUntil(this.assignments$),
           untilDestroyed(this),
           tap((assignments: AssignmentDictEntry[]) => {
             this.assignments = assignments;
@@ -210,8 +209,9 @@ export class DictionaryService {
 
   // /class-dict
   getAllClasses$(sync?: boolean): Observable<ClassDictEntry[]> {
-    return sync || !this.classes
+    return !!sync || !this.classes
       ? this.classDictCollection.valueChanges().pipe(
+          takeUntil(this.classes$),
           untilDestroyed(this),
           tap((classes: ClassDictEntry[]) => {
             this.classes = classes;
@@ -322,8 +322,9 @@ export class DictionaryService {
 
   // /mat-icons-dict
   getAllIcons$(sync?: boolean): Observable<MatIconDictEntry[]> {
-    return sync || !this.matIcons
+    return !!sync || !this.matIcons
       ? this.getAllActiveIcons$(true).pipe(
+          takeUntil(this.activeMatIcons$),
           untilDestroyed(this),
           map((activeIcons: MatIconDictEntry[]) => {
             const matIconsDict = MAT_ICONS.map((icon: MatIconDictEntry) => ({
@@ -346,8 +347,10 @@ export class DictionaryService {
   }
 
   getAllActiveIcons$(sync?: boolean): Observable<MatIconDictEntry[]> {
-    return sync || !this.activeMatIcons
+    return !!sync || !this.activeMatIcons
       ? this.activeMatIconDictDoc.valueChanges().pipe(
+          take(1),
+          takeUntil(this.activeMatIcons$),
           untilDestroyed(this),
           map((matIcons: any) => {
             const matActiveIconsDict = [];
@@ -396,8 +399,9 @@ export class DictionaryService {
 
   // /subject-dict
   getAllSubjects$(sync?: boolean): Observable<SubjectDictEntry[]> {
-    return sync || !this.subjects
+    return !!sync || !this.subjects
       ? this.subjectDictCollection.valueChanges().pipe(
+          takeUntil(this.subjects$),
           untilDestroyed(this),
           tap((subjects: SubjectDictEntry[]) => {
             this.subjects = subjects;

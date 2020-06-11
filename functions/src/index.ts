@@ -15,7 +15,6 @@ import {
   deleteUserRoles,
   getAllUserDetails,
   getAllUserRoles,
-  getHomeworkPaths,
   getSentHomework,
   getUserDetails
 } from "./firestore-documents";
@@ -41,9 +40,7 @@ exports.sendHomeworkSentNotificationEmail = functions.https.onCall(
 );
 
 async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
-  const homeworkPathDocument: HomeworkPath = await getHomeworkPaths(
-    sentHomeworkDocument.path_uid
-  );
+  const homeworkPathDocument: HomeworkPath = sentHomeworkDocument.homeworkPath;
 
   const sender: admin.auth.UserRecord = await getUserByEmail(
     sentHomeworkDocument.email
@@ -65,9 +62,7 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
     );
 
     const assignmentSpecificPartialSentHomeworkDocument: SentHomework = {
-      uid: sentHomeworkDocument.uid,
-      path_uid: sentHomeworkDocument.path_uid,
-      email: sentHomeworkDocument.email,
+      ...sentHomeworkDocument,
       files: sentHomeworkDocument.files.filter(
         file => file.assignment === assignment
       )

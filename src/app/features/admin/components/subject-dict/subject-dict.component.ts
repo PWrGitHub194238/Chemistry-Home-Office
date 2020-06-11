@@ -1,10 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { SubjectDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { SubjectDictDialogComponent } from "../subject-dict-dialog/subject-dict-dialog.component";
 import { SubjectDictsDataSource } from "./subject-dict.data-source";
@@ -16,21 +15,32 @@ import { SubjectDictsDataSource } from "./subject-dict.data-source";
 })
 export class SubjectDictComponent
   extends BaseTablePanelComponent<SubjectDictEntry, SubjectDictDialogComponent>
-  implements OnInit {
+  implements OnInit, AfterViewInit, OnDestroy {
   columnsToDisplay = ["name", "uid"];
-  addEditDialog = SubjectDictDialogComponent;
+
+  viewDialog = SubjectDictDialogComponent;
+  addDialog = SubjectDictDialogComponent;
+  editDialog = SubjectDictDialogComponent;
 
   constructor(
+    dataSource: SubjectDictsDataSource,
     authService: AuthService,
     matDialog: MatDialog,
-    private dictionaryService: DictionaryService,
-    private firestoreDocumentService: FirestoreDocumentService
+    private dictionaryService: DictionaryService
   ) {
-    super(authService, matDialog);
+    super(dataSource, authService, matDialog);
   }
 
   ngOnInit() {
-    this.dataSource = new SubjectDictsDataSource(this.firestoreDocumentService);
+    super.ngOnInit();
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
   getOnDeleteAlertDialogOptions(selectedRow: SubjectDictEntry): AlertDialog {

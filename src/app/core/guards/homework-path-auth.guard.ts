@@ -6,12 +6,12 @@ import {
   RouterStateSnapshot
 } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { HomeworkPath } from "functions/src/models/homework-path.model";
 import { Observable, of } from "rxjs";
 import { map, take, tap } from "rxjs/operators";
 import { RedirectToLoginState } from "../actions/redirect-to-login-state.action";
 import { AuthService } from "../services/auth.service";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
+import { HomeworkPath } from "src/app/models";
 
 @UntilDestroy()
 @Injectable({

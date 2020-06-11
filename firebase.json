@@ -8,12 +8,16 @@
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
-        "source": "/chemistry-home-office/us-central1/sendHomeworkSentNotificationEmail",
-        "function": "sendHomeworkSentNotificationEmail"
-      },
-      {
         "source": "/chemistry-home-office/us-central1/cleanupCloudFirestore",
         "function": "cleanupCloudFirestore"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/getUserData",
+        "function": "getUserData"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/sendHomeworkSentNotificationEmail",
+        "function": "sendHomeworkSentNotificationEmail"
       },
       {
         "source": "**",

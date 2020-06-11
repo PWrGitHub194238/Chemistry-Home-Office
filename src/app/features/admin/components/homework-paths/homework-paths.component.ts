@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
 import { AssignmentDictEntry, MatIconDictEntry } from "src/app/core/models";
@@ -6,9 +6,9 @@ import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { HomeworkPath } from "src/app/models";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
-import { HomeworkPathDialogComponent } from "../homework-path-dialog/homework-path-dialog.component";
+import { HomeworkPathsDialogComponent } from "../homework-paths-dialog/homework-paths-dialog.component";
 import { HomeworkPathsDataSource } from "../homework-paths/homework-paths.data-source";
 
 @Component({
@@ -17,8 +17,8 @@ import { HomeworkPathsDataSource } from "../homework-paths/homework-paths.data-s
   styleUrls: ["./homework-paths.component.scss"]
 })
 export class HomeworkPathsComponent
-  extends BaseTablePanelComponent<HomeworkPath, HomeworkPathDialogComponent>
-  implements OnInit {
+  extends BaseTablePanelComponent<HomeworkPath, HomeworkPathsDialogComponent>
+  implements OnInit, AfterViewInit, OnDestroy {
   columnsToDisplay = [
     "active",
     "date",
@@ -28,27 +28,43 @@ export class HomeworkPathsComponent
     "assignments",
     "uid"
   ];
-  addEditDialog = HomeworkPathDialogComponent;
+
+  viewDialog = HomeworkPathsDialogComponent;
+  addDialog = HomeworkPathsDialogComponent;
+  editDialog = HomeworkPathsDialogComponent;
 
   private assignmentsDict: AssignmentDictEntry[];
   private matIconsDict: MatIconDictEntry[];
 
   constructor(
-    private route: ActivatedRoute,
-    private snackBarService: SnackBarService,
+    dataSource: HomeworkPathsDataSource,
     authService: AuthService,
     matDialog: MatDialog,
-    private firestoreDocumentService: FirestoreDocumentService
+    private firestoreDocumentService: FirestoreDocumentService,
+    private route: ActivatedRoute,
+    private snackBarService: SnackBarService
   ) {
-    super(authService, matDialog);
+    super(dataSource, authService, matDialog);
   }
 
   ngOnInit() {
-    this.dataSource = new HomeworkPathsDataSource(
-      this.firestoreDocumentService
-    );
-
+    super.ngOnInit();
     this.loadResolvedData();
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
+  getViewDialogData() {
+    return {
+      assignmentsDict: this.assignmentsDict,
+      matIconsDict: this.matIconsDict
+    };
   }
 
   getAddDialogData() {

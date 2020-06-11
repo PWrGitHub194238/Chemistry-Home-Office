@@ -5,8 +5,9 @@ import {
 } from "@angular/fire/firestore";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FirebaseError } from "firebase";
-import { Observable, of } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import { interval, Observable, of, Subscription } from "rxjs";
+import { map, switchMap, take, takeUntil, tap } from "rxjs/operators";
+import { SentHomeworksForPath } from "src/app/features/admin/models/sent-homeworks-for-path.model";
 import { HomeworkPath, SentHomework } from "src/app/models";
 import {
   AssignmentDictEntry,
@@ -24,8 +25,25 @@ import { SnackBarService } from "./snack-bar.service";
   providedIn: "root"
 })
 export class FirestoreDocumentService {
+  private timeout = 1000 * 60 * 10;
+
+  // /homework-paths
+  private homeworkPaths: HomeworkPath[];
+  private homeworkPaths$: Observable<HomeworkPath[] | null>;
+  private homeworkPathkSubscription: Subscription;
   private homeworkPathCollection: AngularFirestoreCollection<HomeworkPath>;
+
+  // /sent-homeworks
+  private sentHomeworks: SentHomework[];
+  private sentHomeworks$: Observable<SentHomework[] | null>;
+  private sentHomeworkSubscription: Subscription;
   private sentHomeworkCollection: AngularFirestoreCollection<SentHomework>;
+
+  // SentHomeworksForPath
+  private sentHomeworksForPaths: SentHomeworksForPath[];
+  private sentHomeworksForPaths$: Observable<SentHomeworksForPath[] | null>;
+  private sentHomeworksForPathSubscription: Subscription;
+
   private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
   private userRolesCollection: AngularFirestoreCollection<UserRoles>;
 
@@ -34,12 +52,30 @@ export class FirestoreDocumentService {
     private dictionaryService: DictionaryService,
     private snackBarService: SnackBarService
   ) {
+    // /homework-paths
     this.homeworkPathCollection = this.fireStoreService.collection<
       HomeworkPath
     >("/homework-paths");
+    this.homeworkPaths$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.homeworkPaths = null)),
+      map(_ => this.homeworkPaths)
+    );
+
+    // /sent-homeworks
     this.sentHomeworkCollection = this.fireStoreService.collection<
       SentHomework
     >("/sent-homeworks");
+    this.sentHomeworks$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.sentHomeworks = null)),
+      map(_ => this.sentHomeworks)
+    );
+    this.sentHomeworksForPaths$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.sentHomeworksForPaths = null)),
+      map(_ => this.sentHomeworksForPaths)
+    );
 
     this.userDetailsCollection = this.fireStoreService.collection<UserDetails>(
       "/user-details"
@@ -84,10 +120,20 @@ export class FirestoreDocumentService {
       .pipe(untilDestroyed(this));
   }
 
-  getAllHomeworkPaths$(): Observable<HomeworkPath[]> {
-    return this.homeworkPathCollection
-      .valueChanges()
-      .pipe(untilDestroyed(this));
+  getAllHomeworkPaths$(sync?: boolean): Observable<HomeworkPath[]> {
+    return !!sync || !this.homeworkPaths
+      ? this.homeworkPathCollection.valueChanges().pipe(
+          takeUntil(this.homeworkPaths$),
+          untilDestroyed(this),
+          tap((homeworkPaths: HomeworkPath[]) => {
+            this.homeworkPaths = homeworkPaths;
+            if (this.homeworkPathkSubscription) {
+              this.homeworkPathkSubscription.unsubscribe();
+            }
+            this.homeworkPathkSubscription = this.homeworkPaths$.subscribe();
+          })
+        )
+      : of(this.homeworkPaths);
   }
 
   getHomeworkPaths$(uid: string): Observable<HomeworkPath | null> {
@@ -100,7 +146,7 @@ export class FirestoreDocumentService {
       );
   }
 
-  async createHomeworkPath(
+  async createHomeworkPath$(
     homeworkPath: HomeworkPath
   ): Promise<HomeworkPath | null> {
     homeworkPath.uid = this.fireStoreService.createId();
@@ -117,7 +163,7 @@ export class FirestoreDocumentService {
       });
   }
 
-  async editHomeworkPath(
+  async editHomeworkPath$(
     homeworkPath: HomeworkPath
   ): Promise<HomeworkPath | null> {
     return this.homeworkPathCollection
@@ -148,7 +194,70 @@ export class FirestoreDocumentService {
   }
 
   // /sent-homeworks
-  async createSentHomework(
+  getSentHomeworks$(sync?: boolean): Observable<SentHomework[]> {
+    return !!sync || !this.sentHomeworks
+      ? this.sentHomeworkCollection.valueChanges().pipe(
+          take(1),
+          takeUntil(this.sentHomeworks$),
+          untilDestroyed(this),
+          tap((sentHomeworks: SentHomework[]) => {
+            this.sentHomeworks = sentHomeworks;
+            if (this.sentHomeworkSubscription) {
+              this.sentHomeworkSubscription.unsubscribe();
+            }
+            this.sentHomeworkSubscription = this.sentHomeworks$.subscribe();
+          })
+        )
+      : of(this.sentHomeworks);
+  }
+
+  getAllSentHomeworksForPaths$(
+    sync?: boolean
+  ): Observable<SentHomeworksForPath[]> {
+    return !!sync || !this.sentHomeworksForPaths
+      ? this.getSentHomeworks$().pipe(
+          takeUntil(this.sentHomeworksForPaths$),
+          untilDestroyed(this),
+          map((sentHomeworks: SentHomework[]) => {
+            const sentHomeworksGroupedByPath: SentHomeworksForPath[] = [];
+            const homeworkPaths: HomeworkPath[] = [];
+
+            const groupedHomeworks = sentHomeworks.reduce(
+              (
+                previousValue: Map<string, SentHomework[]>,
+                currentValue: SentHomework
+              ) => {
+                const homeworkPathUid = currentValue.homeworkPath.uid;
+                if (!previousValue[homeworkPathUid]) {
+                  homeworkPaths.push(currentValue.homeworkPath);
+                  previousValue[homeworkPathUid] = [];
+                }
+
+                previousValue[homeworkPathUid].push(currentValue);
+                return previousValue;
+              },
+              new Map<string, SentHomework[]>()
+            );
+
+            homeworkPaths.forEach((homeworkPath: HomeworkPath) => {
+              sentHomeworksGroupedByPath.push({
+                ...homeworkPath,
+                sentHomeworks: groupedHomeworks[homeworkPath.uid]
+              });
+            });
+
+            this.sentHomeworksForPaths = sentHomeworksGroupedByPath;
+            if (this.sentHomeworksForPathSubscription) {
+              this.sentHomeworksForPathSubscription.unsubscribe();
+            }
+            this.sentHomeworksForPathSubscription = this.sentHomeworksForPaths$.subscribe();
+            return sentHomeworksGroupedByPath;
+          })
+        )
+      : of(this.sentHomeworksForPaths);
+  }
+
+  async createSentHomework$(
     sentHomework: SentHomework
   ): Promise<SentHomework | null> {
     sentHomework.uid = this.fireStoreService.createId();
@@ -157,6 +266,36 @@ export class FirestoreDocumentService {
       .set(sentHomework)
       .then(() => sentHomework)
       .catch((error: FirebaseError) => null);
+  }
+
+  async editSentHomework$(
+    sentHomework: SentHomework
+  ): Promise<SentHomework | null> {
+    return this.sentHomeworkCollection
+      .doc<SentHomework>(sentHomework.uid)
+      .set(sentHomework)
+      .then(() => {
+        this.snackBarService.showEditSentHomeworkSuccess(sentHomework);
+        return sentHomework;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showEditSentHomeworkFailed(error);
+        return null;
+      });
+  }
+
+  async deleteSentHomework(sentHomework: SentHomework) {
+    this.sentHomeworkCollection
+      .doc<SentHomework>(sentHomework.uid)
+      .delete()
+      .then(() => {
+        this.snackBarService.showDeleteSentHomeworkSuccess(sentHomework);
+        return sentHomework;
+      })
+      .catch((error: FirebaseError) => {
+        this.snackBarService.showDeleteSentHomeworkFailed(error);
+        return null;
+      });
   }
 
   // /user-details

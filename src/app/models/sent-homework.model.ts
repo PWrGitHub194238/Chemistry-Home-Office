@@ -1,11 +1,11 @@
-import { SentHomeworkFile } from ".";
-import { Entity } from "../core/models";
+import { HomeworkPath, SentHomeworkFile } from ".";
+import { Entity, UserDetails } from "../core/models";
 
 export interface SentHomework extends Entity {
-  path_uid: string;
-  subject: string;
-  topic: string;
   email: string;
   displayName: string;
+  userDetails: UserDetails;
   files: SentHomeworkFile[];
+  date: Date;
+  homeworkPath: HomeworkPath;
 }

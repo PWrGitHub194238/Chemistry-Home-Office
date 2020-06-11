@@ -1,5 +1,11 @@
 <h2 mat-dialog-title>
-  {{ editMode ? "Zmień klasę" : "Dodaj nową klasę" }}
+  {{
+    editMode
+      ? viewMode
+        ? "Szczegóły klasy"
+        : "Zmień klasę"
+      : "Dodaj nową klasę"
+  }}
 </h2>
 <mat-dialog-content>
   <form
@@ -42,7 +48,7 @@
     </fieldset>
   </form>
 </mat-dialog-content>
-<mat-dialog-actions fxLayoutAlign="space-around center">
+<mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>
   <div fxFlex></div>
   <div>

@@ -7,11 +7,11 @@ import {
 } from "@angular/material/dialog";
 import { Subscription } from "rxjs";
 import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
-import { AddEditDialog } from "../../models/add-edit-dialog.model";
+import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
+import { EntityDialog } from "../../models/entity-dialog.model";
 
 export abstract class BaseTablePanelDialogComponent<T>
-  implements OnInit, OnDestroy, AddEditDialog<T> {
+  implements OnInit, OnDestroy, EntityDialog<T> {
   form: FormGroup;
   submitted: boolean;
 
@@ -23,6 +23,10 @@ export abstract class BaseTablePanelDialogComponent<T>
 
   get editMode(): boolean {
     return this.selectedRow !== null;
+  }
+
+  get viewMode(): boolean {
+    return this.editMode && !!this.data["viewMode"];
   }
 
   constructor(
@@ -101,12 +105,14 @@ export abstract class BaseTablePanelDialogComponent<T>
       }
 
       if (item) {
-        this.dialogRef.close();
+        this.dialogRef.close(item);
       }
     }
   }
 
-  protected abstract buildItem(editMode: boolean, item: T): T;
+  protected buildItem(editMode: boolean, item: T): T {
+    return {} as T;
+  }
 
   protected async performEdit(item: T): Promise<T> {
     return new Promise((resolve, reject) => {

@@ -1,0 +1,121 @@
+<ng-scrollbar track="vertical" appearance="standard" [disabled]="false">
+  <div class="files-table">
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="assignment">
+        <td
+          mat-cell
+          *matCellDef="let file"
+          fxLayout="row"
+          fxLayoutAlign="center"
+        >
+          {{ file.assignment }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="icon">
+        <td
+          mat-cell
+          *matCellDef="let file"
+          fxLayout="row"
+          fxLayoutAlign="center"
+        >
+          <span
+            class="tile-icon"
+            [class.tile-icon-hover]="file === selectedRow"
+          >
+            <cho-fa-file-icon
+              size="lg"
+              [mimeType]="file.contentType"
+            ></cho-fa-file-icon>
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="uid">
+        <td mat-cell *matCellDef="let file">
+          <div
+            fxLayout="row"
+            fxLayoutAlign="space-between center"
+            class="row-action"
+            [class.row-action-hover]="file === selectedRow"
+          >
+            <cho-row-small-action-button
+              tooltip="Resetuj stan dokumentu"
+              [icon]="file.icon"
+              [class]="getFileIconClass(taskStatus.ToReview)"
+              [color]="
+                file.status === taskStatus.ToReview ? 'accent' : 'primary'
+              "
+              (action)="setFileStatus(file, taskStatus.ToReview)"
+            ></cho-row-small-action-button>
+
+            <cho-row-small-action-button
+              tooltip="Zaznacz jako sprawdzony"
+              [icon]="file.icon"
+              [class]="getFileIconClass(taskStatus.Reviewed)"
+              [color]="
+                file.status === taskStatus.Reviewed ? 'accent' : 'primary'
+              "
+              (action)="setFileStatus(file, taskStatus.Reviewed)"
+            ></cho-row-small-action-button>
+
+            <mat-icon class="full-size-icon">more_vert</mat-icon>
+
+            <cho-row-action-button
+              tooltip="Pobierz załącznik"
+              icon="play_for_work"
+              color="primary"
+              (action)="downloadFile(file)"
+            ></cho-row-action-button>
+
+            <mat-icon class="full-size-icon">more_vert</mat-icon>
+
+            <cho-row-small-action-button
+              tooltip="Zaznacz jako sprawdzony i oceniony pozytywnie"
+              [icon]="file.icon"
+              [class]="getFileIconClass(taskStatus.Accepted)"
+              [color]="
+                file.status === taskStatus.Accepted ? 'accent' : 'primary'
+              "
+              (action)="setFileStatus(file, taskStatus.Accepted)"
+            ></cho-row-small-action-button>
+
+            <cho-row-small-action-button
+              tooltip="Zaznacz jako sprawdzony lecz wymagający poprawy"
+              [icon]="file.icon"
+              [class]="getFileIconClass(taskStatus.Rejected)"
+              [color]="
+                file.status === taskStatus.Rejected ? 'accent' : 'primary'
+              "
+              (action)="setFileStatus(file, taskStatus.Rejected)"
+            ></cho-row-small-action-button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr
+        mat-row
+        fxLayout="column"
+        fxLayoutAlign="center"
+        *matRowDef="let file; columns: columnsToDisplay; let i = index"
+        matTooltipClass="multiline-tooltip"
+        [matTooltip]="getFileTooltip(file)"
+        (mouseenter)="mouseEnter(file)"
+        (mouseleave)="mouseLeave()"
+        (click)="openGallery(i)"
+      ></tr>
+    </table>
+  </div>
+</ng-scrollbar>
+
+<cho-sent-homework-files-gallery
+  [selectedFile]="selectedFileForGallery"
+  [fileGallery]="data"
+  [subPanelEnabled]="true"
+  [panelEnabled]="true"
+  (onOpen)="onGalleryOpened($event)"
+  (onClose)="onGalleryClosed()"
+  (onImageClicked)="onGalleryClosed()"
+  (onImageChange)="onGalleryImageChange($event)"
+  (fileStateChange)="fileStateChange.emit($event)"
+></cho-sent-homework-files-gallery>

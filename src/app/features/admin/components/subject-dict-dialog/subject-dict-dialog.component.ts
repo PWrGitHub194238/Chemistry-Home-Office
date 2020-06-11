@@ -42,7 +42,10 @@ export class SubjectDictDialogComponent extends BaseTablePanelDialogComponent<
 
   loadForm(selectedRow: SubjectDictEntry) {
     this.form = this.formBuilder.group({
-      name: [selectedRow.name, [Validators.required]]
+      name: [
+        { value: selectedRow.name, disabled: this.viewMode },
+        [Validators.required]
+      ]
     });
   }
 

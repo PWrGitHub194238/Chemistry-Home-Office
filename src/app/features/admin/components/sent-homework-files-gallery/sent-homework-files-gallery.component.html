@@ -1,0 +1,117 @@
+<ngx-image-gallery
+  [images]="fileImages"
+  [conf]="galleryConfig"
+  (onOpen)="galleryOpened($event)"
+  (onClose)="galleryClosed()"
+  (onImageClicked)="galleryImageClicked($event)"
+  (onImageChange)="galleryImageChanged($event)"
+  (onDelete)="deleteImage($event)"
+></ngx-image-gallery>
+
+<div
+  *ngIf="selectedFile"
+  class="bottom-menu-buttons"
+  fxLayout="column"
+  fxLayoutAlign="center"
+  fxLayoutGap="10px"
+>
+  <div
+    *ngIf="subPanelEnabled && isImage(selectedFile)"
+    fxLayout="row"
+    fxLayoutAlign="center center"
+    fxLayoutGap="50px"
+  >
+    <cho-row-small-action-button
+      tooltip="Obróć o 90 stopni w lewo"
+      icon="rotate_left"
+      color="primary"
+      (action)="rotateLeft()"
+    ></cho-row-small-action-button>
+
+    <cho-row-small-action-button
+      tooltip="Pomniejsz obraz"
+      icon="zoom_out"
+      color="primary"
+      (action)="zoomOut()"
+    ></cho-row-small-action-button>
+
+    <cho-row-small-action-button
+      tooltip="Odbij lustrzanie obraz"
+      icon="flip"
+      color="primary"
+      (action)="flipHorizontaly()"
+    ></cho-row-small-action-button>
+
+    <cho-row-small-action-button
+      tooltip="Powiększ obraz"
+      icon="zoom_in"
+      color="primary"
+      (action)="zoomIn()"
+    ></cho-row-small-action-button>
+
+    <cho-row-small-action-button
+      tooltip="Obróć o 90 stopni w prawo"
+      icon="rotate_right"
+      color="primary"
+      (action)="rotateRight()"
+    ></cho-row-small-action-button>
+  </div>
+
+  <div
+    *ngIf="panelEnabled"
+    fxLayout="row"
+    fxLayoutAlign="center center"
+    fxLayoutGap="50px"
+  >
+    <cho-row-action-button
+      tooltip="Resetuj stan dokumentu"
+      [icon]="selectedFile.icon"
+      [class]="getFileIconClass(taskStatus.ToReview)"
+      [color]="
+        selectedFile.status === taskStatus.ToReview ? 'accent' : 'primary'
+      "
+      (action)="setFileStatus(selectedFile, taskStatus.ToReview)"
+    ></cho-row-action-button>
+
+    <cho-row-action-button
+      tooltip="Zaznacz jako sprawdzony"
+      [icon]="selectedFile.icon"
+      [class]="getFileIconClass(taskStatus.Reviewed)"
+      [color]="
+        selectedFile.status === taskStatus.Reviewed ? 'accent' : 'primary'
+      "
+      (action)="setFileStatus(selectedFile, taskStatus.Reviewed)"
+    ></cho-row-action-button>
+
+    <mat-icon class="full-size-icon">more_vert</mat-icon>
+
+    <cho-bottom-action-button
+      tooltip="Pobierz załącznik"
+      icon="play_for_work"
+      color="primary"
+      (action)="downloadFile(selectedFile)"
+    ></cho-bottom-action-button>
+
+    <mat-icon class="full-size-icon">more_vert</mat-icon>
+
+    <cho-row-action-button
+      tooltip="Zaznacz jako sprawdzony i oceniony pozytywnie"
+      [icon]="selectedFile.icon"
+      [class]="getFileIconClass(taskStatus.Accepted)"
+      [color]="
+        selectedFile.status === taskStatus.Accepted ? 'accent' : 'primary'
+      "
+      (action)="setFileStatus(selectedFile, taskStatus.Accepted)"
+    ></cho-row-action-button>
+
+    <cho-row-action-button
+      tooltip="Zaznacz jako sprawdzony lecz wymagający poprawy"
+      [icon]="selectedFile.icon"
+      [class]="getFileIconClass(taskStatus.Rejected)"
+      [color]="
+        selectedFile.status === taskStatus.Rejected ? 'accent' : 'primary'
+      "
+      (action)="setFileStatus(selectedFile, taskStatus.Rejected)"
+    ></cho-row-action-button>
+  </div>
+</div>

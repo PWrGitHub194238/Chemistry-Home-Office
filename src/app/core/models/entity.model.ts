@@ -1,3 +1,3 @@
 export interface Entity {
-  uid: string;
+  uid?: string;
 }

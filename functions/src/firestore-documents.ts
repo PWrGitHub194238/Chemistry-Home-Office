@@ -1,6 +1,5 @@
 import * as admin from "firebase-admin";
 import { HomeworkPath } from "./models/homework-path.model";
-import { MatIconDictEntry } from "./models/mat-icon-dict-entry.model";
 import { SentHomework } from "./models/sent-homework.model";
 import { UserDetails } from "./models/user/user-details.model";
 import { UserRoles } from "./models/user/user-roles.model";
@@ -10,9 +9,12 @@ export async function getSentHomework(uid: string): Promise<SentHomework> {
 
   return {
     uid: document.get("uid"),
-    path_uid: document.get("path_uid"),
     email: document.get("email"),
-    files: document.get("files")
+    displayName: document.get("displayName"),
+    userDetails: document.get("userDetails"),
+    files: document.get("files"),
+    date: document.get("date"),
+    homeworkPath: document.get("homeworkPath")
   };
 }
 
@@ -134,14 +136,4 @@ async function deleteDocumentByUid(
     .collection(collectionName)
     .doc(uid)
     .delete();
-}
-
-export async function createMatIcon(
-  matIcon: MatIconDictEntry
-): Promise<FirebaseFirestore.WriteResult> {
-  return await admin
-    .firestore()
-    .collection("mat-icon-dict")
-    .doc(matIcon.name)
-    .set(matIcon);
 }

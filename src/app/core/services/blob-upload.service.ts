@@ -1,6 +1,5 @@
 import { Injectable } from "@angular/core";
 import { AngularFireStorage } from "@angular/fire/storage";
-import { UUID } from "angular2-uuid";
 import * as mime from "mime";
 import { Observable, Subject } from "rxjs";
 import { HomeworkPath, SentHomeworkFile } from "src/app/models";
@@ -54,11 +53,7 @@ export class BlobUploadService {
   ): string {
     const fileExtension = this.getFileExtension(data);
 
-    sentHomeworkFileMetadata.fullPath = `${homeworkPath.subject}/${
-      this.authService.user.details.studentClass
-    }/${homeworkPath.topic}/${sentHomeworkFileMetadata.assignment}/${
-      this.authService.user.details.studentNo
-    }/${UUID.UUID()}.${fileExtension}`;
+    sentHomeworkFileMetadata.fullPath = `${homeworkPath.subject}/${this.authService.user.details.studentClass}/${homeworkPath.topic}/${sentHomeworkFileMetadata.assignment}/${this.authService.user.details.studentNo}/${sentHomeworkFileMetadata.uid}.${fileExtension}`;
 
     this.addBlobToSend(sentHomeworkFileMetadata, data);
 

@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { Observable, Subject } from "rxjs";
-import { HomeworkPath, SentHomework } from "src/app/models";
+import { HomeworkPath, SentHomework, TaskStatus } from "src/app/models";
 import { FirestorageUploadStatus } from "../models";
 import { AuthService } from "../services/auth.service";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
+import { RedirectToLoginState } from "../actions/redirect-to-login-state.action";
 
 @Injectable({
   providedIn: "root"
@@ -26,21 +27,27 @@ export class HomeworkUploadService {
   ) {
     let sentHomework: SentHomework = {
       uid: "",
-      path_uid: homeworkPath.uid,
-      subject: homeworkPath.subject,
-      topic: homeworkPath.topic,
       email: this.authService.user.auth.email,
       displayName: this.authService.user.auth.displayName,
+      userDetails: this.authService.user.details,
       files: firestorageUploadStatus.uploadedFiles.map(
         uploadTaskSnapshot => uploadTaskSnapshot.sentHomeworkFileMetadata
-      )
+      ),
+      date: new Date(),
+      homeworkPath
     };
-
     // Add UID
-    sentHomework = await this.firestoreDocumenrService.createSentHomework(
+    sentHomework = await this.firestoreDocumenrService.createSentHomework$(
       sentHomework
     );
-
-    this.homeworkUploadedSubject$.next(sentHomework);
+    sentHomework = null;
+    if (sentHomework) {
+      this.homeworkUploadedSubject$.next(sentHomework);
+    } else {
+      const state = {};
+      state[RedirectToLoginState.SentHomeworkFailed] =
+        "Zapisywanie pracy przed wysłaniem nie powiodło się";
+      this.authService.redirectToLogin(undefined, state);
+    }
   }
 }

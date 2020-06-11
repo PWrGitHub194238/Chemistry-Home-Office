@@ -5,10 +5,15 @@ import {
   MatDialogRef,
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
-import { Assignment } from "functions/src/models/assignment.model";
-import { MatIconDictEntry } from "src/app/core/models";
+import {
+  AssignmentDictEntry,
+  MatIconDictEntry,
+  NOT_FOUND_ICON,
+  NOT_FOUND_ICON_IDX
+} from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
+import { SnackBarService } from "src/app/core/services/snack-bar.service";
 
 @Component({
   selector: "cho-assignment-dict-dialog",
@@ -16,7 +21,7 @@ import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-t
   styleUrls: ["./assignment-dict-dialog.component.scss"]
 })
 export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent<
-  Assignment
+  AssignmentDictEntry
 > {
   get name(): FormControl {
     return this.form.get("name") as FormControl;
@@ -33,11 +38,12 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
   constructor(
     private formBuilder: FormBuilder,
     private dictionaryService: DictionaryService,
+    private snackBarService: SnackBarService,
     dialogRef: MatDialogRef<AssignmentDictDialogComponent>,
     matDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA)
     data: {
-      selectedRow: Assignment | null;
+      selectedRow: AssignmentDictEntry | null;
       matIconsDict: MatIconDictEntry[];
     }
   ) {
@@ -51,19 +57,25 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
     });
   }
 
-  loadForm(selectedRow: Assignment) {
+  loadForm(selectedRow: AssignmentDictEntry) {
+    const iconIdx = this.matIconsDict.findIndex(
+      (matIcon: MatIconDictEntry) => matIcon.name === selectedRow.icon
+    );
+
+    if (iconIdx === NOT_FOUND_ICON_IDX) {
+      this.snackBarService.showNoMatIconFound(selectedRow.icon);
+    }
+
     this.form = this.formBuilder.group({
-      name: [selectedRow.name, Validators.required],
-      icon: [
-        this.matIconsDict.findIndex(
-          (matIcon: MatIconDictEntry) => matIcon.name === selectedRow.icon
-        ),
+      name: [
+        { value: selectedRow.name, disabled: this.viewMode },
         Validators.required
-      ]
+      ],
+      icon: [{ value: iconIdx, disabled: this.viewMode }, Validators.required]
     });
   }
 
-  buildItem(editMode: boolean, item: Assignment): Assignment {
+  buildItem(editMode: boolean, item: AssignmentDictEntry): AssignmentDictEntry {
     return {
       uid: this.editMode ? item.uid : null,
       name: this.name.value,
@@ -71,22 +83,24 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
     };
   }
 
-  performAdd(item: Assignment): Promise<Assignment> {
+  performAdd(item: AssignmentDictEntry): Promise<AssignmentDictEntry> {
     return this.dictionaryService.createAssignment(item);
   }
 
-  performEdit(item: Assignment): Promise<Assignment> {
+  performEdit(item: AssignmentDictEntry): Promise<AssignmentDictEntry> {
     return this.dictionaryService.editAssignment(item);
   }
 
   getIconName(): string {
-    return this.matIconsDict[this.icon.value as number].name;
+    const icon: MatIconDictEntry = this.matIconsDict[this.icon.value as number];
+    return icon ? icon.name : NOT_FOUND_ICON;
   }
 
   previousAssignmentIcon() {
     let iconIndex: number = this.icon.value as number;
 
-    if (iconIndex === 0) {
+    if (iconIndex === 0 || iconIndex === NOT_FOUND_ICON_IDX) {
+      // -1 - not found
       iconIndex = this.matIconsDict.length - 1;
     } else {
       iconIndex -= 1;

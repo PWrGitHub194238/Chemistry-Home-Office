@@ -1,26 +1,27 @@
 import { Component, OnInit } from "@angular/core";
 import { MatBottomSheet } from "@angular/material/bottom-sheet";
+import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { UUID } from "angular2-uuid";
 import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
+import { SubjectError, SubjectSuccess } from "src/app/core/models";
 import { FirestorageUploadStatus } from "src/app/core/models/firestorage-upload-status";
 import { AuthService } from "src/app/core/services/auth.service";
 import { BlobUploadService } from "src/app/core/services/blob-upload.service";
 import { EmailSenderService } from "src/app/core/services/email-sender.service";
 import { HomeworkUploadService } from "src/app/core/services/homework-upload.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
+import { SentHomeworkFile, TaskStatus } from "src/app/models";
 import { HomeworkPath } from "src/app/models/homework-path.model";
 import { SentHomework } from "src/app/models/sent-homework.model";
 import { SpinnerMessage } from "../../../../core/spinner-message.consts";
+import { AddCommentForUploadDialogComponent } from "../add-comment-for-upload-dialog/add-comment-for-upload-dialog.component";
 import { FinishUploadBottomSheetAction } from "../finish-upload-bottom-sheet/finish-upload-bottom-sheet.action";
 import { FinishUploadBottomSheetComponent } from "../finish-upload-bottom-sheet/finish-upload-bottom-sheet.component";
 import { SelectSendTypeBottomSheetAction } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.action";
 import { SelectSendTypeBottomSheetComponent } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.component";
 import { SelectSendTypeBottomSheetPayload } from "../select-send-type-bottom-sheet/select-send-type-bottom-sheet.payload";
-import { SubjectSuccess, SubjectError } from "src/app/core/models";
-import { SentHomeworkFile } from "src/app/models";
-import { AddCommentForUploadDialogComponent } from "../add-comment-for-upload-dialog/add-comment-for-upload-dialog.component";
-import { MatDialog } from "@angular/material/dialog";
 
 @UntilDestroy()
 @Component({
@@ -103,16 +104,18 @@ export class SendHomeworkComponent implements OnInit {
       this.emailSenderService.emailSent$
         .pipe(untilDestroyed(this))
         .subscribe((resp: SubjectSuccess | SubjectError) => {
+          const state = {};
           if (resp["error"]) {
-            // TODO
+            state[RedirectToLoginState.SentHomeworkFailed] =
+              "Wysyłanie pracy nie powiodło się";
           } else {
             this.isSending = false;
             const state = {};
             state[RedirectToLoginState.SentHomeworkSuccess] = <HomeworkPath>(
               resp
             );
-            this.authService.logout(null, state);
           }
+          this.authService.logout(null, state);
         });
     } else {
       this.router.navigate(["send-homework", "lesson-not-found"]);
@@ -126,24 +129,29 @@ export class SendHomeworkComponent implements OnInit {
   resetNextHomeworkFileMetadata() {
     if (this.nextHomeworkFileMetadataToSend) {
       this.nextHomeworkFileMetadataToSend = {
+        uid: "",
         fileName: this.blobUploadService.getNextSugestedFileName(
           this.nextHomeworkFileMetadataToSend.assignment
         ),
         fullPath: "",
         assignment: this.nextHomeworkFileMetadataToSend.assignment,
-        description: ""
+        description: "",
+        status: TaskStatus.ToReview
       };
     } else {
       this.nextHomeworkFileMetadataToSend = {
+        uid: "",
         fileName: "",
         fullPath: "",
         assignment: "",
-        description: ""
+        description: "",
+        status: TaskStatus.ToReview
       };
     }
   }
 
   onSaveBlob(data: Blob) {
+    this.nextHomeworkFileMetadataToSend.uid = UUID.UUID();
     this.nextHomeworkFileMetadataToSend.fullPath = this.blobUploadService.addHomeworkAttachment(
       this.homeworkPath,
       this.nextHomeworkFileMetadataToSend,

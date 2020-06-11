@@ -1,0 +1,44 @@
+<div fxLayoutGap="20px">
+  <div fxFlex fxLayout="column">
+    <div fxFlex="30%"></div>
+    <mat-card fxFlex>
+      <ng-content select="mat-card-content"></ng-content>
+    </mat-card>
+  </div>
+  <mat-card>
+    <mat-card-header>
+      <div
+        mat-card-avatar
+        class="key-mat-avatar"
+        [style.background-image]="'url(' + panelIcon + ')'"
+      ></div>
+      <mat-card-title>{{ panelTitle }}</mat-card-title>
+      <mat-card-subtitle>{{ panelSubtitle }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-divider class="divider"></mat-divider>
+    <mat-card-content
+      class="card"
+      fxLayout="column"
+      fxLayoutAlign="space-between"
+      fxLayoutGap="10px"
+    >
+      <div fxFlex></div>
+      <div fxLayout="row" fxLayoutAlign="space-between center">
+        <ng-content select="mat-form-field"></ng-content>
+      </div>
+      <ng-scrollbar track="vertical" appearance="standard" [disabled]="false">
+        <div class="table">
+          <ng-content select="table"></ng-content>
+        </div>
+      </ng-scrollbar>
+      <div fxFlex></div>
+    </mat-card-content>
+    <mat-card-actions
+      fxLayoutAlign="space-between"
+      fxLayoutGap="10px"
+      class="card-actions"
+    >
+    </mat-card-actions>
+    <ng-content select="cho-spinner"></ng-content>
+  </mat-card>
+</div>

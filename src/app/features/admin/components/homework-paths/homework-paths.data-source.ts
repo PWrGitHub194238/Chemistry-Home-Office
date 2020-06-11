@@ -1,11 +1,13 @@
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { HomeworkPath } from "src/app/models";
-import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
+import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
 
-export class HomeworkPathsDataSource extends BaseTablePanelDataSource<
-  HomeworkPath
-> {
+@Injectable({
+  providedIn: "root"
+})
+export class HomeworkPathsDataSource extends BaseTableDataSource<HomeworkPath> {
   protected getData(): Observable<HomeworkPath[]> {
     return this.firestoreDocumentService.getAllHomeworkPaths$();
   }

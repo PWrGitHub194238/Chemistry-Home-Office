@@ -1,10 +1,7 @@
-<cho-base-table-panel
+<cho-base-panel
   panelIcon="/assets/adm/sent-homeworks.jpg"
   panelTitle="Zdefiniowane lekcje"
   panelSubtitle="tutaj znajdziesz wszystkie informacje niezbędne do zarządzania zadaniami domowymi"
-  searchPlaceholder="Klasa, nazwa lekcji lub rodzaj przypisanego zadania"
-  loadingMessage="Ładowanie listy klas..."
-  [dataSource]="dataSource"
 >
   <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
     <cho-row-action-button
@@ -23,6 +20,17 @@
     >
     </cho-row-action-button>
   </mat-card-content>
+
+  <mat-form-field appearance="outline">
+    <mat-icon matPrefix>search</mat-icon>
+    <mat-label>Szukaj</mat-label>
+    <input
+      matInput
+      (keyup)="applyFilter($event)"
+      placeholder="Klasa, nazwa lekcji lub rodzaj przypisanego zadania"
+    />
+  </mat-form-field>
+
   <table mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="active">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Aktywna</th>
@@ -60,8 +68,10 @@
               *ngFor="let assignment of homeworkPath.assignments"
               [matTooltip]="assignment.name"
             >
-              <button mat-mini-fab disabled class="small-button">
-                <mat-icon class="small-icon">{{ assignment.icon }}</mat-icon>
+              <button mat-mini-fab disabled class="small-action-button">
+                <mat-icon class="small-action-icon">{{
+                  assignment.icon
+                }}</mat-icon>
               </button>
             </div>
           </div>
@@ -156,6 +166,12 @@
       *matRowDef="let homeworkPath; columns: columnsToDisplay"
       (mouseenter)="mouseEnter(homeworkPath)"
       (mouseleave)="mouseLeave()"
+      (click)="openViewSelectedItemDialog()"
     ></tr>
   </table>
-</cho-base-table-panel>
+
+  <cho-spinner
+    loadingMessage="Ładowanie listy lekcji..."
+    [isLoading]="dataSource.isLoading$ | async"
+  ></cho-spinner>
+</cho-base-panel>

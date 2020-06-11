@@ -1,10 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { MatIconDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { MatIconDictsDataSource } from "./mat-icon-dict.data-source";
 
@@ -16,26 +15,33 @@ import { MatIconDictsDataSource } from "./mat-icon-dict.data-source";
 })
 export class MatIconDictComponent
   extends BaseTablePanelComponent<MatIconDictEntry, null>
-  implements OnInit {
+  implements OnInit, AfterViewInit, OnDestroy {
   columnsToDisplay = ["name"];
-  addEditDialog = null;
 
   constructor(
+    dataSource: MatIconDictsDataSource,
     authService: AuthService,
     matDialog: MatDialog,
-    private dictionaryService: DictionaryService,
-    private firestoreDocumentService: FirestoreDocumentService
+    private dictionaryService: DictionaryService
   ) {
-    super(authService, matDialog);
+    super(dataSource, authService, matDialog);
   }
 
   ngOnInit() {
-    this.dataSource = new MatIconDictsDataSource(this.firestoreDocumentService);
+    super.ngOnInit();
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
   mouseClick(matIcon: MatIconDictEntry) {
     this.dictionaryService
-      .getAllActiveIcons$()
+      .getAllActiveIcons$(true)
       .pipe(untilDestroyed(this))
       .subscribe((activeMatIcons: MatIconDictEntry[]) => {
         matIcon.active = !matIcon.active;

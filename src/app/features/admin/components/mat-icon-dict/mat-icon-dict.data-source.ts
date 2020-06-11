@@ -1,9 +1,13 @@
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { MatIconDictEntry } from "src/app/core/models";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
+import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
 
-export class MatIconDictsDataSource extends BaseTablePanelDataSource<
+@Injectable({
+  providedIn: "root"
+})
+export class MatIconDictsDataSource extends BaseTableDataSource<
   MatIconDictEntry
 > {
   protected getData(): Observable<MatIconDictEntry[]> {

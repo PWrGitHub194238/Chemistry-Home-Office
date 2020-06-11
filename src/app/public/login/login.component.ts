@@ -150,6 +150,11 @@ export class LoginComponent implements OnInit, AfterViewChecked {
         this.snackBarService.showHomeworkSent(
           state[RedirectToLoginState.SentHomeworkSuccess]
         );
+      } else if (state[RedirectToLoginState.SentHomeworkFailed]) {
+        this.authService.signOut();
+        this.snackBarService.showHomeworkSentFailed(
+          state[RedirectToLoginState.SentHomeworkFailed]
+        );
       } else if (state[RedirectToLoginState.NoAdminRole]) {
         this.authService.signOut();
         this.snackBarService.showNoAdminRole();

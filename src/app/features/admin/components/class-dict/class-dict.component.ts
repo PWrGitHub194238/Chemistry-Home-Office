@@ -1,13 +1,12 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
+import { ClassDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
+import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { ClassDictDialogComponent } from "../class-dict-dialog/class-dict-dialog.component";
 import { ClassDictsDataSource } from "./class-dict.data-source";
-import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { ClassDictEntry } from "src/app/core/models";
 
 @Component({
   selector: "cho-class-dict",
@@ -16,21 +15,32 @@ import { ClassDictEntry } from "src/app/core/models";
 })
 export class ClassDictComponent
   extends BaseTablePanelComponent<ClassDictEntry, ClassDictDialogComponent>
-  implements OnInit {
+  implements OnInit, AfterViewInit, OnDestroy {
   columnsToDisplay = ["classNo", "subclass", "studentCount", "uid"];
-  addEditDialog = ClassDictDialogComponent;
+
+  viewDialog = ClassDictDialogComponent;
+  addDialog = ClassDictDialogComponent;
+  editDialog = ClassDictDialogComponent;
 
   constructor(
+    dataSource: ClassDictsDataSource,
     authService: AuthService,
     matDialog: MatDialog,
-    private dictionaryService: DictionaryService,
-    private firestoreDocumentService: FirestoreDocumentService
+    private dictionaryService: DictionaryService
   ) {
-    super(authService, matDialog);
+    super(dataSource, authService, matDialog);
   }
 
   ngOnInit() {
-    this.dataSource = new ClassDictsDataSource(this.firestoreDocumentService);
+    super.ngOnInit();
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
   getOnDeleteAlertDialogOptions(selectedRow: ClassDictEntry): AlertDialog {

@@ -1,0 +1,49 @@
+div {
+  &.row-action {
+    opacity: 0.2;
+  }
+
+  &.row-action-hover {
+    opacity: 1;
+  }
+}
+
+.mat-row {
+  border: 1px solid #673ab7;
+  border-radius: 1px solid #673ab7;
+  border-radius: 20px;
+  height: auto;
+  float: left;
+  margin: 0.5rem;
+
+  td {
+    border-bottom: none;
+    padding: 10px;
+  }
+
+  &:hover {
+    background-color: #e5d7fd;
+  }
+}
+
+.tile-icon {
+  transform: scale(2.2);
+  opacity: 0.5;
+}
+
+.tile-icon-hover {
+  transform: scale(2.5);
+  opacity: 1;
+}
+
+.files-table {
+  min-height: 250px;
+  max-height: 250px;
+}
+
+ng-scrollbar {
+  --scrollbar-size: 8px;
+  --scrollbar-thumb-color: #e5d7fd;
+  --scrollbar-thumb-hover-color: #673ab7;
+  --scrollbar-border-radius: 4px;
+}

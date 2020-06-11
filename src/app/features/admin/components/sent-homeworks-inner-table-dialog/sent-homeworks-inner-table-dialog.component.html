@@ -1,0 +1,86 @@
+<h2 mat-dialog-title>Szczegóły zadania</h2>
+<mat-dialog-content>
+  <form
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="space-between"
+    fxLayoutGap="10px"
+    [formGroup]="form"
+  >
+    <fieldset>
+      <legend>Podstawowe dane</legend>
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-form-field class="full-width">
+          <mat-label>Imię i nazwisko ucznia</mat-label>
+          <input
+            matInput
+            formControlName="displayName"
+            placeholder="Imię i nazwisko"
+            type="text"
+          />
+          <mat-error *ngIf="displayName.invalid && displayName.touched">
+            Podaj proszę imię i nazwisko ucznia
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Klasa</mat-label>
+          <input
+            matInput
+            formControlName="studentClass"
+            placeholder="Klasa"
+            type="text"
+          />
+          <mat-error *ngIf="studentClass.invalid && studentClass.touched">
+            Podaj proszę klasę, do której należy uczeń
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Numer w dzienniku</mat-label>
+          <input
+            matInput
+            formControlName="studentNo"
+            placeholder="Numer w dzienniku"
+            type="number"
+          />
+          <mat-error *ngIf="studentNo.invalid && studentNo.touched">
+            Podaj proszę klasę, do której należy uczeń
+          </mat-error>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field class="full-width">
+          <mat-label>Termin przesłania zadań</mat-label>
+          <input
+            matInput
+            formControlName="date"
+            placeholder="Data przesłania zadań"
+            type="text"
+          />
+          <mat-error *ngIf="date.invalid && date.touched">
+            Podaj proszę datę przesłania przez ucznia zadań
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Przesłane przez ucznia pliki</legend>
+
+      <cho-sent-homeworks-inner-files-table
+        [homeworkPath]="homeworkPath"
+        [data]="fileRows"
+        (fileStateChange)="onFileStateChange($event)"
+      >
+      </cho-sent-homeworks-inner-files-table>
+    </fieldset>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions fxLayoutAlign="space-around center">
+  <button mat-button (click)="onReset()">Resetuj</button>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{ form.pristine ? "Zamknij" : "Zapisz zmiany" }}
+    </button>
+  </div>
+</mat-dialog-actions>

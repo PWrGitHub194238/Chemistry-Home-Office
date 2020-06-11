@@ -57,7 +57,10 @@ const routes: Routes = [
       {
         path: adminChildSentHomeworksPath,
         component: SentHomeworksComponent,
-        resolve: {},
+        resolve: {
+          assignmentDict: AssignmentDictResolver,
+          matIconDict: MatIconDictResolver
+        },
         data: { animation: adminChildSentHomeworksPath }
       },
       {
@@ -74,7 +77,7 @@ const routes: Routes = [
       },
       {
         path: "**",
-        redirectTo: adminChildHomeworkPathsPath
+        redirectTo: adminChildSentHomeworksPath
       }
     ]
   }

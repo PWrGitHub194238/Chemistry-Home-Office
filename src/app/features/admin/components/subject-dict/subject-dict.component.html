@@ -1,10 +1,7 @@
-<cho-base-table-panel
+<cho-base-panel
   panelIcon="/assets/adm/subjects.jpg"
   panelTitle="Zdefiniowane przedmioty lekcji"
   panelSubtitle="tutaj znajdziesz listę wszystkich zdefiniowanych w aplikacji przedmiotów lekcji"
-  searchPlaceholder="Nazwa przedmiotu lekcji"
-  loadingMessage="Ładowanie listy przedmiotów lekcji..."
-  [dataSource]="dataSource"
 >
   <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
     <cho-row-action-button
@@ -23,6 +20,17 @@
     >
     </cho-row-action-button>
   </mat-card-content>
+
+  <mat-form-field appearance="outline">
+    <mat-icon matPrefix>search</mat-icon>
+    <mat-label>Szukaj</mat-label>
+    <input
+      matInput
+      (keyup)="applyFilter($event)"
+      placeholder="Nazwa przedmiotu lekcji"
+    />
+  </mat-form-field>
+
   <table mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -71,6 +79,12 @@
       *matRowDef="let subject; columns: columnsToDisplay"
       (mouseenter)="mouseEnter(subject)"
       (mouseleave)="mouseLeave()"
+      (click)="openViewSelectedItemDialog()"
     ></tr>
   </table>
-</cho-base-table-panel>
+
+  <cho-spinner
+    loadingMessage="Ładowanie listy przedmiotów lekcji..."
+    [isLoading]="dataSource.isLoading$ | async"
+  ></cho-spinner>
+</cho-base-panel>

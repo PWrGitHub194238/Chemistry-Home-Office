@@ -3,6 +3,9 @@ export interface MatIconDictEntry {
   name: string;
 }
 
+export const NOT_FOUND_ICON = "help_outline";
+export const NOT_FOUND_ICON_IDX = -1;
+
 export const MAT_ICONS: MatIconDictEntry[] = [
   { active: false, name: "3d_rotation" },
   { active: false, name: "accessibility" },

@@ -1,10 +1,7 @@
-<cho-base-table-panel
+<cho-base-panel
   panelIcon="/assets/adm/classes.jpg"
   panelTitle="Zdefiniowane klasy"
   panelSubtitle="tutaj znajdziesz listę wszystkich zdefiniowanych w aplikacji klas"
-  searchPlaceholder="Nazwa klasy"
-  loadingMessage="Ładowanie listy klas..."
-  [dataSource]="dataSource"
 >
   <mat-card-content fxFlex fxLayout="column" fxLayoutGap="10px">
     <cho-row-action-button
@@ -23,6 +20,13 @@
     >
     </cho-row-action-button>
   </mat-card-content>
+
+  <mat-form-field appearance="outline">
+    <mat-icon matPrefix>search</mat-icon>
+    <mat-label>Szukaj</mat-label>
+    <input matInput (keyup)="applyFilter($event)" placeholder="Nazwa klasy" />
+  </mat-form-field>
+
   <table mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="classNo">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Numer klasy</th>
@@ -87,6 +91,12 @@
       *matRowDef="let class; columns: columnsToDisplay"
       (mouseenter)="mouseEnter(class)"
       (mouseleave)="mouseLeave()"
+      (click)="openViewSelectedItemDialog()"
     ></tr>
   </table>
-</cho-base-table-panel>
+
+  <cho-spinner
+    loadingMessage="Ładowanie listy klas..."
+    [isLoading]="dataSource.isLoading$ | async"
+  ></cho-spinner>
+</cho-base-panel>

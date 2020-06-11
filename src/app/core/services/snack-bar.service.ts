@@ -1,11 +1,15 @@
 import { Injectable } from "@angular/core";
 import { MatSnackBar, MatSnackBarConfig } from "@angular/material/snack-bar";
 import { FirebaseError } from "firebase";
-import { Assignment } from "functions/src/models/assignment.model";
-import { UserDetails } from "functions/src/models/user/user-details.model";
-import { AuthResponse, HomeworkPath } from "src/app/models";
+import { AuthResponse, HomeworkPath, SentHomework } from "src/app/models";
 import { SnackBarComponent } from "src/app/public/snack-bar/snack-bar.component";
-import { ClassDictEntry, MatIconDictEntry, SubjectDictEntry } from "../models";
+import {
+  AssignmentDictEntry,
+  ClassDictEntry,
+  MatIconDictEntry,
+  SubjectDictEntry,
+  UserDetails
+} from "../models";
 import { User } from "../models/user/user.model";
 
 @Injectable({
@@ -70,6 +74,17 @@ export class SnackBarService {
       },
       ...this.displayDefaultconfig,
       duration: 10000
+    });
+  }
+
+  showHomeworkSentFailed(errorMessage: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Błąd przy wysyłaniu zadań",
+        color: "warn",
+        message: errorMessage
+      },
+      ...this.displayDefaultconfig
     });
   }
 
@@ -217,9 +232,21 @@ export class SnackBarService {
     });
   }
 
+  showNoMatIconFound(icon: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        color: "warn",
+        header: "Ikona wyłączona",
+        message: `Ikona o nazwie '${icon}' jest nieaktywna. Aby móc jej używać zaznacz ją w zdefiniowanych ikonach jako aktywną.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 5000
+    });
+  }
+
   // /assignment-dict
 
-  showCreateAssignmentSuccess(assignment: Assignment) {
+  showCreateAssignmentSuccess(assignment: AssignmentDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Dodano zadanie!",
       `Zadanie '${assignment.name}' zostało dodane.`
@@ -233,7 +260,7 @@ export class SnackBarService {
     );
   }
 
-  showEditAssignmentSuccess(assignment: Assignment) {
+  showEditAssignmentSuccess(assignment: AssignmentDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono zadanie!",
       `Zadanie '${assignment.name}' zostało zmienione.`
@@ -247,7 +274,7 @@ export class SnackBarService {
     );
   }
 
-  showDeleteAssignmentSuccess(assignment: Assignment) {
+  showDeleteAssignmentSuccess(assignment: AssignmentDictEntry) {
     return this.showFirebaseDocumentActionSuccess(
       "Usunięto zadanie!",
       `Zadanie '${assignment.name}' zostało usunięte.`
@@ -324,6 +351,34 @@ export class SnackBarService {
   }
 
   // /sent-homeworks
+
+  showEditSentHomeworkSuccess(sentHomework: SentHomework) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono przesłane zadanie!",
+      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject}) zostało zmienione.`
+    );
+  }
+
+  showEditSentHomeworkFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmodyfikować przesłanego zadania",
+      error
+    );
+  }
+
+  showDeleteSentHomeworkSuccess(sentHomework: SentHomework) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto przesłane zadanie!",
+      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject}) zostało usunięte.`
+    );
+  }
+
+  showDeleteSentHomeworkFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć przesłanego zadania",
+      error
+    );
+  }
 
   // /subject-dict
 

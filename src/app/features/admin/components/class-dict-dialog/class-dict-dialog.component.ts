@@ -54,24 +54,33 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
         "",
         [Validators.required, Validators.pattern("^[1-9][a-zA-Z]$")]
       ],
-      studentCount: ["", Validators.required]
+      studentCount: [
+        "",
+        [Validators.required, Validators.pattern("^[1-9][0-9]?$")]
+      ]
     });
   }
 
   loadForm(selectedRow: ClassDictEntry) {
     this.form = this.formBuilder.group({
       className: [
-        selectedRow.classNo + selectedRow.subclass,
+        {
+          value: selectedRow.classNo + selectedRow.subclass,
+          disabled: this.viewMode
+        },
         [Validators.required, Validators.pattern("^[1-9][a-zA-Z]$")]
       ],
-      studentCount: [selectedRow.studentCount, Validators.required]
+      studentCount: [
+        { value: selectedRow.studentCount, disabled: this.viewMode },
+        [Validators.required, Validators.pattern("^[1-9][0-9]?$")]
+      ]
     });
   }
 
   buildItem(editMode: boolean, item: ClassDictEntry): ClassDictEntry {
     return {
       uid: this.editMode ? item.uid : null,
-      classNo: this.className.value[0],
+      classNo: Number(this.className.value[0]),
       subclass: this.className.value[1],
       studentCount: this.studentCount.value
     };

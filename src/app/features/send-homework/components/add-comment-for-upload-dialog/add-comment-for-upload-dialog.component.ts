@@ -1,13 +1,12 @@
-import { Component, OnInit, Inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { Component, Inject, OnInit } from "@angular/core";
 import {
-  FormGroup,
-  FormControl,
   FormBuilder,
+  FormControl,
+  FormGroup,
   Validators
 } from "@angular/forms";
-import { HomeworkPath } from "functions/src/models/homework-path.model";
-import { SentHomeworkFile } from "src/app/models";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { HomeworkPath, SentHomeworkFile } from "src/app/models";
 
 @Component({
   selector: "cho-add-comment-for-upload-dialog",
@@ -46,8 +45,8 @@ export class AddCommentForUploadDialogComponent implements OnInit {
 
   get formValue(): SentHomeworkFile {
     return {
+      ...this.data.homeworkFileMetadata,
       fileName: this.uploadFileName.value,
-      fullPath: this.data.homeworkFileMetadata.fullPath,
       assignment: this.assignmentControl.value,
       description: this.uploadFileDescription.value
     };

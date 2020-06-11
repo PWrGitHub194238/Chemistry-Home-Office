@@ -1,12 +1,10 @@
-import { Component, OnInit } from "@angular/core";
+import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
-import { MatIconDictEntry } from "functions/src/models/mat-icon-dict-entry.model";
-import { AssignmentDictEntry } from "src/app/core/models";
+import { AssignmentDictEntry, MatIconDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
 import { AssignmentDictDialogComponent } from "../assignment-dict-dialog/assignment-dict-dialog.component";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { AssignmentDictsDataSource } from "./assignment-dict.data-source";
@@ -21,28 +19,42 @@ export class AssignmentDictComponent
     AssignmentDictEntry,
     AssignmentDictDialogComponent
   >
-  implements OnInit {
+  implements OnInit, AfterViewInit, OnDestroy {
   columnsToDisplay = ["name", "icon", "uid"];
-  addEditDialog = AssignmentDictDialogComponent;
+
+  viewDialog = AssignmentDictDialogComponent;
+  addDialog = AssignmentDictDialogComponent;
+  editDialog = AssignmentDictDialogComponent;
 
   private matIconsDict: MatIconDictEntry[];
 
   constructor(
-    private route: ActivatedRoute,
+    dataSource: AssignmentDictsDataSource,
     authService: AuthService,
     matDialog: MatDialog,
-    private dictionaryService: DictionaryService,
-    private firestoreDocumentService: FirestoreDocumentService
+    private route: ActivatedRoute,
+    private dictionaryService: DictionaryService
   ) {
-    super(authService, matDialog);
+    super(dataSource, authService, matDialog);
   }
 
   ngOnInit() {
-    this.dataSource = new AssignmentDictsDataSource(
-      this.firestoreDocumentService
-    );
-
+    super.ngOnInit();
     this.loadResolvedData();
+  }
+
+  ngAfterViewInit() {
+    super.ngAfterViewInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+  }
+
+  getViewDialogData() {
+    return {
+      matIconsDict: this.matIconsDict
+    };
   }
 
   getAddDialogData() {

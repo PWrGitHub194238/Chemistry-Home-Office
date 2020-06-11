@@ -1,140 +1,34 @@
-import { ComponentType } from "@angular/cdk/portal";
-import {
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-  AfterViewInit
-} from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { MatSort } from "@angular/material/sort";
-import { Subscription } from "rxjs";
 import { AuthService } from "src/app/core/services/auth.service";
-import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
-import { AlertDialog } from "src/app/shared/components/alert-dialog/alert-dialog.model";
-import { AddEditDialog } from "../../models/add-edit-dialog.model";
-import { BaseTablePanelDataSource } from "./base-table-panel.data-source";
+import { BaseTableComponent } from "../../helpers/base-table/base-table.component";
+import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
+import { EntityDialog } from "../../models/entity-dialog.model";
 
-@Component({
-  selector: "cho-base-table-panel",
-  templateUrl: "./base-table-panel.component.html",
-  styleUrls: ["./base-table-panel.component.scss"]
-})
-export class BaseTablePanelComponent<T, U extends AddEditDialog<T>>
-  implements OnInit, AfterViewInit, OnDestroy {
-  @Input() panelIcon: string;
-  @Input() panelTitle: string;
-  @Input() panelSubtitle: string;
-  @Input() searchPlaceholder: string;
-  @Input() loadingMessage: string;
-  @Input() dataSource: BaseTablePanelDataSource<T>;
-
-  selectedRow: T;
-  addEditDialog: ComponentType<U> | null;
-
-  private subscription: Subscription;
-
-  constructor(private authService: AuthService, private matDialog: MatDialog) {}
-
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-
-  ngOnInit() {
-    this.dataSource.loadData();
+export abstract class BaseTablePanelComponent<
+  T,
+  U extends EntityDialog<T>
+> extends BaseTableComponent<T, U> {
+  constructor(
+    dataSource: BaseTableDataSource<T>,
+    private authService: AuthService,
+    matDialog: MatDialog
+  ) {
+    super(dataSource, matDialog);
   }
 
-  ngAfterViewInit() {
-    this.dataSource.sort = this.sort;
+  protected ngOnInit() {
+    super.ngOnInit();
   }
 
-  ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+  protected ngAfterViewInit() {
+    super.ngAfterViewInit();
   }
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
-  mouseEnter(rowSelection: T) {
-    this.selectedRow = rowSelection;
-  }
-
-  mouseLeave() {
-    this.selectedRow = null;
+  protected ngOnDestroy() {
+    super.ngOnDestroy();
   }
 
   logout() {
     this.authService.logout();
   }
-
-  openAddSelectedItemDialog() {
-    if (!this.addEditDialog) {
-      return;
-    }
-
-    this.matDialog.open(this.addEditDialog, {
-      height: "auto",
-      width: "auto",
-      disableClose: true,
-      closeOnNavigation: false,
-      data: {
-        selectedRow: null,
-        ...this.getAddDialogData()
-      }
-    });
-  }
-
-  getAddDialogData(): { [key: string]: any } {
-    return {};
-  }
-
-  openEditSelectedItemDialog() {
-    if (!this.addEditDialog) {
-      return;
-    }
-
-    this.matDialog.open(this.addEditDialog, {
-      height: "auto",
-      width: "auto",
-      disableClose: true,
-      closeOnNavigation: false,
-      data: {
-        selectedRow: this.selectedRow,
-        ...this.getEditDialogData()
-      }
-    });
-  }
-
-  getEditDialogData(): { [key: string]: any } {
-    return {};
-  }
-
-  openDeleteSelectedItemDialog() {
-    const toDelete = this.selectedRow;
-    const dialogRef = this.matDialog.open(AlertDialogComponent, {
-      data: this.getOnDeleteAlertDialogOptions(toDelete)
-    });
-
-    this.subscription = dialogRef
-      .afterClosed()
-      .subscribe((deleteSelection: boolean) => {
-        if (deleteSelection) {
-          this.onDeleteAction(toDelete);
-        }
-      });
-  }
-
-  getOnDeleteAlertDialogOptions(selectedRow: T): AlertDialog {
-    return {
-      title: "Usuwanie",
-      body: `Czy na pewno chcesz usunąć '${JSON.stringify(selectedRow)}'?`,
-      cancelLabel: "Nie, nie usuwaj",
-      okLabel: "Tak, usuwamy!"
-    };
-  }
-
-  onDeleteAction(selectedRow: T) {}
 }

@@ -66,6 +66,18 @@ mat-dialog-actions {
   font-weight: bolder !important;
 }
 
+.multiline-tooltip {
+  white-space: pre-line;
+}
+
+.sub-bottom-menu-buttons {
+  position: fixed;
+  bottom: 6vh;
+  left: 0;
+  right: 0;
+  z-index: 999;
+}
+
 .bottom-menu-buttons {
   position: fixed;
   bottom: 5vh;
@@ -89,11 +101,34 @@ mat-dialog-actions {
   transform: scale(0.8);
 }
 
-.small-icon {
+.icon-disabled {
+  opacity: 0.2;
+}
+
+.icon-color {
+  cursor: default;
+  &.icon-color-to-review {
+    background-color: #ffd740;
+  }
+
+  &.icon-color-reviewed {
+    background-color: #3636f4;
+  }
+
+  &.icon-color-accepted {
+    background-color: #36f442;
+  }
+
+  &.icon-color-rejected {
+    background-color: #f44336;
+  }
+}
+
+.small-action-icon {
   transform: scale(1);
 }
 
-.small-button {
+.small-action-button {
   transform: scale(0.6) !important;
   font-size: x-large;
   font-weight: bold;
@@ -126,4 +161,10 @@ mat-dialog-actions {
 mark {
   background-color: white;
   font-weight: bold;
+}
+
+.mat-sidenav-container,
+.mat-sidenav-content,
+.mat-tab-body-content {
+  transform: none !important;
 }

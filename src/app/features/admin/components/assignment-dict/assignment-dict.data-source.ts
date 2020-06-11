@@ -1,9 +1,13 @@
+import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { AssignmentDictEntry } from "src/app/core/models";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { BaseTablePanelDataSource } from "../base-table-panel/base-table-panel.data-source";
+import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
 
-export class AssignmentDictsDataSource extends BaseTablePanelDataSource<
+@Injectable({
+  providedIn: "root"
+})
+export class AssignmentDictsDataSource extends BaseTableDataSource<
   AssignmentDictEntry
 > {
   protected getData(): Observable<AssignmentDictEntry[]> {
