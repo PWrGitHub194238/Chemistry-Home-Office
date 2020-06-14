@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject } from "@angular/core";
 import {
   FormArray,
   FormBuilder,
@@ -25,6 +25,7 @@ import {
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { HomeworkPath } from "src/app/models";
 import { AssignmentRowForm } from "../../models/assignment-row-form.mode";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
@@ -63,6 +64,14 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     return this.form.get("assignments") as FormArray;
   }
 
+  get isLoading(): boolean {
+    return this.spinnerService.isLoading;
+  }
+
+  get loadingMessage(): boolean {
+    return this.spinnerService.loadingMessage;
+  }
+
   get assignmentsDict(): AssignmentDictEntry[] {
     return this.data["assignmentsDict"] as AssignmentDictEntry[];
   }
@@ -78,12 +87,14 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     private snackBarService: SnackBarService,
     dialogRef: MatDialogRef<HomeworkPathsDialogComponent>,
     matDialog: MatDialog,
+    spinnerService: SpinnerService,
+    changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     data: {
       selectedRow: HomeworkPath | null;
     }
   ) {
-    super(dialogRef, matDialog, data);
+    super(dialogRef, matDialog, spinnerService, changeDetector, data);
     this.subjects$ = this.dictionaryService.getAllSubjects$();
     this.classes$ = this.dictionaryService.getClassesByClassOnly$();
   }
@@ -105,7 +116,7 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     this.form = this.formBuilder.group({
       active: { value: selectedRow.active, disabled: this.viewMode },
       subject: [
-        { value: selectedRow.subject, disabled: this.viewMode },
+        { value: selectedRow.subject.name, disabled: this.viewMode },
         Validators.required
       ],
       classNo: [
@@ -133,7 +144,11 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
       uid: editMode ? item.uid : null,
       active: this.active.value,
       date: editMode ? item.date : new Date(),
-      subject: this.subject.value,
+      subject: {
+        uid: item.subject.uid,
+        name: this.subject.value,
+        teacherEmail: item.subject.teacherEmail
+      },
       classNo: this.classNo.value,
       topic: this.topic.value,
       assignments: this.assignments.controls
@@ -146,11 +161,11 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     };
   }
 
-  performAdd(item: HomeworkPath): Promise<HomeworkPath> {
+  protected async performAdd(item: HomeworkPath): Promise<HomeworkPath> {
     return this.firestoreDocumentService.createHomeworkPath$(item);
   }
 
-  performEdit(item: HomeworkPath): Promise<HomeworkPath> {
+  protected async performEdit(item: HomeworkPath): Promise<HomeworkPath> {
     return this.firestoreDocumentService.editHomeworkPath$(item);
   }
 
@@ -207,7 +222,6 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     if (inputValue !== "" && this.isPlaceholderForNextAssignment(index)) {
       this.createNewAssignment();
     }
-
     const iconIdx: number = this.getIconFromAssignmentName(inputValue);
 
     if (iconIdx) {

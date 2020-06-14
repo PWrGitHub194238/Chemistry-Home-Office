@@ -154,4 +154,8 @@ export class RegisterComponent implements OnInit {
   onLoginButtonClick() {
     this.authService.redirectToLogin(this.returnUrl, null);
   }
+
+  onPasswordRecoveryButtonClick() {
+    this.authService.redirectToPasswordRecovery(this.returnUrl);
+  }
 }

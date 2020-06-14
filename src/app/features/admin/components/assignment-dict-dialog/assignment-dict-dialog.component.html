@@ -33,7 +33,7 @@
         </mat-form-field>
 
         <div fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="10px">
-          <div matTooltip="Poprzednia ikona">
+          <div [matTooltip]="viewMode ? '' : 'Poprzednia ikona'">
             <button
               mat-mini-fab
               class="small-action-button"
@@ -47,7 +47,7 @@
           <mat-icon class="action-icon" [class.icon-disabled]="viewMode">{{
             getIconName()
           }}</mat-icon>
-          <div matTooltip="Następna ikona">
+          <div [matTooltip]="viewMode ? '' : 'Następna ikona'">
             <button
               mat-mini-fab
               class="small-action-button"
@@ -62,6 +62,10 @@
       </div>
     </fieldset>
   </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>
@@ -69,7 +73,13 @@
   <div>
     <button mat-button (click)="onCancel()">Anuluj</button>
     <button mat-raised-button color="primary" (click)="onSubmit()">
-      {{ editMode ? "Zmień zadanie" : "Dodaj zadanie" }}
+      {{
+        editMode
+          ? form.pristine
+            ? "Zamknij"
+            : "Zmień zadanie"
+          : "Dodaj zadanie"
+      }}
     </button>
   </div>
 </mat-dialog-actions>

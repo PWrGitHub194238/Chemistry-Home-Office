@@ -47,11 +47,12 @@ export class LoginFormValidator {
         return of(null);
       }
 
-      return dictionaryService.getAllClasses$().pipe(
+      return dictionaryService.getAllClasses$(true).pipe(
         map((classes: ClassDictEntry[]) => {
           const allowedClasses: string[] = classes.map(c =>
             `${c.classNo}${c.subclass}`.toUpperCase()
           );
+
           if (!allowedClasses.includes(value.toUpperCase())) {
             studentNoControl().setValue(null);
             studentNoControl().disable();
@@ -73,7 +74,7 @@ export class LoginFormValidator {
     studentClass: () => string
   ): AsyncValidatorFn {
     return (control: AbstractControl): Observable<ValidationErrors | null> => {
-      if (!control.value) {
+      if (control.value === null || control.value === undefined) {
         return of(null);
       }
 
@@ -93,7 +94,7 @@ export class LoginFormValidator {
         });
       }
 
-      return dictionaryService.getAllClasses$().pipe(
+      return dictionaryService.getAllClasses$(true).pipe(
         map((classes: ClassDictEntry[]) => {
           const classDef: ClassDictEntry = classes.find(
             (c: ClassDictEntry) =>

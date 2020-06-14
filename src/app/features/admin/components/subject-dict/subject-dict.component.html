@@ -21,7 +21,7 @@
     </cho-row-action-button>
   </mat-card-content>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" class="search">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Szukaj</mat-label>
     <input
@@ -43,6 +43,17 @@
       </td>
     </ng-container>
 
+    <ng-container matColumnDef="teacherEmail">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Adres e-mail nauczyciela
+      </th>
+      <td mat-cell *matCellDef="let subject">
+        <span>
+          {{ subject.teacherEmail }}
+        </span>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="uid">
       <th mat-header-cell *matHeaderCellDef></th>
       <td mat-cell *matCellDef="let subject" fxLayout="row" fxLayoutAlign="end">
@@ -60,13 +71,13 @@
               tooltip="Edytuj przedmiot lekcji"
               icon="edit"
               color="primary"
-              (action)="openEditSelectedItemDialog()"
+              (action)="openEditSelectedItemDialog(subject)"
             ></cho-row-action-button>
             <cho-row-action-button
               tooltip="Usuń przedmiot lekcji"
               icon="delete_outline"
               color="warn"
-              (action)="openDeleteSelectedItemDialog()"
+              (action)="openDeleteSelectedItemDialog(subject)"
             ></cho-row-action-button>
           </div>
         </span>
@@ -79,7 +90,7 @@
       *matRowDef="let subject; columns: columnsToDisplay"
       (mouseenter)="mouseEnter(subject)"
       (mouseleave)="mouseLeave()"
-      (click)="openViewSelectedItemDialog()"
+      (click)="openViewSelectedItemDialog(subject)"
     ></tr>
   </table>
 

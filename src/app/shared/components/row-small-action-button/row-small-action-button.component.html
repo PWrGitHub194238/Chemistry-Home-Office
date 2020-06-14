@@ -1,6 +1,7 @@
 <div [matTooltipClass]="matTooltipClass" [matTooltip]="tooltip">
   <button
     mat-mini-fab
+    [disabled]="disabled"
     [class]="'small-action-button ' + class"
     [color]="color"
     (click)="emit($event)"

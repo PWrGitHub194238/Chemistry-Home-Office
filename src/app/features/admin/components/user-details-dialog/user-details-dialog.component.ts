@@ -1,14 +1,16 @@
-import { Component, Inject } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
-import { untilDestroyed } from "@ngneat/until-destroy";
+import { MatSlideToggleChange } from "@angular/material/slide-toggle";
+import { Observable } from "rxjs";
+import { UserDisplayDict } from "src/app/core/models";
+import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { Student } from "src/app/models";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
@@ -18,34 +20,24 @@ import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-t
   styleUrls: ["./user-details-dialog.component.scss"]
 })
 export class UserDetailsDialogComponent extends BaseTablePanelDialogComponent<
-  Student
+  UserDisplayDict
 > {
-  get email(): FormControl {
-    return this.form.get("email") as FormControl;
+  studentClasses$: Observable<string[]>;
+
+  get enabled(): FormControl {
+    return this.form.get("enabled") as FormControl;
   }
 
   get displayName(): FormControl {
     return this.form.get("displayName") as FormControl;
   }
 
-  get photoURL(): FormControl {
-    return this.form.get("photoURL") as FormControl;
+  get studentClass(): FormControl {
+    return this.form.get("studentClass") as FormControl;
   }
 
-  get disabled(): FormControl {
-    return this.form.get("disabled") as FormControl;
-  }
-
-  get providerId(): FormControl {
-    return this.form.get("providerId") as FormControl;
-  }
-
-  get class(): FormControl {
-    return this.form.get("class") as FormControl;
-  }
-
-  get no(): FormControl {
-    return this.form.get("no") as FormControl;
+  get studentNo(): FormControl {
+    return this.form.get("studentNo") as FormControl;
   }
 
   get admin(): FormControl {
@@ -56,87 +48,100 @@ export class UserDetailsDialogComponent extends BaseTablePanelDialogComponent<
     return this.form.get("student") as FormControl;
   }
 
+  get isLoading(): boolean {
+    return this.spinnerService.isLoading;
+  }
+
+  get loadingMessage(): boolean {
+    return this.spinnerService.loadingMessage;
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private dictionaryService: DictionaryService,
-    private firestoreDocumentService: FirestoreDocumentService,
+    private authService: AuthService,
     dialogRef: MatDialogRef<UserDetailsDialogComponent>,
     matDialog: MatDialog,
+    spinnerService: SpinnerService,
+    changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     data: {
-      selectedRow: Student | null;
+      selectedRow: UserDisplayDict | null;
     }
   ) {
-    super(dialogRef, matDialog, data);
+    super(dialogRef, matDialog, spinnerService, changeDetector, data);
+    this.studentClasses$ = this.dictionaryService.getAllClassesByString$();
   }
 
-  afterOnInit() {
-    this.class.valueChanges
-      .pipe(untilDestroyed(this))
-      .subscribe((value: string) =>
-        this.class.setValue(value.toUpperCase(), { emitEvent: false })
-      );
-  }
+  createNewForm() {}
 
-  createNewForm() {
-    this.form = this.formBuilder.group({});
-  }
-
-  loadForm(selectedRow: Student) {
+  loadForm(selectedRow: UserDisplayDict) {
     this.form = this.formBuilder.group({
-      email: [
-        { value: selectedRow.email, disabled: true },
-        [Validators.required, Validators.email]
+      enabled: [
+        { value: !selectedRow.disabled, disabled: this.viewMode },
+        [Validators.required]
       ],
       displayName: [
-        { value: selectedRow.displayName, disabled: true },
+        { value: selectedRow.displayName, disabled: this.viewMode },
         [Validators.required, LoginFormValidator.Name()]
       ],
-      photoURL: [
-        { value: selectedRow.photoURL, disabled: true },
-        Validators.required
+      studentClass: [
+        { value: selectedRow.details.studentClass, disabled: this.viewMode },
+        [Validators.required]
       ],
-      disabled: [selectedRow.disabled, Validators.required],
-      providerId: [
-        { value: selectedRow.providerId, disabled: true },
-        Validators.required
-      ],
-      class: [
-        selectedRow.class,
-        [Validators.required],
-        [LoginFormValidator.StudentClass(this.dictionaryService, () => this.no)]
-      ],
-      no: [
-        selectedRow.no,
+      studentNo: [
+        { value: selectedRow.details.studentNo, disabled: this.viewMode },
         [Validators.required],
         [
-          LoginFormValidator.StudentNo(
-            this.dictionaryService,
-            () => this.class.value
+          LoginFormValidator.StudentNo(this.dictionaryService, () =>
+            this.form ? this.studentClass.value : ""
           )
         ]
       ],
-      admin: [selectedRow.admin, Validators.required],
-      student: [selectedRow.student, Validators.required]
+      admin: [
+        { value: selectedRow.roles.admin, disabled: this.viewMode },
+        Validators.required
+      ],
+      student: [
+        { value: selectedRow.roles.student, disabled: this.viewMode },
+        Validators.required
+      ]
     });
   }
 
-  buildItem(editMode: boolean, item: Student): Student {
+  buildItem(editMode: boolean, item: UserDisplayDict): UserDisplayDict {
     return {
       uid: this.editMode ? item.uid : null,
-      email: item.email,
-      displayName: item.displayName,
+      disabled: !this.enabled.value,
+      emailVerified: item.emailVerified,
+      displayName: this.displayName.value,
       photoURL: item.photoURL,
-      disabled: item.disabled,
-      providerId: item.providerId,
-      class: item.class,
-      no: item.no,
-      admin: item.admin,
-      student: item.student
+      details: {
+        uid: this.editMode ? item.details.uid : null,
+        studentClass: this.studentClass.value,
+        studentNo: this.studentNo.value
+      },
+      roles: {
+        uid: this.editMode ? item.roles.uid : null,
+        admin: this.admin.value,
+        student: this.student.value
+      }
     };
   }
 
-  // performEdit(item: Student): Promise<Student> {
-  //   return this.firestoreDocumentService.editClass(item);
-  // }
+  protected async performEdit(item: UserDisplayDict): Promise<UserDisplayDict> {
+    return this.authService.editUserDisplay$(item).toPromise();
+  }
+
+  enabledToggle(toggleChange: MatSlideToggleChange) {
+    this.enabled.setValue(toggleChange.checked);
+  }
+
+  adminRoleToggle(toggleChange: MatSlideToggleChange) {
+    this.admin.setValue(toggleChange.checked);
+  }
+
+  studentRoleToggle(toggleChange: MatSlideToggleChange) {
+    this.student.setValue(toggleChange.checked);
+  }
 }

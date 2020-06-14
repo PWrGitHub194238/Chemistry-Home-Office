@@ -1,8 +1,8 @@
-import { UserDetails } from "./user-details.model";
-import { UserRoles } from "./user-roles.model";
+import { UserDetailsDictEntry } from "./user-details-dict-entry.model";
+import { UserRolesDictEntry } from "./user-roles-dict-entry.model";
 
 export interface User {
   auth: firebase.User;
-  details: UserDetails;
-  roles: UserRoles;
+  details: UserDetailsDictEntry;
+  roles: UserRolesDictEntry;
 }

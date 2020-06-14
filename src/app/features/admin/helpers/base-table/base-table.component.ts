@@ -58,7 +58,7 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
     this.selectedRow = null;
   }
 
-  openViewSelectedItemDialog() {
+  openViewSelectedItemDialog(selectedRow: T) {
     if (!this.viewDialog) {
       return;
     }
@@ -67,14 +67,14 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
       height: "auto",
       width: "auto",
       data: {
-        selectedRow: this.selectedRow,
+        selectedRow,
         viewMode: true,
         ...this.getViewDialogData()
       }
     });
   }
 
-  getViewDialogData(): { [key: string]: any } {
+  protected getViewDialogData(): { [key: string]: any } {
     return {};
   }
 
@@ -103,13 +103,15 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
       });
   }
 
-  getAddDialogData(): { [key: string]: any } {
+  protected getAddDialogData(): { [key: string]: any } {
     return {};
   }
 
-  onItemAdded(addedItem: T) {}
+  protected onItemAdded(addedItem: T) {
+    this.refreshDataSource();
+  }
 
-  openEditSelectedItemDialog() {
+  openEditSelectedItemDialog(selectedRow: T) {
     if (!this.editDialog) {
       return;
     }
@@ -120,7 +122,7 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
       disableClose: true,
       closeOnNavigation: false,
       data: {
-        selectedRow: this.selectedRow,
+        selectedRow,
         ...this.getEditDialogData()
       }
     });
@@ -134,23 +136,24 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
       });
   }
 
-  onItemEdited(editedItem: T) {}
+  protected onItemEdited(editedItem?: T) {
+    this.refreshDataSource();
+  }
 
-  getEditDialogData(): { [key: string]: any } {
+  protected getEditDialogData(): { [key: string]: any } {
     return {};
   }
 
-  openDeleteSelectedItemDialog() {
-    const toDelete = this.selectedRow;
+  openDeleteSelectedItemDialog(selectedRow: T) {
     const dialogRef = this.matDialog.open(AlertDialogComponent, {
-      data: this.getOnDeleteAlertDialogOptions(toDelete)
+      data: this.getOnDeleteAlertDialogOptions(selectedRow)
     });
 
     this.deleteDialogSubscription = dialogRef
       .afterClosed()
       .subscribe((deleteSelection: boolean) => {
         if (deleteSelection) {
-          this.onDeleteAction(toDelete);
+          this.onItemDeleted(selectedRow);
         }
       });
   }
@@ -164,5 +167,11 @@ export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {
     };
   }
 
-  onDeleteAction(selectedRow: T) {}
+  protected onItemDeleted(deletedItem: T) {
+    this.refreshDataSource();
+  }
+
+  private refreshDataSource() {
+    this.dataSource.data = [...this.dataSource.data];
+  }
 }

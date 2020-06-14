@@ -9,10 +9,8 @@ import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-so
 export class SentHomeworksInnerTableDataSource extends BaseTableDataSource<
   SentHomework
 > {
-  sentHomeworks: SentHomework[] = [];
-
   protected getData(): Observable<SentHomework[]> {
-    return of(this.sentHomeworks);
+    return of(this.data);
   }
 
   filterPredicate = (data: SentHomework, filter: string) => {

@@ -3,7 +3,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Observable, of } from "rxjs";
 import { AuthService } from "../services/auth.service";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
-import { UserDetails } from "../models/User/user-details.model";
+import { UserDetailsDictEntry } from "../models/user/user-details-dict-entry.model";
 
 @UntilDestroy()
 @Injectable({
@@ -15,7 +15,7 @@ export class UserDetailsResolver {
     private firestoreDocumentService: FirestoreDocumentService
   ) {}
 
-  resolve(): Observable<UserDetails | null> {
+  resolve(): Observable<UserDetailsDictEntry | null> {
     if (this.authService.user && this.authService.user.details) {
       return of(this.authService.user.details);
     }

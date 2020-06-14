@@ -61,7 +61,7 @@ function getSentToTeacherConfirmationSubject(
   receiverDetails: UserDetails,
   assignment: string
 ): string {
-  return `[${homeworkPath.subject}][${receiverDetails.studentClass}][${
+  return `[${homeworkPath.subject.name}][${receiverDetails.studentClass}][${
     homeworkPath.topic
   }][${receiverDetails.studentNo}][${
     receiver.displayName ? receiver.displayName : receiver.email
@@ -95,7 +95,7 @@ function getSentToTeacherConfirmationHtmlBody(
         receiver.displayName && receiver.displayName.split(" ").length > 1
           ? receiver.displayName.split(" ")[0]
           : receiver.email,
-      subject: homeworkPath.subject,
+      subject: homeworkPath.subject.name,
       assignment: assignment,
       topic: homeworkPath.topic,
       attachmentsCount: sentHomeworkDocument.files.filter(

@@ -2,30 +2,51 @@ import { Injectable, NgZone } from "@angular/core";
 import { AngularFireAuth } from "@angular/fire/auth";
 import { Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { BehaviorSubject, Observable, of, Subject, zip } from "rxjs";
-import { map, switchMap } from "rxjs/operators";
+import {
+  BehaviorSubject,
+  interval,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  zip
+} from "rxjs";
+import { map, switchMap, take, takeUntil, tap } from "rxjs/operators";
 import {
   SubjectError,
   SubjectSuccess,
   User,
-  UserDetails,
-  UserRoles
+  UserDetailsDictEntry,
+  UserDisplayDict,
+  UserRecord,
+  UserRolesDictEntry
 } from "../models";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
+import { DictionaryService } from "./dictionary.service";
+import { FirefunctionService } from "./firefunction.service";
+import { SnackBarService } from "./snack-bar.service";
 
 @UntilDestroy()
 @Injectable({
   providedIn: "root"
 })
 export class AuthService {
-  private signedInSubject$: Subject<SubjectSuccess | SubjectError>;
-  private loggedInSubject$: Subject<SubjectSuccess | SubjectError>;
-  private userSubject$: BehaviorSubject<User | null>;
   signedIn$: Observable<SubjectSuccess | SubjectError>;
   loggedIn$: Observable<SubjectSuccess | SubjectError>;
   user$: Observable<User | null>;
   user: User | null;
   onLogoutState: { [key: string]: any };
+
+  private timeout = 1000 * 60 * 10;
+
+  private signedInSubject$: Subject<SubjectSuccess | SubjectError>;
+  private loggedInSubject$: Subject<SubjectSuccess | SubjectError>;
+  private userSubject$: BehaviorSubject<User | null>;
+
+  // /user-displays-dict
+  private userDisplays: UserDisplayDict[];
+  private userDisplays$: Observable<UserDisplayDict[] | null>;
+  private userDisplaySubscription: Subscription;
 
   get isAuthenticated(): boolean {
     return !!this.user;
@@ -43,6 +64,9 @@ export class AuthService {
     private router: Router,
     private firebaseAuth: AngularFireAuth,
     private firestoreDocumentService: FirestoreDocumentService,
+    private dictionaryService: DictionaryService,
+    private firefunctionService: FirefunctionService,
+    private snackBarService: SnackBarService,
     private ngZone: NgZone
   ) {
     this.signedInSubject$ = new Subject<SubjectSuccess | SubjectError>();
@@ -52,6 +76,13 @@ export class AuthService {
     this.signedIn$ = this.signedInSubject$.asObservable();
     this.loggedIn$ = this.loggedInSubject$.asObservable();
     this.user$ = this.userSubject$.asObservable();
+
+    // /user-displays-dict
+    this.userDisplays$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.userDisplays = null)),
+      map(_ => this.userDisplays)
+    );
 
     this.firebaseAuth.authState
       .pipe(
@@ -70,8 +101,8 @@ export class AuthService {
         map(
           ([auth, userDetails, userRoles]: [
             firebase.User,
-            UserDetails,
-            UserRoles
+            UserDetailsDictEntry,
+            UserRolesDictEntry
           ]) => ({
             auth: auth,
             details: userDetails,
@@ -98,7 +129,7 @@ export class AuthService {
     displayName: string,
     email: string,
     password: string,
-    additionalDetails: UserDetails
+    additionalDetails: UserDetailsDictEntry
   ) {
     this.firebaseAuth.auth
       .createUserWithEmailAndPassword(email, password)
@@ -117,7 +148,7 @@ export class AuthService {
   setUserProfile(
     credentials: firebase.auth.UserCredential,
     displayName: string,
-    additionalDetails: UserDetails
+    additionalDetails: UserDetailsDictEntry
   ) {
     credentials.user
       .updateProfile({
@@ -133,7 +164,7 @@ export class AuthService {
 
   setUserProfileDetails(
     credentials: firebase.auth.UserCredential,
-    additionalDetails: UserDetails
+    additionalDetails: UserDetailsDictEntry
   ) {
     this.firestoreDocumentService
       .setUserDetails$(credentials.user.uid, additionalDetails)
@@ -148,7 +179,7 @@ export class AuthService {
       );
   }
 
-  updateUserProfileDetails(additionalDetails?: UserDetails) {
+  updateUserProfileDetails(additionalDetails?: UserDetailsDictEntry) {
     if (this.user) {
       this.firestoreDocumentService.setUserDetails$(
         this.user.auth.uid,
@@ -195,5 +226,151 @@ export class AuthService {
     } else {
       this.router.navigate(["home", "register"]);
     }
+  }
+
+  redirectToPasswordRecovery(returnUrl: string) {
+    this.router.navigate(["home", "resetPassword"], {
+      queryParams: { returnUrl: returnUrl }
+    });
+  }
+
+  // /user-display-dict
+  getAllUserDisplays$(sync?: boolean): Observable<UserDisplayDict[]> {
+    if (!this.isAdmin) {
+      return of([]);
+    }
+
+    return !!sync || !this.userDisplays
+      ? this.firefunctionService.getUserAdminDetails$(this.user.auth.uid).pipe(
+          takeUntil(this.userDisplays$),
+          untilDestroyed(this),
+          tap((userDisplays: UserDisplayDict[]) => {
+            this.userDisplays = userDisplays;
+            if (this.userDisplaySubscription) {
+              this.userDisplaySubscription.unsubscribe();
+            }
+            this.userDisplaySubscription = this.userDisplays$.subscribe();
+          })
+        )
+      : of(this.userDisplays);
+  }
+
+  editUserDisplay$(
+    user: UserDisplayDict,
+    showNotification: boolean = true
+  ): Observable<UserDisplayDict> {
+    return zip(
+      this.updateUser$(user),
+      this.dictionaryService.editUserDetails(user.details, false),
+      this.dictionaryService.editUserRoles(user.roles, false)
+    ).pipe(
+      map(
+        ([userRecord, userDetails, userRoles]: [
+          UserRecord,
+          UserDetailsDictEntry,
+          UserRolesDictEntry
+        ]) => ({
+          uid: userRecord.uid,
+          disabled: userRecord.disabled,
+          emailVerified: userRecord.emailVerified,
+          photoURL: userRecord.photoURL,
+          displayName: userRecord.displayName,
+          details: userDetails,
+          roles: userRoles
+        })
+      ),
+      tap((user: UserDisplayDict) => {
+        this.userDisplays.splice(
+          this.userDisplays.findIndex(
+            (_: UserDisplayDict) => _.uid === user.uid
+          ),
+          1,
+          user
+        );
+        if (this.userDisplaySubscription) {
+          this.userDisplaySubscription.unsubscribe();
+        }
+        this.userDisplaySubscription = this.userDisplays$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showEditUserSuccess(user);
+        }
+        return user;
+      })
+    );
+  }
+
+  deleteUserDisplay$(user: UserDisplayDict, showNotification: boolean = true) {
+    return zip(
+      this.deleteUser$(user),
+      this.dictionaryService.deleteUserDetails(user.details, false),
+      this.dictionaryService.deleteUserRoles(user.roles, false)
+    )
+      .pipe(take(1), untilDestroyed(this))
+      .subscribe(() => {
+        this.userDisplays.splice(
+          this.userDisplays.findIndex(
+            (_: UserDisplayDict) => _.uid === user.uid
+          ),
+          1
+        );
+        if (this.userDisplaySubscription) {
+          this.userDisplaySubscription.unsubscribe();
+        }
+        this.userDisplaySubscription = this.userDisplays$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showDeleteUserSuccess(user);
+        }
+        return user;
+      });
+  }
+
+  sentValidateEmailToUser(userUid: string, userDisplayName: string) {
+    this.firefunctionService
+      .verifyUserEmail$(userUid)
+      .pipe(take(1), untilDestroyed(this))
+      .subscribe(
+        (result: boolean) => {
+          if (result) {
+            this.snackBarService.showSentEmailVerificationRequestSuccess(
+              userDisplayName
+            );
+          }
+        },
+        (error: any) =>
+          this.snackBarService.showSentEmailVerificationRequestFailed(error)
+      );
+  }
+
+  sentResetPasswordToUser(userUid: string, userDisplayName: string) {
+    this.firefunctionService
+      .resetUserPassword$(userUid)
+      .pipe(take(1), untilDestroyed(this))
+      .subscribe(
+        (result: boolean) => {
+          if (result) {
+            this.snackBarService.showSentPasswordResetRequestSuccess(
+              userDisplayName
+            );
+          }
+        },
+        (error: any) =>
+          this.snackBarService.showSentPasswordResetRequestFailed(error)
+      );
+  }
+
+  private updateUser$(updatedUser: UserDisplayDict): Observable<UserRecord> {
+    return this.firefunctionService.updateUserData$(
+      this.user.auth.uid,
+      updatedUser.uid,
+      updatedUser.disabled,
+      updatedUser.displayName
+    );
+  }
+
+  private deleteUser$(deletedUser: UserDisplayDict): Observable<boolean> {
+    return this.firefunctionService.removeUserData$(
+      this.user.auth.uid,
+      deletedUser.uid
+    );
   }
 }

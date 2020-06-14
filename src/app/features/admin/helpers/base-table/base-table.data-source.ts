@@ -1,36 +1,37 @@
 import { MatTableDataSource } from "@angular/material/table";
 import { BehaviorSubject, Observable, of } from "rxjs";
-import { catchError, tap } from "rxjs/operators";
+import { catchError, take } from "rxjs/operators";
 
 export abstract class BaseTableDataSource<T> extends MatTableDataSource<T> {
   isLoading$: Observable<boolean>;
-  data$: Observable<T[]>;
 
   private isLoadingSubject$ = new BehaviorSubject<boolean>(true);
-  private dataSubject$ = new BehaviorSubject<T[]>([]);
 
   constructor() {
     super();
     this.isLoading$ = this.isLoadingSubject$.asObservable();
-    this.data$ = this.dataSubject$.asObservable();
   }
 
-  public loadData() {
-    this.fetchData();
+  public loadData(sync?: boolean) {
+    this.fetchData(sync);
   }
 
   protected abstract getData(): Observable<T[]>;
 
-  private fetchData() {
-    this.getData()
-      .pipe(
-        tap(() => this.isLoadingSubject$.next(true)),
-        catchError(() => of([]))
-      )
-      .subscribe(data => {
-        this.data = data;
-        this.dataSubject$.next(data);
-        this.isLoadingSubject$.next(false);
-      });
+  protected updateData(data: T[]) {
+    this.data = data;
+    this.isLoadingSubject$.next(false);
+  }
+
+  private fetchData(sync?: boolean) {
+    if (!!sync || this.data.length === 0) {
+      this.isLoadingSubject$.next(true);
+      this.getData()
+        .pipe(
+          take(1),
+          catchError(() => of([]))
+        )
+        .subscribe(data => this.updateData(data));
+    }
   }
 }

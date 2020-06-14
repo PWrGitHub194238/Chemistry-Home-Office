@@ -49,9 +49,7 @@ export class SentHomeworksInnerFilesTableComponent
   ngOnChanges(changes: SimpleChanges) {
     if (!changes.data.isFirstChange()) {
       this.selectedFileForGallery = undefined;
-      (<SentHomeworksInnerFilesTableDataSource>(
-        this.dataSource
-      )).files = this.data;
+      this.dataSource.data = this.data;
       this.dataSource.loadData();
       this.changeDetectorRefs.detectChanges();
     }
@@ -59,7 +57,7 @@ export class SentHomeworksInnerFilesTableComponent
 
   ngOnInit() {
     this.selectedFileForGallery = undefined;
-    (<SentHomeworksInnerFilesTableDataSource>this.dataSource).files = this.data;
+    this.dataSource.data = this.data;
     super.ngOnInit();
   }
 

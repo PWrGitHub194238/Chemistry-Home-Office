@@ -47,6 +47,10 @@
       </div>
     </fieldset>
   </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>
@@ -54,7 +58,9 @@
   <div>
     <button mat-button (click)="onCancel()">Anuluj</button>
     <button mat-raised-button color="primary" (click)="onSubmit()">
-      {{ editMode ? "Zmień klasę" : "Dodaj klasę" }}
+      {{
+        editMode ? (form.pristine ? "Zamknij" : "Zmień klasę") : "Dodaj klasę"
+      }}
     </button>
   </div>
 </mat-dialog-actions>

@@ -19,7 +19,7 @@
     <fieldset>
       <legend>Podstawowe dane</legend>
 
-      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+      <div fxLayout="column" fxLayoutAlign="space-between" fxLayoutGap="10px">
         <mat-form-field class="full-width">
           <mat-label>Nazwa lekcji</mat-label>
           <input
@@ -32,9 +32,25 @@
             Podaj proszę nazwę lekcji
           </mat-error>
         </mat-form-field>
+        <mat-form-field class="full-width">
+          <mat-label>Adres e-mail nauczyciela</mat-label>
+          <input
+            matInput
+            formControlName="teacherEmail"
+            placeholder="przykład@mail.com"
+            type="email"
+          />
+          <mat-error *ngIf="teacherEmail.invalid && teacherEmail.touched">
+            Podaj proszę prawidłowy adres e-mail
+          </mat-error>
+        </mat-form-field>
       </div>
     </fieldset>
   </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>
@@ -42,7 +58,13 @@
   <div>
     <button mat-button (click)="onCancel()">Anuluj</button>
     <button mat-raised-button color="primary" (click)="onSubmit()">
-      {{ editMode ? "Zmień przedmiot lekcji" : "Dodaj przedmiot lekcji" }}
+      {{
+        editMode
+          ? form.pristine
+            ? "Zamknij"
+            : "Zmień przedmiot lekcji"
+          : "Dodaj przedmiot lekcji"
+      }}
     </button>
   </div>
 </mat-dialog-actions>

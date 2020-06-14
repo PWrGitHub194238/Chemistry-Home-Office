@@ -63,10 +63,28 @@ export class AssignmentDictComponent
     };
   }
 
+  onItemAdded(addedItem: AssignmentDictEntry) {
+    this.dataSource.data.push(addedItem);
+    super.onItemAdded(addedItem);
+  }
+
   getEditDialogData() {
     return {
       matIconsDict: this.matIconsDict
     };
+  }
+
+  onItemEdited(editedItem?: AssignmentDictEntry) {
+    if (editedItem) {
+      this.dataSource.data.splice(
+        this.dataSource.data.findIndex(
+          (item: AssignmentDictEntry) => item.uid === editedItem.uid
+        ),
+        1,
+        editedItem
+      );
+      super.onItemEdited(editedItem);
+    }
   }
 
   getOnDeleteAlertDialogOptions(selectedRow: AssignmentDictEntry): AlertDialog {
@@ -78,8 +96,15 @@ export class AssignmentDictComponent
     };
   }
 
-  onDeleteAction(selectedRow: AssignmentDictEntry) {
-    this.dictionaryService.deleteAssignment(selectedRow);
+  onItemDeleted(deletedItem: AssignmentDictEntry) {
+    this.dictionaryService.deleteAssignment(deletedItem);
+    this.dataSource.data.splice(
+      this.dataSource.data.findIndex(
+        (item: AssignmentDictEntry) => item.uid === deletedItem.uid
+      ),
+      1
+    );
+    super.onItemDeleted(deletedItem);
   }
 
   loadResolvedData() {

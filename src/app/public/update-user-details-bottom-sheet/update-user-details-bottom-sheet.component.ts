@@ -10,7 +10,7 @@ import {
   MAT_BOTTOM_SHEET_DATA
 } from "@angular/material/bottom-sheet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { UserDetails } from "src/app/core/models/user/user-details.model";
+import { UserDetailsDictEntry } from "src/app/core/models/user/user-details-dict-entry.model";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
@@ -115,7 +115,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.registerForm.valid) {
-      const UserDetails: UserDetails = {
+      const UserDetails: UserDetailsDictEntry = {
         uid: "",
         studentClass: (this.studentClass.value as string).toUpperCase(),
         studentNo: this.studentNo.value as number

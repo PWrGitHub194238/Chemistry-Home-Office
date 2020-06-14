@@ -11,6 +11,7 @@ import { LoginComponent } from "./login/login.component";
 import { RegisterComponent } from "./register/register.component";
 import { SnackBarComponent } from "./snack-bar/snack-bar.component";
 import { UpdateUserDetailsBottomSheetComponent } from "./update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
   signInFlow: "popup",
@@ -32,7 +33,8 @@ const firebaseUiAuthConfig: firebaseui.auth.TenantConfig = {
     RegisterComponent,
     SnackBarComponent,
     UpdateUserDetailsBottomSheetComponent,
-    HomeComponent
+    HomeComponent,
+    ResetPasswordComponent
   ],
   imports: [
     CommonModule,

@@ -1,0 +1,332 @@
+{
+	"info": {
+		"_postman_id": "add3e9c0-6660-4ece-b12b-cc4f8b9eaaaf",
+		"name": "Firebase Functions API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "sendHomeworkSentNotificationEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"<UID of an item in /sent-homework Cloud Firestore DB collection>\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/sendHomeworkSentNotificationEmail",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"sendHomeworkSentNotificationEmail"
+					]
+				},
+				"description": "Send notification email about sent homework."
+			},
+			"response": []
+		},
+		{
+			"name": "cleanupCloudFirestore",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"uid\": \"{{adminUserUID}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/cleanupCloudFirestore",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"cleanupCloudFirestore"
+					]
+				},
+				"description": "Run a full scan and delete all entries in the Cloud Firestore DB that are related to non-existing users."
+			},
+			"response": []
+		},
+		{
+			"name": "getUserData",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{targetUserUID}}\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/getUserData",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"getUserData"
+					]
+				},
+				"description": "Get a given user's details."
+			},
+			"response": []
+		},
+		{
+			"name": "updateUserData",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{adminUID}}\",\r\n\t\t\"update_uid\": \"{{targetUserUID}}\",\r\n\t\t\"disabled\": false,\r\n\t\t\"displayName\": \"<user's display name>\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/updateUserData",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"updateUserData"
+					]
+				},
+				"description": "Update user details."
+			},
+			"response": []
+		},
+		{
+			"name": "removeUserData",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{adminUID}}\",\r\n\t\t\"remove_uid\": \"{{targetUserUID}}\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/removeUserData",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"removeUserData"
+					]
+				},
+				"description": "Entirely remove a user from the system."
+			},
+			"response": []
+		},
+		{
+			"name": "resetUserPassword",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{targetUserUID}}\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/resetUserPassword",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"resetUserPassword"
+					]
+				},
+				"description": "Send an email with reset password link to the given user."
+			},
+			"response": []
+		},
+		{
+			"name": "verifyUserEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{targetUserUID}}\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/verifyUserEmail",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"verifyUserEmail"
+					]
+				},
+				"description": "Send an email with e-mail verifying link to the given user."
+			},
+			"response": []
+		},
+		{
+			"name": "getUserAdminDetails",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"data\": {\r\n        \"uid\": \"{{adminUserUID}}\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/getUserAdminDetails",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"getUserAdminDetails"
+					]
+				},
+				"description": "Return all users details."
+			},
+			"response": []
+		},
+		{
+			"name": "sendEmail",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{adminUserUID}}\",\r\n\t\t\"to_name\": \"<receiver's name>\",\r\n\t\t\"to_address\": \"<receiver's email address>\",\r\n\t\t\"subject\": \"<subject>\",\r\n\t\t\"html\": \"<html>\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/sendEmail",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"sendEmail"
+					]
+				},
+				"description": "Send an email to the target address with a given subject and HTML body."
+			},
+			"response": []
+		},
+		{
+			"name": "sendEmail (by UID)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{adminUserUID}}\",\r\n\t\t\"to_uid\": \"{{targetUserUID}}\",\r\n\t\t\"subject\": \"<subject>\",\r\n\t\t\"html\": \"<html>\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/sendEmail",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"sendEmail"
+					]
+				},
+				"description": "Send an email to the target based on a given user's UID with a given subject and HTML body."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "703feb45-41ac-40af-9777-e1f95782e50f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f111abf7-6fc9-404c-9a31-2b6d65e97687",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "9e9297d9-f72e-4757-897c-16636b86ded7",
+			"key": "domain",
+			"value": "us-central1-chemistry-home-office.cloudfunctions.net",
+			"type": "string"
+		},
+		{
+			"id": "8e22ef10-9e4a-4688-8f2e-66479af3345f",
+			"key": "adminUserUID",
+			"value": "????????????????????????????",
+			"type": "string"
+		},
+		{
+			"id": "126f9588-486f-4271-9b7b-ca1fd2ffad2f",
+			"key": "targetUserUID",
+			"value": "????????????????????????????",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

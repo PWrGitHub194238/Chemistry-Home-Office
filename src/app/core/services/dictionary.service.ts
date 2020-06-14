@@ -8,7 +8,11 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FirebaseError } from "firebase";
 import { interval, Observable, of, Subscription } from "rxjs";
 import { map, take, takeUntil, tap } from "rxjs/operators";
-import { SubjectDictEntry } from "../models";
+import {
+  SubjectDictEntry,
+  UserDetailsDictEntry,
+  UserRolesDictEntry
+} from "../models";
 import { AssignmentDictEntry } from "../models/dictionaries/assignment-dict-entry.model";
 import { ClassDictEntry } from "../models/dictionaries/class-dict-entry.model";
 import {
@@ -26,7 +30,7 @@ export class DictionaryService {
   private dictionariesCollection: AngularFirestoreCollection;
 
   // /assignment-dict
-  private assignments: AssignmentDictEntry[];
+  private assignments: AssignmentDictEntry[] = [];
   private assignments$: Observable<AssignmentDictEntry[] | null>;
   private assignmentSubscription: Subscription;
   private assignmentDictCollection: AngularFirestoreCollection<
@@ -34,23 +38,39 @@ export class DictionaryService {
   >;
 
   // /class-dict
-  private classes: ClassDictEntry[];
+  private classes: ClassDictEntry[] = [];
   private classes$: Observable<ClassDictEntry[] | null>;
   private classSubscription: Subscription;
   private classDictCollection: AngularFirestoreCollection<ClassDictEntry>;
 
   // /mat-icons-dict
-  private matIcons: MatIconDictEntry[];
-  private activeMatIcons: MatIconDictEntry[];
+  private matIcons: MatIconDictEntry[] = [];
+  private activeMatIcons: MatIconDictEntry[] = [];
   private activeMatIcons$: Observable<MatIconDictEntry[] | null>;
   private activeMatIconSubscription: Subscription;
   private activeMatIconDictDoc: AngularFirestoreDocument;
 
   // /subject-dict
-  private subjects: SubjectDictEntry[];
+  private subjects: SubjectDictEntry[] = [];
   private subjects$: Observable<SubjectDictEntry[] | null>;
   private subjectSubscription: Subscription;
   private subjectDictCollection: AngularFirestoreCollection<SubjectDictEntry>;
+
+  // /user-details
+  private userDetailsArray: UserDetailsDictEntry[] = [];
+  private userDetailsArray$: Observable<UserDetailsDictEntry[] | null>;
+  private userDetailsSubscription: Subscription;
+  private userDetailsDictCollection: AngularFirestoreCollection<
+    UserDetailsDictEntry
+  >;
+
+  // /user-roles
+  private userRolesArray: UserRolesDictEntry[] = [];
+  private userRolesArray$: Observable<UserRolesDictEntry[] | null>;
+  private userRolesSubscription: Subscription;
+  private userRolesDictCollection: AngularFirestoreCollection<
+    UserRolesDictEntry
+  >;
 
   constructor(
     private fireStoreService: AngularFirestore,
@@ -100,6 +120,26 @@ export class DictionaryService {
       tap(_ => (this.subjects = null)),
       map(_ => this.subjects)
     );
+
+    // /user-details
+    this.userDetailsDictCollection = this.fireStoreService.collection<
+      UserDetailsDictEntry
+    >("/user-details");
+    this.userDetailsArray$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.userDetailsArray = null)),
+      map(_ => this.userDetailsArray)
+    );
+
+    // /user-roles
+    this.userRolesDictCollection = this.fireStoreService.collection<
+      UserRolesDictEntry
+    >("/user-roles");
+    this.userRolesArray$ = interval(this.timeout).pipe(
+      untilDestroyed(this),
+      tap(_ => (this.subjects = null)),
+      map(_ => this.subjects)
+    );
   }
 
   // /assignment-dict
@@ -120,7 +160,8 @@ export class DictionaryService {
   }
 
   async createAssignment(
-    assignment: AssignmentDictEntry
+    assignment: AssignmentDictEntry,
+    showNotification: boolean = true
   ): Promise<AssignmentDictEntry | null> {
     assignment.uid = this.fireStoreService.createId();
     return this.assignmentDictCollection
@@ -132,7 +173,9 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showCreateAssignmentSuccess(assignment);
+        if (showNotification) {
+          this.snackBarService.showCreateAssignmentSuccess(assignment);
+        }
         return assignment;
       })
       .catch((error: FirebaseError) => {
@@ -141,13 +184,16 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showCreateAssignmentFailed(error);
+        if (showNotification) {
+          this.snackBarService.showCreateAssignmentFailed(error);
+        }
         return null;
       });
   }
 
   async editAssignment(
-    assignment: AssignmentDictEntry
+    assignment: AssignmentDictEntry,
+    showNotification: boolean = true
   ): Promise<AssignmentDictEntry | null> {
     return this.assignmentDictCollection
       .doc<AssignmentDictEntry>(assignment.uid)
@@ -164,7 +210,9 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showEditAssignmentSuccess(assignment);
+        if (showNotification) {
+          this.snackBarService.showEditAssignmentSuccess(assignment);
+        }
         return assignment;
       })
       .catch((error: FirebaseError) => {
@@ -173,12 +221,17 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showEditAssignmentFailed(error);
+        if (showNotification) {
+          this.snackBarService.showEditAssignmentFailed(error);
+        }
         return null;
       });
   }
 
-  async deleteAssignment(assignment: AssignmentDictEntry) {
+  async deleteAssignment(
+    assignment: AssignmentDictEntry,
+    showNotification: boolean = true
+  ) {
     this.assignmentDictCollection
       .doc<AssignmentDictEntry>(assignment.uid)
       .delete()
@@ -193,7 +246,9 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showDeleteAssignmentSuccess(assignment);
+        if (showNotification) {
+          this.snackBarService.showDeleteAssignmentSuccess(assignment);
+        }
         return assignment;
       })
       .catch((error: FirebaseError) => {
@@ -202,7 +257,9 @@ export class DictionaryService {
           this.assignmentSubscription.unsubscribe();
         }
         this.assignmentSubscription = this.assignments$.subscribe();
-        this.snackBarService.showDeleteAssignmentFailed(error);
+        if (showNotification) {
+          this.snackBarService.showDeleteAssignmentFailed(error);
+        }
         return null;
       });
   }
@@ -225,7 +282,7 @@ export class DictionaryService {
   }
 
   getClassesByClassOnly$(): Observable<number[]> {
-    return this.getAllClasses$().pipe(
+    return this.getAllClasses$(true).pipe(
       map((classes: ClassDictEntry[]) =>
         classes
           .map(c => c.classNo)
@@ -234,8 +291,17 @@ export class DictionaryService {
     );
   }
 
+  getAllClassesByString$(): Observable<string[]> {
+    return this.getAllClasses$(true).pipe(
+      map((classes: ClassDictEntry[]) =>
+        classes.map(c => `${c.classNo}${c.subclass}`)
+      )
+    );
+  }
+
   async createClass(
-    classObject: ClassDictEntry
+    classObject: ClassDictEntry,
+    showNotification: boolean = true
   ): Promise<ClassDictEntry | null> {
     classObject.uid = this.fireStoreService.createId();
     return this.classDictCollection
@@ -247,7 +313,9 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showCreateClassSuccess(classObject);
+        if (showNotification) {
+          this.snackBarService.showCreateClassSuccess(classObject);
+        }
         return classObject;
       })
       .catch((error: FirebaseError) => {
@@ -256,12 +324,17 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showCreateClassFailed(error);
+        if (showNotification) {
+          this.snackBarService.showCreateClassFailed(error);
+        }
         return null;
       });
   }
 
-  async editClass(classObject: ClassDictEntry): Promise<ClassDictEntry | null> {
+  async editClass(
+    classObject: ClassDictEntry,
+    showNotification: boolean = true
+  ): Promise<ClassDictEntry | null> {
     return this.classDictCollection
       .doc<ClassDictEntry>(classObject.uid)
       .set(classObject)
@@ -277,7 +350,9 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showEditClassSuccess(classObject);
+        if (showNotification) {
+          this.snackBarService.showEditClassSuccess(classObject);
+        }
         return classObject;
       })
       .catch((error: FirebaseError) => {
@@ -286,12 +361,17 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showEditClassFailed(error);
+        if (showNotification) {
+          this.snackBarService.showEditClassFailed(error);
+        }
         return null;
       });
   }
 
-  async deleteClass(classObject: ClassDictEntry) {
+  async deleteClass(
+    classObject: ClassDictEntry,
+    showNotification: boolean = true
+  ) {
     this.classDictCollection
       .doc<ClassDictEntry>(classObject.uid)
       .delete()
@@ -306,7 +386,9 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showDeleteClassSuccess(classObject);
+        if (showNotification) {
+          this.snackBarService.showDeleteClassSuccess(classObject);
+        }
         return classObject;
       })
       .catch((error: FirebaseError) => {
@@ -315,7 +397,9 @@ export class DictionaryService {
           this.classSubscription.unsubscribe();
         }
         this.classSubscription = this.classes$.subscribe();
-        this.snackBarService.showDeleteClassFailed(error);
+        if (showNotification) {
+          this.snackBarService.showDeleteClassFailed(error);
+        }
         return null;
       });
   }
@@ -374,7 +458,8 @@ export class DictionaryService {
 
   setAllActiveIcons$(
     editedMatIcon: MatIconDictEntry,
-    matIcons: MatIconDictEntry[]
+    matIcons: MatIconDictEntry[],
+    showNotification: boolean = true
   ) {
     const doc = {};
     matIcons.forEach((matIcon: MatIconDictEntry) => {
@@ -390,10 +475,14 @@ export class DictionaryService {
     this.activeMatIconDictDoc
       .set(doc)
       .then(() => {
-        this.snackBarService.showEditMatIconSuccess(editedMatIcon);
+        if (showNotification) {
+          this.snackBarService.showEditMatIconSuccess(editedMatIcon);
+        }
       })
       .catch((error: FirebaseError) => {
-        this.snackBarService.showEditMatIconFailed(error);
+        if (showNotification) {
+          this.snackBarService.showEditMatIconFailed(error);
+        }
       });
   }
 
@@ -415,7 +504,8 @@ export class DictionaryService {
   }
 
   async createSubject(
-    subject: SubjectDictEntry
+    subject: SubjectDictEntry,
+    showNotification: boolean = true
   ): Promise<SubjectDictEntry | null> {
     subject.uid = this.fireStoreService.createId();
     return this.subjectDictCollection
@@ -427,7 +517,9 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showCreateSubjectSuccess(subject);
+        if (showNotification) {
+          this.snackBarService.showCreateSubjectSuccess(subject);
+        }
         return subject;
       })
       .catch((error: FirebaseError) => {
@@ -436,13 +528,16 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showCreateSubjectFailed(error);
+        if (showNotification) {
+          this.snackBarService.showCreateSubjectFailed(error);
+        }
         return null;
       });
   }
 
   async editSubject(
-    subject: SubjectDictEntry
+    subject: SubjectDictEntry,
+    showNotification: boolean = true
   ): Promise<SubjectDictEntry | null> {
     return this.subjectDictCollection
       .doc<SubjectDictEntry>(subject.uid)
@@ -459,7 +554,9 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showEditSubjectSuccess(subject);
+        if (showNotification) {
+          this.snackBarService.showEditSubjectSuccess(subject);
+        }
         return subject;
       })
       .catch((error: FirebaseError) => {
@@ -468,12 +565,17 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showEditSubjectFailed(error);
+        if (showNotification) {
+          this.snackBarService.showEditSubjectFailed(error);
+        }
         return null;
       });
   }
 
-  async deleteSubject(subject: SubjectDictEntry) {
+  async deleteSubject(
+    subject: SubjectDictEntry,
+    showNotification: boolean = true
+  ) {
     this.subjectDictCollection
       .doc<SubjectDictEntry>(subject.uid)
       .delete()
@@ -488,7 +590,9 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showDeleteSubjectSuccess(subject);
+        if (showNotification) {
+          this.snackBarService.showDeleteSubjectSuccess(subject);
+        }
         return subject;
       })
       .catch((error: FirebaseError) => {
@@ -497,7 +601,253 @@ export class DictionaryService {
           this.subjectSubscription.unsubscribe();
         }
         this.subjectSubscription = this.subjects$.subscribe();
-        this.snackBarService.showDeleteSubjectFailed(error);
+        if (showNotification) {
+          this.snackBarService.showDeleteSubjectFailed(error);
+        }
+        return null;
+      });
+  }
+
+  // /user-details
+  getAllUserDetails$(sync?: boolean): Observable<UserDetailsDictEntry[]> {
+    return !!sync || !this.userDetailsArray
+      ? this.userDetailsDictCollection.valueChanges().pipe(
+          takeUntil(this.userDetailsArray$),
+          untilDestroyed(this),
+          tap((userDetailsArray: UserDetailsDictEntry[]) => {
+            this.userDetailsArray = userDetailsArray;
+            if (this.userDetailsSubscription) {
+              this.userDetailsSubscription.unsubscribe();
+            }
+            this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+          })
+        )
+      : of(this.userDetailsArray);
+  }
+
+  async createUserDetails(
+    userDetails: UserDetailsDictEntry,
+    showNotification: boolean = true
+  ): Promise<UserDetailsDictEntry | null> {
+    userDetails.uid = this.fireStoreService.createId();
+    return this.userDetailsDictCollection
+      .doc<UserDetailsDictEntry>(userDetails.uid)
+      .set(userDetails)
+      .then(() => {
+        this.userDetailsArray = [...this.userDetailsArray, userDetails];
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showCreateUserDetailsSuccess(userDetails);
+        }
+        return userDetails;
+      })
+      .catch((error: FirebaseError) => {
+        this.userDetailsArray = null;
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showCreateUserDetailsFailed(error);
+        }
+        return null;
+      });
+  }
+
+  async editUserDetails(
+    userDetails: UserDetailsDictEntry,
+    showNotification: boolean = true
+  ): Promise<UserDetailsDictEntry | null> {
+    return this.userDetailsDictCollection
+      .doc<UserDetailsDictEntry>(userDetails.uid)
+      .set(userDetails)
+      .then(() => {
+        this.userDetailsArray.splice(
+          this.userDetailsArray.findIndex(
+            (_: UserDetailsDictEntry) => _.uid === userDetails.uid
+          ),
+          1,
+          userDetails
+        );
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showEditUserDetailsSuccess(userDetails);
+        }
+        return userDetails;
+      })
+      .catch((error: FirebaseError) => {
+        this.userDetailsArray = null;
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showEditUserDetailsFailed(error);
+        }
+        return null;
+      });
+  }
+
+  async deleteUserDetails(
+    userDetails: UserDetailsDictEntry,
+    showNotification: boolean = true
+  ) {
+    this.userDetailsDictCollection
+      .doc<UserDetailsDictEntry>(userDetails.uid)
+      .delete()
+      .then(() => {
+        this.userDetailsArray.splice(
+          this.userDetailsArray.findIndex(
+            (_: UserDetailsDictEntry) => _.uid === userDetails.uid
+          ),
+          1
+        );
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showDeleteUserDetailsSuccess(userDetails);
+        }
+        return userDetails;
+      })
+      .catch((error: FirebaseError) => {
+        this.userDetailsArray = null;
+        if (this.userDetailsSubscription) {
+          this.userDetailsSubscription.unsubscribe();
+        }
+        this.userDetailsSubscription = this.userDetailsArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showDeleteUserDetailsFailed(error);
+        }
+        return null;
+      });
+  }
+
+  // /user-roles
+  getAllUserRoles$(sync?: boolean): Observable<UserRolesDictEntry[]> {
+    return !!sync || !this.userRolesArray
+      ? this.userRolesDictCollection.valueChanges().pipe(
+          takeUntil(this.userRolesArray$),
+          untilDestroyed(this),
+          tap((userRolesArray: UserRolesDictEntry[]) => {
+            this.userRolesArray = userRolesArray;
+            if (this.userRolesSubscription) {
+              this.userRolesSubscription.unsubscribe();
+            }
+            this.userRolesSubscription = this.userRolesArray$.subscribe();
+          })
+        )
+      : of(this.userRolesArray);
+  }
+
+  async createUserRoles(
+    userRoles: UserRolesDictEntry,
+    showNotification: boolean = true
+  ): Promise<UserRolesDictEntry | null> {
+    userRoles.uid = this.fireStoreService.createId();
+    return this.userRolesDictCollection
+      .doc<UserRolesDictEntry>(userRoles.uid)
+      .set(userRoles)
+      .then(() => {
+        this.userRolesArray = [...this.userRolesArray, userRoles];
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showCreateUserRolesSuccess(userRoles);
+        }
+        return userRoles;
+      })
+      .catch((error: FirebaseError) => {
+        this.userRolesArray = null;
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showCreateUserRolesFailed(error);
+        }
+        return null;
+      });
+  }
+
+  async editUserRoles(
+    userRoles: UserRolesDictEntry,
+    showNotification: boolean = true
+  ): Promise<UserRolesDictEntry | null> {
+    return this.userRolesDictCollection
+      .doc<UserRolesDictEntry>(userRoles.uid)
+      .set(userRoles)
+      .then(() => {
+        this.userRolesArray.splice(
+          this.userRolesArray.findIndex(
+            (_: UserRolesDictEntry) => _.uid === userRoles.uid
+          ),
+          1,
+          userRoles
+        );
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showEditUserRolesSuccess(userRoles);
+        }
+        return userRoles;
+      })
+      .catch((error: FirebaseError) => {
+        this.userRolesArray = null;
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showEditUserRolesFailed(error);
+        }
+        return null;
+      });
+  }
+
+  async deleteUserRoles(
+    userRoles: UserRolesDictEntry,
+    showNotification: boolean = true
+  ) {
+    this.userRolesDictCollection
+      .doc<UserRolesDictEntry>(userRoles.uid)
+      .delete()
+      .then(() => {
+        this.userRolesArray.splice(
+          this.userRolesArray.findIndex(
+            (_: UserRolesDictEntry) => _.uid === userRoles.uid
+          ),
+          1
+        );
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showDeleteUserRolesSuccess(userRoles);
+        }
+        return userRoles;
+      })
+      .catch((error: FirebaseError) => {
+        this.userRolesArray = null;
+        if (this.userRolesSubscription) {
+          this.userRolesSubscription.unsubscribe();
+        }
+        this.userRolesSubscription = this.userRolesArray$.subscribe();
+        if (showNotification) {
+          this.snackBarService.showDeleteUserRolesFailed(error);
+        }
         return null;
       });
   }

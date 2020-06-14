@@ -9,6 +9,15 @@
       <div mat-card-avatar class="register-key-mat-avatar"></div>
       <mat-card-title>Zarejestruj się do portalu</mat-card-title>
       <mat-card-subtitle>podając wymagane dane</mat-card-subtitle>
+      <div fxFlex></div>
+      <button
+        mat-mini-fab
+        color="primary"
+        matTooltip="Przypomnij hasło"
+        (click)="onPasswordRecoveryButtonClick()"
+      >
+        <mat-icon>admin_panel_settings</mat-icon>
+      </button>
     </mat-card-header>
     <mat-divider class="register-divider"></mat-divider>
     <mat-card-content
@@ -134,7 +143,7 @@
         </button>
       </form>
     </mat-card-content>
-    <mat-card-actions class="register-card-actions"></mat-card-actions>
+    <mat-card-actions class="empty-card-actions"></mat-card-actions>
     <cho-spinner
       [loadingMessage]="loadingMessage"
       [isLoading]="isLoading"

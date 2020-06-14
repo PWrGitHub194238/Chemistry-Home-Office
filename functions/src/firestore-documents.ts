@@ -3,6 +3,7 @@ import { HomeworkPath } from "./models/homework-path.model";
 import { SentHomework } from "./models/sent-homework.model";
 import { UserDetails } from "./models/user/user-details.model";
 import { UserRoles } from "./models/user/user-roles.model";
+import { SubjectDictEntry } from "./models/dictionaries/subject-dict-entry.model";
 
 export async function getSentHomework(uid: string): Promise<SentHomework> {
   const document = await getDocumentByUid("sent-homeworks", uid);
@@ -29,6 +30,16 @@ export async function getHomeworkPaths(uid: string): Promise<HomeworkPath> {
     classNo: document.get("classNo"),
     topic: document.get("topic"),
     assignments: document.get("assignments")
+  };
+}
+
+export async function getSubject(uid: string): Promise<SubjectDictEntry> {
+  const document = await getDocumentByUid("subject-dict", uid);
+
+  return {
+    uid: document.get("uid"),
+    name: document.get("name"),
+    teacherEmail: document.get("teacherEmail")
   };
 }
 

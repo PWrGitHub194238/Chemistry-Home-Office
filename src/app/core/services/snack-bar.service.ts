@@ -8,7 +8,9 @@ import {
   ClassDictEntry,
   MatIconDictEntry,
   SubjectDictEntry,
-  UserDetails
+  UserDetailsDictEntry,
+  UserRolesDictEntry,
+  UserDisplayDict
 } from "../models";
 import { User } from "../models/user/user.model";
 
@@ -64,7 +66,7 @@ export class SnackBarService {
     });
   }
 
-  showHomeworkSent(homeworkPath: HomeworkPath) {
+  showHomeworkSent(sentHomework: SentHomework) {
     this.snackBar.openFromComponent(SnackBarComponent, {
       data: {
         header: "Zadanie domowe przesłane",
@@ -112,7 +114,7 @@ export class SnackBarService {
     });
   }
 
-  showUserDetailsUpdated(userDetails: UserDetails) {
+  showUserDetailsUpdated(userDetails: UserDetailsDictEntry) {
     this.snackBar.openFromComponent(SnackBarComponent, {
       data: {
         header: "Dane zaktualizowane",
@@ -244,6 +246,46 @@ export class SnackBarService {
     });
   }
 
+  showSentPasswordResetRequestSuccess(userDisplayName: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        color: "primary",
+        message: `Formularz resetujący hasło został wysłany do ${userDisplayName}!`
+      },
+      ...this.displayDefaultconfig,
+      duration: 2000
+    });
+  }
+
+  showSentPasswordResetRequestFailed(error: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Coś poszło nie tak :(",
+        color: "warn",
+        message: `Wysłanie formularza resetującego hasło użytkownika nie powiodło się (${error})`
+      },
+      ...this.displayDefaultconfig
+    });
+  }
+
+  showSentEmailVerificationRequestSuccess(userDisplayName: string) {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        color: "primary",
+        message: `Został wysłany e-mail do weryfikacji adresu e-mail użytkownika ${userDisplayName}!`
+      },
+      ...this.displayDefaultconfig,
+      duration: 2000
+    });
+  }
+
+  showSentEmailVerificationRequestFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Wysłanie wiadomości do weryfikacji adresu e-mail użytkownika nie powiodło się",
+      error
+    );
+  }
+
   // /assignment-dict
 
   showCreateAssignmentSuccess(assignment: AssignmentDictEntry) {
@@ -355,7 +397,7 @@ export class SnackBarService {
   showEditSentHomeworkSuccess(sentHomework: SentHomework) {
     return this.showFirebaseDocumentActionSuccess(
       "Zmieniono przesłane zadanie!",
-      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject}) zostało zmienione.`
+      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject.name}) zostało zmienione.`
     );
   }
 
@@ -369,7 +411,7 @@ export class SnackBarService {
   showDeleteSentHomeworkSuccess(sentHomework: SentHomework) {
     return this.showFirebaseDocumentActionSuccess(
       "Usunięto przesłane zadanie!",
-      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject}) zostało usunięte.`
+      `Zadanie przesłane przez '${sentHomework.displayName}' (klasa ${sentHomework.userDetails.studentClass}) do leckji '${sentHomework.homeworkPath.topic}' (${sentHomework.homeworkPath.subject.name}) zostało usunięte.`
     );
   }
 
@@ -424,6 +466,108 @@ export class SnackBarService {
     );
   }
 
+  // /user-details
+
+  showCreateUserDetailsSuccess(userDetails: UserDetailsDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano  wpis dla szczegółów użytkownika!",
+      "Szczegóły dla użytkownika zostały dodane."
+    );
+  }
+
+  showCreateUserDetailsFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać szczegółów użytkownika",
+      error
+    );
+  }
+
+  showEditUserDetailsSuccess(userDetails: UserDetailsDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono szczegóły użytkownika!",
+      "Szczegóły dla użytkownika zostały zmienione."
+    );
+  }
+
+  showEditUserDetailsFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmienić szczegółów użytkownika",
+      error
+    );
+  }
+
+  showDeleteUserDetailsSuccess(UserDetails: UserDetailsDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto szczegóły użytkownika!",
+      "Szczegóły dla użytkownika zostały usunięte"
+    );
+  }
+
+  showDeleteUserDetailsFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć szczegółów użytkownika",
+      error
+    );
+  }
+
+  // /user-roles
+
+  showCreateUserRolesSuccess(userRoles: UserRolesDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Dodano  wpis dla ról użytkownika!",
+      "Role dla użytkownika zostały dodane."
+    );
+  }
+
+  showCreateUserRolesFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się dodać ról użytkownika",
+      error
+    );
+  }
+
+  showEditUserRolesSuccess(userRoles: UserRolesDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono role użytkownika!",
+      "Role dla użytkownika zostały zmienione."
+    );
+  }
+
+  showEditUserRolesFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się zmienić ról użytkownika",
+      error
+    );
+  }
+
+  showDeleteUserRolesSuccess(userRoles: UserRolesDictEntry) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto role użytkownika!",
+      "Role dla użytkownika zostały usunięte"
+    );
+  }
+
+  showDeleteUserRolesFailed(error: FirebaseError) {
+    return this.showFirebaseDocumentActionFailed(
+      "Nie udało się usunąć ról użytkownika",
+      error
+    );
+  }
+
+  showEditUserSuccess(user: UserDisplayDict) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Zmieniono użytkownika!",
+      "Konto użytkownika zmienione."
+    );
+  }
+
+  showDeleteUserSuccess(user: UserDisplayDict) {
+    return this.showFirebaseDocumentActionSuccess(
+      "Usunięto użytkownika!",
+      "Konto użytkownika zostało usunięte"
+    );
+  }
+
   private showFirebaseDocumentActionSuccess(header: string, message: string) {
     this.snackBar.openFromComponent(SnackBarComponent, {
       data: {
@@ -466,7 +610,7 @@ export class SnackBarService {
     switch (code) {
       case "permission-denied":
       default:
-        return "brak uprawnień";
+        return code;
     }
   }
 }

@@ -6,6 +6,7 @@ import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { HomeworkPath } from "src/app/models";
+import { getDate } from "src/app/shared/helpers/date.helper";
 import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { HomeworkPathsDialogComponent } from "../homework-paths-dialog/homework-paths-dialog.component";
@@ -74,11 +75,29 @@ export class HomeworkPathsComponent
     };
   }
 
+  onItemAdded(addedItem: HomeworkPath) {
+    this.dataSource.data.push(addedItem);
+    super.onItemAdded(addedItem);
+  }
+
   getEditDialogData() {
     return {
       assignmentsDict: this.assignmentsDict,
       matIconsDict: this.matIconsDict
     };
+  }
+
+  onItemEdited(editedItem?: HomeworkPath) {
+    if (editedItem) {
+      this.dataSource.data.splice(
+        this.dataSource.data.findIndex(
+          (item: HomeworkPath) => item.uid === editedItem.uid
+        ),
+        1,
+        editedItem
+      );
+      super.onItemEdited(editedItem);
+    }
   }
 
   getOnDeleteAlertDialogOptions(selectedRow: HomeworkPath): AlertDialog {
@@ -90,8 +109,15 @@ export class HomeworkPathsComponent
     };
   }
 
-  onDeleteAction(selectedRow: HomeworkPath) {
-    this.firestoreDocumentService.deleteHomeworkPath(selectedRow);
+  onItemDeleted(deletedItem: HomeworkPath) {
+    this.firestoreDocumentService.deleteHomeworkPath(deletedItem);
+    this.dataSource.data.splice(
+      this.dataSource.data.findIndex(
+        (item: HomeworkPath) => item.uid === deletedItem.uid
+      ),
+      1
+    );
+    super.onItemDeleted(deletedItem);
   }
 
   getSelectedHomeworkPathLink(homeworkPath: HomeworkPath): string {
@@ -102,6 +128,10 @@ export class HomeworkPathsComponent
 
   onSelectedHomeworkPathLinkCopied() {
     this.snackBarService.showOnSelectedHomeworkPathLinkCopied();
+  }
+
+  getDate(date: Date | any) {
+    return getDate(date);
   }
 
   private loadResolvedData() {

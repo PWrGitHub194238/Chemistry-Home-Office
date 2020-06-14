@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   MatDialog,
@@ -12,8 +12,9 @@ import {
   NOT_FOUND_ICON_IDX
 } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
+import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @Component({
   selector: "cho-assignment-dict-dialog",
@@ -31,6 +32,14 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
     return this.form.get("icon") as FormControl;
   }
 
+  get isLoading(): boolean {
+    return this.spinnerService.isLoading;
+  }
+
+  get loadingMessage(): boolean {
+    return this.spinnerService.loadingMessage;
+  }
+
   get matIconsDict(): MatIconDictEntry[] {
     return this.data["matIconsDict"] as MatIconDictEntry[];
   }
@@ -41,13 +50,15 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
     private snackBarService: SnackBarService,
     dialogRef: MatDialogRef<AssignmentDictDialogComponent>,
     matDialog: MatDialog,
+    spinnerService: SpinnerService,
+    changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     data: {
       selectedRow: AssignmentDictEntry | null;
       matIconsDict: MatIconDictEntry[];
     }
   ) {
-    super(dialogRef, matDialog, data);
+    super(dialogRef, matDialog, spinnerService, changeDetector, data);
   }
 
   createNewForm() {
@@ -83,11 +94,15 @@ export class AssignmentDictDialogComponent extends BaseTablePanelDialogComponent
     };
   }
 
-  performAdd(item: AssignmentDictEntry): Promise<AssignmentDictEntry> {
+  protected async performAdd(
+    item: AssignmentDictEntry
+  ): Promise<AssignmentDictEntry> {
     return this.dictionaryService.createAssignment(item);
   }
 
-  performEdit(item: AssignmentDictEntry): Promise<AssignmentDictEntry> {
+  protected async performEdit(
+    item: AssignmentDictEntry
+  ): Promise<AssignmentDictEntry> {
     return this.dictionaryService.editAssignment(item);
   }
 

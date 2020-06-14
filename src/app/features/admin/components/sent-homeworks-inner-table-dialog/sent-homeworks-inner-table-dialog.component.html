@@ -73,6 +73,10 @@
       </cho-sent-homeworks-inner-files-table>
     </fieldset>
   </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
 </mat-dialog-content>
 <mat-dialog-actions fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>

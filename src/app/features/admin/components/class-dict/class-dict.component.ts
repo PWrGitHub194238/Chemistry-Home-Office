@@ -43,6 +43,35 @@ export class ClassDictComponent
     super.ngOnDestroy();
   }
 
+  onItemAdded(addedItem: ClassDictEntry) {
+    this.dataSource.data.push(addedItem);
+    super.onItemAdded(addedItem);
+  }
+
+  onItemEdited(editedItem?: ClassDictEntry) {
+    if (editedItem) {
+      this.dataSource.data.splice(
+        this.dataSource.data.findIndex(
+          (item: ClassDictEntry) => item.uid === editedItem.uid
+        ),
+        1,
+        editedItem
+      );
+      super.onItemEdited(editedItem);
+    }
+  }
+
+  onItemDeleted(deletedItem: ClassDictEntry) {
+    this.dictionaryService.deleteClass(deletedItem);
+    this.dataSource.data.splice(
+      this.dataSource.data.findIndex(
+        (item: ClassDictEntry) => item.uid === deletedItem.uid
+      ),
+      1
+    );
+    super.onItemDeleted(deletedItem);
+  }
+
   getOnDeleteAlertDialogOptions(selectedRow: ClassDictEntry): AlertDialog {
     return {
       title: "Usuwanie klasy",
@@ -50,9 +79,5 @@ export class ClassDictComponent
       cancelLabel: "Nie, nie usuwaj",
       okLabel: "Tak, usuwamy!"
     };
-  }
-
-  onDeleteAction(selectedRow: ClassDictEntry) {
-    this.dictionaryService.deleteClass(selectedRow);
   }
 }

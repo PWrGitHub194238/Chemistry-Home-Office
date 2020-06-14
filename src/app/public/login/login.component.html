@@ -11,6 +11,15 @@
       <mat-card-subtitle
         >z wykorzystaniem jednej z poniższych metod</mat-card-subtitle
       >
+      <div fxFlex></div>
+      <button
+        mat-mini-fab
+        color="primary"
+        matTooltip="Przypomnij hasło"
+        (click)="onPasswordRecoveryButtonClick()"
+      >
+        <mat-icon>admin_panel_settings</mat-icon>
+      </button>
     </mat-card-header>
     <mat-divider class="login-divider"></mat-divider>
     <mat-card-content
@@ -76,7 +85,7 @@
         (signInFailure)="errorCallback($event)"
       ></firebase-ui>
     </mat-card-content>
-    <mat-card-actions class="login-card-actions"></mat-card-actions>
+    <mat-card-actions class="empty-card-actions"></mat-card-actions>
     <cho-spinner
       [loadingMessage]="loadingMessage"
       [isLoading]="isLoading"

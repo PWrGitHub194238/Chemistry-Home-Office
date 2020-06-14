@@ -1,9 +1,9 @@
-import { AssignmentDictEntry, Entity } from "../core/models";
+import { AssignmentDictEntry, Entity, SubjectDictEntry } from "../core/models";
 
 export interface HomeworkPath extends Entity {
   active: boolean;
   date: Date;
-  subject: string;
+  subject: SubjectDictEntry;
   classNo: number;
   topic: string;
   assignments: AssignmentDictEntry[];

@@ -24,11 +24,11 @@ import {
   taskStatusToColor,
   taskStatusToString
 } from "src/app/models";
+import { getDate } from "src/app/shared/helpers/date.helper";
 import { FileRowForm } from "../../models/file-row-form.mode";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { SentHomeworksInnerTableDialogComponent } from "../sent-homeworks-inner-table-dialog/sent-homeworks-inner-table-dialog.component";
 import { SentHomeworksInnerTableDataSource } from "./sent-homeworks-inner-table.data-source";
-import { SendHomeworkComponent } from "src/app/features/send-homework/components/send-homework/send-homework.component";
 
 @UntilDestroy()
 @Component({
@@ -74,9 +74,7 @@ export class SentHomeworksInnerTableComponent
   }
 
   ngOnInit() {
-    (<SentHomeworksInnerTableDataSource>(
-      this.dataSource
-    )).sentHomeworks = this.data;
+    this.dataSource.data = this.data;
     super.ngOnInit();
   }
 
@@ -86,7 +84,7 @@ export class SentHomeworksInnerTableComponent
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.filter) {
-      this.dataSource.filter = String(changes.filter);
+      this.dataSource.filter = changes.filter.currentValue;
     }
   }
 
@@ -94,10 +92,9 @@ export class SentHomeworksInnerTableComponent
     super.ngOnDestroy();
   }
 
-  openEditSelectedItemDialog() {
-    let sentHomework = this.selectedRow;
+  openEditSelectedItemDialog(selectedRow: SentHomework) {
     this.firestorageDocumentService
-      .getFilesInfo$(this.homeworkPath, sentHomework)
+      .getFilesInfo$(this.homeworkPath, selectedRow)
       .pipe(untilDestroyed(this))
       .subscribe((fileRows: FileRowForm[]) => {
         const matDialogRef = this.matDialog.open(this.editDialog, {
@@ -106,7 +103,7 @@ export class SentHomeworksInnerTableComponent
           disableClose: true,
           closeOnNavigation: false,
           data: {
-            selectedRow: sentHomework,
+            selectedRow,
             homeworkPath: this.homeworkPath,
             fileRows: fileRows
           }
@@ -117,7 +114,7 @@ export class SentHomeworksInnerTableComponent
           .pipe(untilDestroyed(this))
           .subscribe((editedItem: SentHomework) => {
             if (editedItem) {
-              sentHomework.files.forEach(
+              selectedRow.files.forEach(
                 (file: SentHomeworkFile, index: number) => {
                   file.status = editedItem.files[index].status;
                 }
@@ -195,5 +192,9 @@ export class SentHomeworksInnerTableComponent
     );
 
     await this.firestoreDocumentService.editSentHomework$(row);
+  }
+
+  getDate(date: Date | any) {
+    return getDate(date);
   }
 }

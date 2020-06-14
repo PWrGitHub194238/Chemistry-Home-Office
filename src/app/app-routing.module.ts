@@ -3,9 +3,10 @@ import { RouterModule, Routes } from "@angular/router";
 import { IsAdminGuard } from "./core/guards/is-admin.guard";
 import { IsStudentGuard } from "./core/guards/is-student.guard";
 import { LoginGuard } from "./core/guards/login.guard";
+import { HomeComponent } from "./public/home/home.component";
 import { LoginComponent } from "./public/login/login.component";
 import { RegisterComponent } from "./public/register/register.component";
-import { HomeComponent } from "./public/home/home.component";
+import { ResetPasswordComponent } from "./public/reset-password/reset-password.component";
 
 const routes: Routes = [
   {
@@ -42,6 +43,10 @@ const routes: Routes = [
       {
         path: "register",
         component: RegisterComponent
+      },
+      {
+        path: "resetPassword",
+        component: ResetPasswordComponent
       }
     ]
   },

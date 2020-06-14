@@ -21,7 +21,7 @@
     </cho-row-action-button>
   </mat-card-content>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" class="search">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Szukaj</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Nazwa klasy" />
@@ -72,13 +72,13 @@
               tooltip="Edytuj klasę"
               icon="edit"
               color="primary"
-              (action)="openEditSelectedItemDialog()"
+              (action)="openEditSelectedItemDialog(class)"
             ></cho-row-action-button>
             <cho-row-action-button
               tooltip="Usuń klasę"
               icon="delete_outline"
               color="warn"
-              (action)="openDeleteSelectedItemDialog()"
+              (action)="openDeleteSelectedItemDialog(class)"
             ></cho-row-action-button>
           </div>
         </span>
@@ -91,7 +91,7 @@
       *matRowDef="let class; columns: columnsToDisplay"
       (mouseenter)="mouseEnter(class)"
       (mouseleave)="mouseLeave()"
-      (click)="openViewSelectedItemDialog()"
+      (click)="openViewSelectedItemDialog(class)"
     ></tr>
   </table>
 

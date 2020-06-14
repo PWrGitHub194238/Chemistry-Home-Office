@@ -15,6 +15,7 @@ import {
 export class RowSmallActionButtonComponent {
   @Input() matTooltipClass: string;
   @Input() tooltip: string;
+  @Input() disabled: boolean;
   @Input() class: string;
   @Input() icon: string;
   @Input() iconClass: string;

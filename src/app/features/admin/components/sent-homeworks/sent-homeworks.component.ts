@@ -12,8 +12,8 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { AssignmentDictEntry, MatIconDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { FirestorageDocumentService } from "src/app/core/services/firestorage-document.service";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { HomeworkPath, SentHomework, SentHomeworkFile } from "src/app/models";
+import { getDate } from "src/app/shared/helpers/date.helper";
 import { FileRowForm } from "../../models";
 import { SentHomeworksForPath } from "../../models/sent-homeworks-for-path.model";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
@@ -56,7 +56,6 @@ export class SentHomeworksComponent
   private matIconsDict: MatIconDictEntry[];
 
   constructor(
-    private firestoreDocumentService: FirestoreDocumentService,
     private firestorageDocumentService: FirestorageDocumentService,
     dataSource: SentHomeworksDataSource,
     authService: AuthService,
@@ -87,12 +86,12 @@ export class SentHomeworksComponent
     return row === this.expandedItem;
   }
 
-  openViewSelectedItemDialog() {
+  openViewSelectedItemDialog(selectedRow: SentHomeworksForPath) {
     this.matDialog.open(HomeworkPathsDialogComponent, {
       height: "auto",
       width: "auto",
       data: {
-        selectedRow: this.selectedRow as HomeworkPath,
+        selectedRow: selectedRow as HomeworkPath,
         assignmentsDict: this.assignmentsDict,
         matIconsDict: this.matIconsDict,
         viewMode: true
@@ -119,6 +118,10 @@ export class SentHomeworksComponent
 
   onGalleryClosed() {
     this.selectedFileForGallery = undefined;
+  }
+
+  getDate(date: Date | any) {
+    return getDate(date);
   }
 
   private loadResolvedData() {

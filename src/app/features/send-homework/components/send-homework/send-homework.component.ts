@@ -103,7 +103,7 @@ export class SendHomeworkComponent implements OnInit {
 
       this.emailSenderService.emailSent$
         .pipe(untilDestroyed(this))
-        .subscribe((resp: SubjectSuccess | SubjectError) => {
+        .subscribe((resp: SentHomework | SubjectError) => {
           const state = {};
           if (resp["error"]) {
             state[RedirectToLoginState.SentHomeworkFailed] =
@@ -111,7 +111,8 @@ export class SendHomeworkComponent implements OnInit {
           } else {
             this.isSending = false;
             const state = {};
-            state[RedirectToLoginState.SentHomeworkSuccess] = <HomeworkPath>(
+
+            state[RedirectToLoginState.SentHomeworkSuccess] = <SentHomework>(
               resp
             );
           }

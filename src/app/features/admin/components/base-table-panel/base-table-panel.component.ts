@@ -10,7 +10,7 @@ export abstract class BaseTablePanelComponent<
 > extends BaseTableComponent<T, U> {
   constructor(
     dataSource: BaseTableDataSource<T>,
-    private authService: AuthService,
+    protected authService: AuthService,
     matDialog: MatDialog
   ) {
     super(dataSource, matDialog);

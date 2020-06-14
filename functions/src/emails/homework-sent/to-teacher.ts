@@ -64,7 +64,7 @@ function getTeacherNotificationSubject(
   senderDetails: UserDetails,
   assignment: string
 ): string {
-  return `[${homeworkPath.subject}][${senderDetails.studentClass}][${
+  return `[${homeworkPath.subject.name}][${senderDetails.studentClass}][${
     homeworkPath.topic
   }][${senderDetails.studentNo}][${
     sender.displayName ? sender.displayName : sender.email
@@ -100,7 +100,7 @@ function getTeacherNotificationHtmlBody(
       studentClass: senderDetails.studentClass,
       studentNo: senderDetails.studentNo,
       assignment: assignment,
-      subject: homeworkPath.subject,
+      subject: homeworkPath.subject.name,
       topic: homeworkPath.topic,
       attachmentsCount: sentHomeworkDocument.files.length,
       studentEmail: sender.email,

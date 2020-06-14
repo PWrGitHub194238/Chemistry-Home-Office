@@ -16,7 +16,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { filter } from "rxjs/operators";
 import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
 import { SubjectError, SubjectSuccess } from "src/app/core/models";
-import { UserDetails } from "src/app/core/models/User/user-details.model";
+import { UserDetailsDictEntry } from "src/app/core/models/user/user-details-dict-entry.model";
 import { AuthService } from "src/app/core/services/auth.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
@@ -133,6 +133,10 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     this.authService.redirectToRegister(this.returnUrl);
   }
 
+  onPasswordRecoveryButtonClick() {
+    this.authService.redirectToPasswordRecovery(this.returnUrl);
+  }
+
   successCallback(signInSuccessData: FirebaseUISignInSuccessWithAuthResult) {
     this.spinnerService.hideSpinner();
   }
@@ -191,10 +195,12 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     bottomSheetRef
       .afterDismissed()
       .pipe(untilDestroyed(this))
-      .subscribe((result: UserDetails) => {
+      .subscribe((result: UserDetailsDictEntry) => {
         this.authService.user.details = result;
         const state = {};
-        state[RedirectToLoginState.UserDetailsUpdated] = <UserDetails>result;
+        state[RedirectToLoginState.UserDetailsUpdated] = <UserDetailsDictEntry>(
+          result
+        );
         this.authService.redirectToLogin(this.returnUrl, state);
       });
   }

@@ -14,8 +14,8 @@ import {
   ClassDictEntry,
   MatIconDictEntry,
   SubjectDictEntry,
-  UserDetails,
-  UserRoles
+  UserDetailsDictEntry,
+  UserRolesDictEntry
 } from "../models";
 import { DictionaryService } from "./dictionary.service";
 import { SnackBarService } from "./snack-bar.service";
@@ -44,8 +44,10 @@ export class FirestoreDocumentService {
   private sentHomeworksForPaths$: Observable<SentHomeworksForPath[] | null>;
   private sentHomeworksForPathSubscription: Subscription;
 
-  private userDetailsCollection: AngularFirestoreCollection<UserDetails>;
-  private userRolesCollection: AngularFirestoreCollection<UserRoles>;
+  private userDetailsCollection: AngularFirestoreCollection<
+    UserDetailsDictEntry
+  >;
+  private userRolesCollection: AngularFirestoreCollection<UserRolesDictEntry>;
 
   constructor(
     private fireStoreService: AngularFirestore,
@@ -77,12 +79,12 @@ export class FirestoreDocumentService {
       map(_ => this.sentHomeworksForPaths)
     );
 
-    this.userDetailsCollection = this.fireStoreService.collection<UserDetails>(
-      "/user-details"
-    );
-    this.userRolesCollection = this.fireStoreService.collection<UserRoles>(
-      "/user-roles"
-    );
+    this.userDetailsCollection = this.fireStoreService.collection<
+      UserDetailsDictEntry
+    >("/user-details");
+    this.userRolesCollection = this.fireStoreService.collection<
+      UserRolesDictEntry
+    >("/user-roles");
   }
 
   // /assignment-dict
@@ -194,7 +196,7 @@ export class FirestoreDocumentService {
   }
 
   // /sent-homeworks
-  getSentHomeworks$(sync?: boolean): Observable<SentHomework[]> {
+  getAllSentHomeworks$(sync?: boolean): Observable<SentHomework[]> {
     return !!sync || !this.sentHomeworks
       ? this.sentHomeworkCollection.valueChanges().pipe(
           take(1),
@@ -215,7 +217,7 @@ export class FirestoreDocumentService {
     sync?: boolean
   ): Observable<SentHomeworksForPath[]> {
     return !!sync || !this.sentHomeworksForPaths
-      ? this.getSentHomeworks$().pipe(
+      ? this.getAllSentHomeworks$().pipe(
           takeUntil(this.sentHomeworksForPaths$),
           untilDestroyed(this),
           map((sentHomeworks: SentHomework[]) => {
@@ -299,22 +301,27 @@ export class FirestoreDocumentService {
   }
 
   // /user-details
-  getUserDetails$(uid: string): Observable<UserDetails | null> {
+  getUserDetails$(uid: string): Observable<UserDetailsDictEntry | null> {
     return this.userDetailsCollection
-      .doc<UserDetails>(uid)
+      .doc<UserDetailsDictEntry>(uid)
       .get()
       .pipe(map(document => this.getUserDetails(document)));
   }
 
-  setUserDetails$(uid: string, userDetails: UserDetails): Promise<void> {
+  setUserDetails$(
+    uid: string,
+    userDetails: UserDetailsDictEntry
+  ): Promise<void> {
     userDetails.uid = uid;
-    return this.userDetailsCollection.doc<UserDetails>(uid).set(userDetails);
+    return this.userDetailsCollection
+      .doc<UserDetailsDictEntry>(uid)
+      .set(userDetails);
   }
 
   // /user-roles
-  getUserRoles$(uid: string): Observable<UserRoles | null> {
+  getUserRoles$(uid: string): Observable<UserRolesDictEntry | null> {
     return this.userRolesCollection
-      .doc<UserRoles>(uid)
+      .doc<UserRolesDictEntry>(uid)
       .get()
       .pipe(
         untilDestroyed(this),
@@ -322,15 +329,17 @@ export class FirestoreDocumentService {
       );
   }
 
-  getUserRolesOrCreateDefault$(uid: string): Observable<UserRoles | null> {
-    const defaultUserRoles: UserRoles = {
+  getUserRolesOrCreateDefault$(
+    uid: string
+  ): Observable<UserRolesDictEntry | null> {
+    const defaultUserRoles: UserRolesDictEntry = {
       uid,
       admin: false,
       student: true
     };
 
     return this.getUserRoles$(uid).pipe(
-      switchMap((userRoles: UserRoles | null) =>
+      switchMap((userRoles: UserRolesDictEntry | null) =>
         userRoles
           ? of(userRoles)
           : this.setUserRoles$(uid, defaultUserRoles)
@@ -340,9 +349,11 @@ export class FirestoreDocumentService {
     );
   }
 
-  setUserRoles$(uid: string, userRoles: UserRoles): Promise<void> {
+  setUserRoles$(uid: string, userRoles: UserRolesDictEntry): Promise<void> {
     userRoles.uid = uid;
-    return this.userRolesCollection.doc<UserRoles>(uid).set({ ...userRoles });
+    return this.userRolesCollection
+      .doc<UserRolesDictEntry>(uid)
+      .set({ ...userRoles });
   }
 
   // private
@@ -366,7 +377,7 @@ export class FirestoreDocumentService {
 
   private getUserDetails(
     document: firebase.firestore.DocumentData
-  ): UserDetails | null {
+  ): UserDetailsDictEntry | null {
     if (!document.exists) {
       return null;
     }
@@ -380,7 +391,7 @@ export class FirestoreDocumentService {
 
   private getUserRoles(
     document: firebase.firestore.DocumentData
-  ): UserRoles | null {
+  ): UserRolesDictEntry | null {
     if (!document.exists) {
       return null;
     }

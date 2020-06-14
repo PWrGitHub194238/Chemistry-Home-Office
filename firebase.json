@@ -12,12 +12,36 @@
         "function": "cleanupCloudFirestore"
       },
       {
+        "source": "/chemistry-home-office/us-central1/getUserAdminDetails",
+        "function": "getUserAdminDetails"
+      },
+      {
         "source": "/chemistry-home-office/us-central1/getUserData",
         "function": "getUserData"
       },
       {
+        "source": "/chemistry-home-office/us-central1/removeUserData",
+        "function": "removeUserData"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/resetUserPassword",
+        "function": "resetUserPassword"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/sendEmail",
+        "function": "sendEmail"
+      },
+      {
         "source": "/chemistry-home-office/us-central1/sendHomeworkSentNotificationEmail",
         "function": "sendHomeworkSentNotificationEmail"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/updateUserData",
+        "function": "updateUserData"
+      },
+      {
+        "source": "/chemistry-home-office/us-central1/verifyUserEmail",
+        "function": "verifyUserEmail"
       },
       {
         "source": "**",

@@ -1,4 +1,4 @@
-import { Inject, OnDestroy, OnInit } from "@angular/core";
+import { Inject, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import {
   MatDialog,
@@ -6,6 +6,8 @@ import {
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
 import { Subscription } from "rxjs";
+import { SpinnerService } from "src/app/core/services/spinner.service";
+import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
 import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
 import { EntityDialog } from "../../models/entity-dialog.model";
@@ -31,7 +33,9 @@ export abstract class BaseTablePanelDialogComponent<T>
 
   constructor(
     private dialogRef: MatDialogRef<BaseTablePanelDialogComponent<T>>,
-    private matDialog: MatDialog,
+    protected matDialog: MatDialog,
+    protected spinnerService: SpinnerService,
+    private changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     protected data: {
       selectedRow: T | null;
@@ -94,18 +98,25 @@ export abstract class BaseTablePanelDialogComponent<T>
   }
 
   async onSubmit() {
-    this.form.markAllAsTouched();
-    if (this.form.valid) {
-      let item = this.buildItem(this.editMode, this.selectedRow);
+    if (this.form.pristine) {
+      this.dialogRef.close();
+    } else {
+      this.form.markAllAsTouched();
+      if (this.form.valid) {
+        this.spinnerService.showSpinner(SpinnerMessage.SavingChanges);
+        this.changeDetector.detectChanges();
+        let item = this.buildItem(this.editMode, this.selectedRow);
 
-      if (this.editMode) {
-        item = await this.performEdit(item);
-      } else {
-        item = await this.performAdd(item);
-      }
+        if (this.editMode) {
+          item = await this.performEdit(item);
+        } else {
+          item = await this.performAdd(item);
+        }
 
-      if (item) {
-        this.dialogRef.close(item);
+        this.spinnerService.hideSpinner();
+        if (item) {
+          this.dialogRef.close(item);
+        }
       }
     }
   }

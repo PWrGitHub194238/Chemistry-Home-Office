@@ -53,7 +53,7 @@ export class BlobUploadService {
   ): string {
     const fileExtension = this.getFileExtension(data);
 
-    sentHomeworkFileMetadata.fullPath = `${homeworkPath.subject}/${this.authService.user.details.studentClass}/${homeworkPath.topic}/${sentHomeworkFileMetadata.assignment}/${this.authService.user.details.studentNo}/${sentHomeworkFileMetadata.uid}.${fileExtension}`;
+    sentHomeworkFileMetadata.fullPath = `${homeworkPath.subject.name}/${this.authService.user.details.studentClass}/${homeworkPath.topic}/${sentHomeworkFileMetadata.assignment}/${this.authService.user.details.studentNo}/${sentHomeworkFileMetadata.uid}.${fileExtension}`;
 
     this.addBlobToSend(sentHomeworkFileMetadata, data);
 

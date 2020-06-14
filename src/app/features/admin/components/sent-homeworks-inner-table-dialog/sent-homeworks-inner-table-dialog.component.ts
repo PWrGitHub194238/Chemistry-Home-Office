@@ -1,14 +1,15 @@
-import { Component, Inject } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject } from "@angular/core";
 import { FormArray, FormBuilder, FormControl } from "@angular/forms";
 import {
   MatDialog,
   MatDialogRef,
   MAT_DIALOG_DATA
 } from "@angular/material/dialog";
+import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { HomeworkPath, SentHomework, SentHomeworkFile } from "src/app/models";
 import { FileRowForm } from "../../models/file-row-form.mode";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
-import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 
 @Component({
   selector: "cho-sent-homeworks-inner-table-dialog",
@@ -38,6 +39,14 @@ export class SentHomeworksInnerTableDialogComponent extends BaseTablePanelDialog
     return this.form.get("files") as FormArray;
   }
 
+  get isLoading(): boolean {
+    return this.spinnerService.isLoading;
+  }
+
+  get loadingMessage(): boolean {
+    return this.spinnerService.loadingMessage;
+  }
+
   get homeworkPath(): HomeworkPath {
     return this.data["homeworkPath"] as HomeworkPath;
   }
@@ -57,6 +66,8 @@ export class SentHomeworksInnerTableDialogComponent extends BaseTablePanelDialog
     private firestoreDocumentService: FirestoreDocumentService,
     dialogRef: MatDialogRef<SentHomeworksInnerTableDialogComponent>,
     matDialog: MatDialog,
+    spinnerService: SpinnerService,
+    changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     data: {
       selectedRow: SentHomework | null;
@@ -64,7 +75,7 @@ export class SentHomeworksInnerTableDialogComponent extends BaseTablePanelDialog
       fileRows: FileRowForm[];
     }
   ) {
-    super(dialogRef, matDialog, data);
+    super(dialogRef, matDialog, spinnerService, changeDetector, data);
     this.filesCopy = [
       ...data.fileRows.map((fileRow: FileRowForm) => ({
         ...fileRow

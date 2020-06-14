@@ -1,1 +1,125 @@
-<p>user-details-dialog works!</p>
+<h2 mat-dialog-title>
+  {{
+    editMode
+      ? viewMode
+        ? "Szczegóły użytkownika"
+        : "Zmień dane użytkownika"
+      : "Dodaj nowego użytkownika"
+  }}
+</h2>
+<mat-dialog-content>
+  <form
+    class="form"
+    fxLayout="column"
+    fxLayoutAlign="space-between"
+    fxLayoutGap="10px"
+    [formGroup]="form"
+  >
+    <fieldset>
+      <legend>Podstawowe dane</legend>
+      <div fxLayoutAlign="end">
+        <mat-slide-toggle
+          formControlName="enabled"
+          color="primary"
+          [checked]="enabled.value"
+          (change)="enabledToggle($event)"
+        >
+          Czy konto jest aktywne
+        </mat-slide-toggle>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-form-field class="full-width">
+          <mat-label>Imię i nazwisko</mat-label>
+          <input
+            matInput
+            formControlName="displayName"
+            placeholder="Imię i nazwisko"
+            type="text"
+          />
+          <mat-error *ngIf="displayName.invalid && displayName.touched">
+            Podaj proszę imię i nazwisko
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Klasa</mat-label>
+          <mat-select formControlName="studentClass">
+            <mat-option
+              *ngFor="let studentClass of studentClasses$ | async"
+              [value]="studentClass"
+            >
+              {{ studentClass }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="studentClass.invalid && studentClass.touched"
+            >Proszę wybierz klasę
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Numer w dzienniku</mat-label>
+          <input
+            matInput
+            formControlName="studentNo"
+            placeholder="Numer w dzienniku"
+            type="number"
+          />
+          <mat-error
+            *ngIf="
+              (studentNo.touched || submitted) && studentNo.errors?.required
+            "
+          >
+            Podaj proszę numer z dziennika
+          </mat-error>
+          <mat-error
+            *ngIf="(studentNo.touched || submitted) && studentNo.errors?.no"
+          >
+            Dany numer jest niepoprawny dla klasy {{ studentClass.value }}
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Uprawnienia</legend>
+      <div fxLayout="row" fxLayoutAlign="space-between" fxLayoutGap="10px">
+        <mat-slide-toggle
+          formControlName="admin"
+          color="primary"
+          [checked]="admin.value"
+          (change)="adminRoleToggle($event)"
+        >
+          Administrator
+        </mat-slide-toggle>
+        <mat-slide-toggle
+          formControlName="student"
+          color="primary"
+          [checked]="student.value"
+          (change)="studentRoleToggle($event)"
+        >
+          Uczeń
+        </mat-slide-toggle>
+      </div>
+    </fieldset>
+  </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
+  <button mat-button (click)="onReset()">Resetuj</button>
+  <div fxFlex></div>
+  <div>
+    <button mat-button (click)="onCancel()">Anuluj</button>
+    <button mat-raised-button color="primary" (click)="onSubmit()">
+      {{
+        editMode
+          ? form.pristine
+            ? "Zamknij"
+            : "Zmień dane użytkownika"
+          : "Dodaj użytkownika"
+      }}
+    </button>
+  </div>
+</mat-dialog-actions>

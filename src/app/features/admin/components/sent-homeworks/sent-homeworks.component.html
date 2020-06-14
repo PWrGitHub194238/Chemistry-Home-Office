@@ -14,7 +14,7 @@
     </cho-row-action-button>
   </mat-card-content>
 
-  <mat-form-field appearance="outline">
+  <mat-form-field appearance="outline" class="search">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Szukaj</mat-label>
     <input
@@ -85,7 +85,7 @@
       </th>
       <td mat-cell *matCellDef="let homeworkPath">
         <span>
-          {{ homeworkPath.date.toDate() | date: "fullDate" }}
+          {{ getDate(homeworkPath.date) | date: "fullDate" }}
         </span>
       </td>
     </ng-container>
@@ -95,7 +95,7 @@
       </th>
       <td mat-cell *matCellDef="let homeworkPath">
         <span>
-          {{ homeworkPath.subject }}
+          {{ homeworkPath.subject.name }}
         </span>
       </td>
     </ng-container>
@@ -119,6 +119,7 @@
         <cho-sent-homeworks-inner-table
           [homeworkPath]="homeworkPath"
           [data]="homeworkPath.sentHomeworks"
+          [filter]="dataSource.filter"
           [@detailExpand]="isExpanded(homeworkPath) ? 'expanded' : 'collapsed'"
           (onOpenGalleryForFile)="openGalleryForFile($event)"
         >
@@ -148,7 +149,7 @@
               tooltip="Zobacz szczegóły lekcji"
               icon="remove_red_eye"
               color="primary"
-              (action)="openViewSelectedItemDialog()"
+              (action)="openViewSelectedItemDialog(homeworkPath)"
             ></cho-row-action-button>
             <cho-row-action-button
               color="link"

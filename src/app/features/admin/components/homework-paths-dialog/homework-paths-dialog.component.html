@@ -157,7 +157,7 @@
                   fxLayoutGap="10px"
                   [class.hidden]="isPlaceholderForNextAssignment(index)"
                 >
-                  <div matTooltip="Poprzednia ikona">
+                  <div [matTooltip]="viewMode ? '' : 'Poprzednia ikona'">
                     <button
                       mat-mini-fab
                       class="small-action-button"
@@ -175,7 +175,7 @@
                     [class.icon-disabled]="viewMode"
                     >{{ getIconName(assignmentIconIdx(index).value) }}</mat-icon
                   >
-                  <div matTooltip="Następna ikona">
+                  <div [matTooltip]="viewMode ? '' : 'Następna ikona'">
                     <button
                       mat-mini-fab
                       class="small-action-button"
@@ -203,6 +203,10 @@
       </ng-scrollbar>
     </fieldset>
   </form>
+  <cho-spinner
+    [loadingMessage]="loadingMessage"
+    [isLoading]="isLoading"
+  ></cho-spinner>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!viewMode" fxLayoutAlign="space-around center">
   <button mat-button (click)="onReset()">Resetuj</button>
@@ -210,7 +214,9 @@
   <div>
     <button mat-button (click)="onCancel()">Anuluj</button>
     <button mat-raised-button color="primary" (click)="onSubmit()">
-      {{ editMode ? "Zmień lekcję" : "Dodaj lekcję" }}
+      {{
+        editMode ? (form.pristine ? "Zamknij" : "Zmień lekcję") : "Dodaj lekcję"
+      }}
     </button>
   </div>
 </mat-dialog-actions>

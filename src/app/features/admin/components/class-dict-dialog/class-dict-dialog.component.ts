@@ -1,4 +1,4 @@
-import { Component, Inject } from "@angular/core";
+import { ChangeDetectorRef, Component, Inject } from "@angular/core";
 import { FormBuilder, FormControl, Validators } from "@angular/forms";
 import {
   MatDialog,
@@ -8,6 +8,7 @@ import {
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { ClassDictEntry } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { SpinnerService } from "src/app/core/services/spinner.service";
 import { BaseTablePanelDialogComponent } from "../base-table-panel-dialog/base-table-panel-dialog.component";
 
 @UntilDestroy()
@@ -27,17 +28,27 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
     return this.form.get("studentCount") as FormControl;
   }
 
+  get isLoading(): boolean {
+    return this.spinnerService.isLoading;
+  }
+
+  get loadingMessage(): boolean {
+    return this.spinnerService.loadingMessage;
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private dictionaryService: DictionaryService,
     dialogRef: MatDialogRef<ClassDictDialogComponent>,
     matDialog: MatDialog,
+    spinnerService: SpinnerService,
+    changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA)
     data: {
       selectedRow: ClassDictEntry | null;
     }
   ) {
-    super(dialogRef, matDialog, data);
+    super(dialogRef, matDialog, spinnerService, changeDetector, data);
   }
 
   afterOnInit() {
@@ -86,11 +97,11 @@ export class ClassDictDialogComponent extends BaseTablePanelDialogComponent<
     };
   }
 
-  performAdd(item: ClassDictEntry): Promise<ClassDictEntry> {
+  protected async performAdd(item: ClassDictEntry): Promise<ClassDictEntry> {
     return this.dictionaryService.createClass(item);
   }
 
-  performEdit(item: ClassDictEntry): Promise<ClassDictEntry> {
+  protected async performEdit(item: ClassDictEntry): Promise<ClassDictEntry> {
     return this.dictionaryService.editClass(item);
   }
 }
