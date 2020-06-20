@@ -1,4 +1,4 @@
-import { FirestorageHomeworkFile } from "./firestorage-homework-file.model";
+import { FirestorageHomeworkFile } from ".";
 
 export interface FirestorageUploadStatus {
   uploadFinish: boolean;

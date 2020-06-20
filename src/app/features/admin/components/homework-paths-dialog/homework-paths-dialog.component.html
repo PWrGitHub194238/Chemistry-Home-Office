@@ -32,8 +32,8 @@
           <mat-label>Przedmiot nauczania</mat-label>
           <mat-select formControlName="subject">
             <mat-option
-              *ngFor="let subject of subjects$ | async"
-              [value]="subject.name"
+              *ngFor="let subject of subjectDict"
+              [value]="subject.uid"
             >
               {{ subject.name }}
             </mat-option>

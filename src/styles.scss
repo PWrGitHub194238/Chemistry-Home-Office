@@ -7,7 +7,7 @@ $primary: mat-palette($mat-deep-purple);
   color: mat-color($primary, default);
 }
 
-img.avatar {
+.avatar {
   border-radius: 50%;
 }
 
@@ -46,7 +46,7 @@ mat-dialog-actions {
 
 .empty-card-actions {
   margin: 0px;
-  padding: 0px;
+  padding: 0px !important;
 }
 
 .hidden-router {

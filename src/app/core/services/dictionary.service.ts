@@ -9,16 +9,14 @@ import { FirebaseError } from "firebase";
 import { interval, Observable, of, Subscription } from "rxjs";
 import { map, take, takeUntil, tap } from "rxjs/operators";
 import {
+  AssignmentDictEntry,
+  ClassDictEntry,
+  MatIconDictEntry,
+  MAT_ICONS,
   SubjectDictEntry,
   UserDetailsDictEntry,
   UserRolesDictEntry
 } from "../models";
-import { AssignmentDictEntry } from "../models/dictionaries/assignment-dict-entry.model";
-import { ClassDictEntry } from "../models/dictionaries/class-dict-entry.model";
-import {
-  MatIconDictEntry,
-  MAT_ICONS
-} from "../models/dictionaries/mat-icon-dict-entry.model";
 import { SnackBarService } from "./snack-bar.service";
 
 @UntilDestroy()
@@ -144,7 +142,7 @@ export class DictionaryService {
 
   // /assignment-dict
   getAllAssignments$(sync?: boolean): Observable<AssignmentDictEntry[]> {
-    return !!sync || !this.assignments
+    return !!sync || this.assignments.length === 0
       ? this.assignmentDictCollection.valueChanges().pipe(
           takeUntil(this.assignments$),
           untilDestroyed(this),
@@ -266,7 +264,7 @@ export class DictionaryService {
 
   // /class-dict
   getAllClasses$(sync?: boolean): Observable<ClassDictEntry[]> {
-    return !!sync || !this.classes
+    return !!sync || this.classes.length === 0
       ? this.classDictCollection.valueChanges().pipe(
           takeUntil(this.classes$),
           untilDestroyed(this),
@@ -406,7 +404,7 @@ export class DictionaryService {
 
   // /mat-icons-dict
   getAllIcons$(sync?: boolean): Observable<MatIconDictEntry[]> {
-    return !!sync || !this.matIcons
+    return !!sync || this.matIcons.length === 0
       ? this.getAllActiveIcons$(true).pipe(
           takeUntil(this.activeMatIcons$),
           untilDestroyed(this),
@@ -431,7 +429,7 @@ export class DictionaryService {
   }
 
   getAllActiveIcons$(sync?: boolean): Observable<MatIconDictEntry[]> {
-    return !!sync || !this.activeMatIcons
+    return !!sync || this.activeMatIcons.length === 0
       ? this.activeMatIconDictDoc.valueChanges().pipe(
           take(1),
           takeUntil(this.activeMatIcons$),
@@ -488,7 +486,7 @@ export class DictionaryService {
 
   // /subject-dict
   getAllSubjects$(sync?: boolean): Observable<SubjectDictEntry[]> {
-    return !!sync || !this.subjects
+    return !!sync || this.subjects.length === 0
       ? this.subjectDictCollection.valueChanges().pipe(
           takeUntil(this.subjects$),
           untilDestroyed(this),
@@ -610,7 +608,7 @@ export class DictionaryService {
 
   // /user-details
   getAllUserDetails$(sync?: boolean): Observable<UserDetailsDictEntry[]> {
-    return !!sync || !this.userDetailsArray
+    return !!sync || this.userDetailsArray.length === 0
       ? this.userDetailsDictCollection.valueChanges().pipe(
           takeUntil(this.userDetailsArray$),
           untilDestroyed(this),
@@ -732,7 +730,7 @@ export class DictionaryService {
 
   // /user-roles
   getAllUserRoles$(sync?: boolean): Observable<UserRolesDictEntry[]> {
-    return !!sync || !this.userRolesArray
+    return !!sync || this.userRolesArray.length === 0
       ? this.userRolesDictCollection.valueChanges().pipe(
           takeUntil(this.userRolesArray$),
           untilDestroyed(this),

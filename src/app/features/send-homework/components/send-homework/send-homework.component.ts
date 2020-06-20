@@ -5,16 +5,19 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UUID } from "angular2-uuid";
 import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
-import { SubjectError, SubjectSuccess } from "src/app/core/models";
+import { SubjectError } from "src/app/core/models";
 import { FirestorageUploadStatus } from "src/app/core/models/firestorage-upload-status";
 import { AuthService } from "src/app/core/services/auth.service";
 import { BlobUploadService } from "src/app/core/services/blob-upload.service";
 import { EmailSenderService } from "src/app/core/services/email-sender.service";
 import { HomeworkUploadService } from "src/app/core/services/homework-upload.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
-import { SentHomeworkFile, TaskStatus } from "src/app/models";
-import { HomeworkPath } from "src/app/models/homework-path.model";
-import { SentHomework } from "src/app/models/sent-homework.model";
+import {
+  HomeworkPath,
+  SentHomework,
+  SentHomeworkFile,
+  TaskStatus
+} from "src/app/models";
 import { SpinnerMessage } from "../../../../core/spinner-message.consts";
 import { AddCommentForUploadDialogComponent } from "../add-comment-for-upload-dialog/add-comment-for-upload-dialog.component";
 import { FinishUploadBottomSheetAction } from "../finish-upload-bottom-sheet/finish-upload-bottom-sheet.action";
@@ -104,18 +107,17 @@ export class SendHomeworkComponent implements OnInit {
       this.emailSenderService.emailSent$
         .pipe(untilDestroyed(this))
         .subscribe((resp: SentHomework | SubjectError) => {
-          const state = {};
+          let state = {};
           if (resp["error"]) {
             state[RedirectToLoginState.SentHomeworkFailed] =
               "Wysyłanie pracy nie powiodło się";
           } else {
             this.isSending = false;
-            const state = {};
-
-            state[RedirectToLoginState.SentHomeworkSuccess] = <SentHomework>(
-              resp
-            );
+            state[
+              RedirectToLoginState.SentHomeworkSuccess
+            ] = resp as SentHomework;
           }
+
           this.authService.logout(null, state);
         });
     } else {

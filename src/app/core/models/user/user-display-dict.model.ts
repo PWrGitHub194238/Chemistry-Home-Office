@@ -1,6 +1,4 @@
-import { Entity } from "..";
-import { UserDetailsDictEntry } from "./user-details-dict-entry.model";
-import { UserRolesDictEntry } from "./user-roles-dict-entry.model";
+import { Entity, UserDetailsDictEntry, UserRolesDictEntry } from "..";
 
 export interface UserDisplayDict extends Entity {
   disabled: boolean;

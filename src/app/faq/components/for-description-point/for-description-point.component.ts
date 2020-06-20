@@ -5,7 +5,7 @@ import {
   Input,
   Output
 } from "@angular/core";
-import { BulletPoint } from "../../model/bullet-point.model";
+import { BulletPoint } from "../../model";
 
 @Component({
   selector: "cho-for-description-point",

@@ -73,7 +73,7 @@ export class UserDetailsComponent
   getOnDeleteAlertDialogOptions(selectedRow: UserDisplayDict): AlertDialog {
     return {
       title: "Usuwanie użytkownika",
-      body: `Czy na pewno chcesz usunąć użytkownika '${selectedRow.displayName}'?`,
+      body: `Czy na pewno chcesz usunąć użytkownika ${selectedRow.displayName}?`,
       cancelLabel: "Nie, nie usuwaj",
       okLabel: "Tak, usuwamy!"
     };

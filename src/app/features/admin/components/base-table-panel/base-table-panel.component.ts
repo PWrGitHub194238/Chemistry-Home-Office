@@ -2,7 +2,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { AuthService } from "src/app/core/services/auth.service";
 import { BaseTableComponent } from "../../helpers/base-table/base-table.component";
 import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
-import { EntityDialog } from "../../models/entity-dialog.model";
+import { EntityDialog } from "../../models";
 
 export abstract class BaseTablePanelComponent<
   T,

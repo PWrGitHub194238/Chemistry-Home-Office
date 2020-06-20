@@ -1,4 +1,9 @@
-import { AfterViewChecked, Component, OnInit } from "@angular/core";
+import {
+  AfterViewChecked,
+  ChangeDetectorRef,
+  Component,
+  OnInit
+} from "@angular/core";
 import {
   FormBuilder,
   FormControl,
@@ -13,19 +18,22 @@ import {
   Router
 } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import {
+  FirebaseUISignInFailure,
+  FirebaseUISignInSuccessWithAuthResult
+} from "firebaseui-angular";
 import { filter } from "rxjs/operators";
 import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
-import { SubjectError, SubjectSuccess } from "src/app/core/models";
-import { UserDetailsDictEntry } from "src/app/core/models/user/user-details-dict-entry.model";
+import {
+  SubjectError,
+  SubjectSuccess,
+  UserDetailsDictEntry
+} from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import { UpdateUserDetailsBottomSheetComponent } from "../update-user-details-bottom-sheet/update-user-details-bottom-sheet.component";
-import {
-  FirebaseUISignInSuccessWithAuthResult,
-  FirebaseUISignInFailure
-} from "firebaseui-angular";
 
 @UntilDestroy()
 @Component({
@@ -54,6 +62,8 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     return this.spinnerService.loadingMessage;
   }
 
+  private firebaseUiRendered: boolean = false;
+
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -61,7 +71,8 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     private router: Router,
     private snackBarService: SnackBarService,
     private spinnerService: SpinnerService,
-    private bottomSheet: MatBottomSheet
+    private bottomSheet: MatBottomSheet,
+    private changeDetectorRef: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -107,8 +118,15 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    this.addLoginButtonProviderClickListeners();
-    this.swapLoginButtonProviderLabels();
+    const loginProviderButtonLabel: Element = document.querySelector(
+      `.firebaseui-idp-button > .firebaseui-idp-text-long`
+    );
+    if (loginProviderButtonLabel && !this.firebaseUiRendered) {
+      this.firebaseUiRendered = true;
+      this.addLoginButtonProviderClickListeners();
+      this.swapLoginButtonProviderLabels();
+      this.changeDetectorRef.detectChanges();
+    }
   }
 
   createForm() {
@@ -147,6 +165,7 @@ export class LoginComponent implements OnInit, AfterViewChecked {
 
   private showSnackBarOnLogout(state?: { [k: string]: any }) {
     if (state) {
+      this.spinnerService.hideSpinner();
       if (state[RedirectToLoginState.UserRegisterSuccess]) {
         this.snackBarService.showUserRegistered();
       } else if (state[RedirectToLoginState.SentHomeworkSuccess]) {
@@ -220,8 +239,8 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
 
   private swapLoginButtonProviderLabels() {
-    //this.swapLoginButtonProviderLabel("facebook.com", "Facebooka");
-    //this.swapLoginButtonProviderLabel("google.com", "Google");
+    this.swapLoginButtonProviderLabel("facebook.com", "Facebooka");
+    this.swapLoginButtonProviderLabel("google.com", "Google");
   }
 
   private swapLoginButtonProviderLabel(providerId: string, label: string) {

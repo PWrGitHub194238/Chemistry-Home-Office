@@ -4,14 +4,14 @@ import * as stringFormat from "string-format";
 import { HomeworkPath } from "../../models/homework-path.model";
 import { SentHomeworkFile } from "../../models/sent-homework-file.model";
 import { SentHomework } from "../../models/sent-homework.model";
-import { UserDetails } from "../../models/user/user-details.model";
+import { UserDetailsDictEntry } from "../../models/user/user-details-dict-entry.model";
 const TableBuilder = require("table-builder");
 
 export async function getHomeworkSentToTeacherNotificationOptions(
   sentHomeworkDocument: SentHomework,
   homeworkPath: HomeworkPath,
   sender: admin.auth.UserRecord,
-  senderDetails: UserDetails,
+  senderDetails: UserDetailsDictEntry,
   tempFilePaths: string[],
   assignment: string
 ): Promise<Mail.Options> {
@@ -61,7 +61,7 @@ export async function getHomeworkSentToTeacherNotificationOptions(
 function getTeacherNotificationSubject(
   homeworkPath: HomeworkPath,
   sender: admin.auth.UserRecord,
-  senderDetails: UserDetails,
+  senderDetails: UserDetailsDictEntry,
   assignment: string
 ): string {
   return `[${homeworkPath.subject.name}][${senderDetails.studentClass}][${
@@ -75,7 +75,7 @@ function getTeacherNotificationHtmlBody(
   sentHomeworkDocument: SentHomework,
   homeworkPath: HomeworkPath,
   sender: admin.auth.UserRecord,
-  senderDetails: UserDetails,
+  senderDetails: UserDetailsDictEntry,
   assignment: string
 ): string {
   return stringFormat(

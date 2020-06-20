@@ -29,6 +29,7 @@ import { FileRowForm } from "../../models/file-row-form.mode";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { SentHomeworksInnerTableDialogComponent } from "../sent-homeworks-inner-table-dialog/sent-homeworks-inner-table-dialog.component";
 import { SentHomeworksInnerTableDataSource } from "./sent-homeworks-inner-table.data-source";
+import { SentHomeworksForPath } from "../../models";
 
 @UntilDestroy()
 @Component({
@@ -43,7 +44,7 @@ export class SentHomeworksInnerTableComponent
     SentHomeworksInnerTableDialogComponent
   >
   implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  @Input() homeworkPath: HomeworkPath;
+  @Input() homeworkPath: SentHomeworksForPath;
   @Input() data: SentHomework[] = [];
   @Input() filter: string;
   @Output() onOpenGalleryForFile = new EventEmitter<{
@@ -75,6 +76,9 @@ export class SentHomeworksInnerTableComponent
 
   ngOnInit() {
     this.dataSource.data = this.data;
+    (<SentHomeworksInnerTableDataSource>(
+      this.dataSource
+    )).homeworkPath = this.homeworkPath;
     super.ngOnInit();
   }
 

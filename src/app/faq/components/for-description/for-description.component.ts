@@ -5,7 +5,7 @@ import {
   Input,
   Output
 } from "@angular/core";
-import { FaqPoint } from "../../model/faq-point.model";
+import { FaqPoint } from "../../model";
 
 @Component({
   selector: "cho-for-description",

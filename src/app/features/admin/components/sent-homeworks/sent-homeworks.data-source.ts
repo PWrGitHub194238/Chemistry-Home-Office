@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
-import { SentHomeworksForPath } from "../../models/sent-homeworks-for-path.model";
 import { SentHomework } from "src/app/models";
+import { BaseTableDataSource } from "../../helpers/base-table/base-table.data-source";
+import { SentHomeworksForPath } from "../../models";
 
 @Injectable({
   providedIn: "root"
@@ -25,13 +25,18 @@ export class SentHomeworksDataSource extends BaseTableDataSource<
 
     lowerCaseFilter.forEach((searchKey: string) => {
       const lowerCaseSearchKey = searchKey.toLowerCase();
-      result =
-        (result &&
-          this.homeworkPathFilterPredicate(data, lowerCaseSearchKey)) ||
+
+      if (
         this.sentHomeworksFilterPredicate(
           data.sentHomeworks,
           lowerCaseSearchKey
-        );
+        )
+      ) {
+        result = true;
+      } else {
+        result =
+          result && this.homeworkPathFilterPredicate(data, lowerCaseSearchKey);
+      }
     });
 
     return result;

@@ -65,7 +65,6 @@ export class ResetPasswordComponent implements OnInit {
     this.submitted = true;
     if (this.resetPasswordForm.valid) {
       this.spinnerService.showSpinner(SpinnerMessage.ResetPassword);
-
       this.firefunctionService
         .resetUserPassword$(undefined, this.userMail.value)
         .pipe(untilDestroyed(this))
@@ -85,9 +84,11 @@ export class ResetPasswordComponent implements OnInit {
               );
             }
           },
-          (error: any) => {
+          (error: Error) => {
             this.spinnerService.hideSpinner();
-            this.snackBarService.showSentPasswordResetRequestFailed(error);
+            this.snackBarService.showSentPasswordResetRequestFailed(
+              error.message
+            );
           }
         );
     }

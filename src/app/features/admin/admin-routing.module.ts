@@ -19,6 +19,7 @@ import { RootComponent } from "./components/root/root.component";
 import { SentHomeworksComponent } from "./components/sent-homeworks/sent-homeworks.component";
 import { SubjectDictComponent } from "./components/subject-dict/subject-dict.component";
 import { UserDetailsComponent } from "./components/user-details/user-details.component";
+import { SubjecDictResolver } from "src/app/core/resolvers/subject-dict.resolver";
 
 const routes: Routes = [
   {
@@ -50,7 +51,8 @@ const routes: Routes = [
         component: HomeworkPathsComponent,
         resolve: {
           assignmentDict: AssignmentDictResolver,
-          matIconDict: MatIconDictResolver
+          matIconDict: MatIconDictResolver,
+          subjectDict: SubjecDictResolver
         },
         data: { animation: adminChildHomeworkPathsPath }
       },
@@ -77,7 +79,7 @@ const routes: Routes = [
       },
       {
         path: "**",
-        redirectTo: adminChildSentHomeworksPath
+        redirectTo: adminChildHomeworkPathsPath
       }
     ]
   }

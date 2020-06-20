@@ -12,9 +12,12 @@ import {
   SimpleChanges
 } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
-import { HomeworkPath } from "functions/src/models/homework-path.model";
-import { TaskStatus } from "functions/src/models/task-status.model";
-import { taskStatusToClass, taskStatusToString } from "src/app/models";
+import {
+  HomeworkPath,
+  TaskStatus,
+  taskStatusToClass,
+  taskStatusToString
+} from "src/app/models";
 import { BaseTableComponent } from "../../helpers/base-table/base-table.component";
 import { FileRowForm } from "../../models";
 import { SentHomeworksInnerFilesTableDataSource } from "./sent-homeworks-inner-files-table.data-source";
@@ -97,7 +100,6 @@ export class SentHomeworksInnerFilesTableComponent
   }
 
   downloadFile(file: FileRowForm) {
-    // This can be downloaded directly:
     const xhr = new XMLHttpRequest();
     xhr.responseType = "blob";
     xhr.onload = function(event) {

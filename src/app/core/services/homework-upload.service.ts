@@ -36,18 +36,19 @@ export class HomeworkUploadService {
       date: new Date(),
       homeworkPath
     };
+
     // Add UID
     sentHomework = await this.firestoreDocumenrService.createSentHomework$(
       sentHomework
     );
-    sentHomework = null;
+
     if (sentHomework) {
       this.homeworkUploadedSubject$.next(sentHomework);
     } else {
       const state = {};
       state[RedirectToLoginState.SentHomeworkFailed] =
-        "Zapisywanie pracy przed wysłaniem nie powiodło się";
-      this.authService.redirectToLogin(undefined, state);
+        "Zapisywanie pracy przed wysłaniem nie powiodło się.";
+      this.authService.logout(null, state);
     }
   }
 }

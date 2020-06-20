@@ -141,7 +141,7 @@ export class FirefunctionService {
     return this.resetUserPasswordFunctionRef(body).pipe(
       map((resp: any) => {
         if (resp["error"]) {
-          throw new Error(resp["error"]);
+          throw new Error(resp.error.errorInfo.code);
         } else {
           return resp["success"] as boolean;
         }

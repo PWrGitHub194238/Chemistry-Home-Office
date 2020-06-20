@@ -4,8 +4,8 @@ import { MatDialog } from "@angular/material/dialog";
 import { MatSort } from "@angular/material/sort";
 import { Subscription } from "rxjs";
 import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
-import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
-import { EntityDialog } from "../../models/entity-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
+import { EntityDialog } from "../../models";
 import { BaseTableDataSource } from "./base-table.data-source";
 
 export abstract class BaseTableComponent<T, U extends EntityDialog<T>> {

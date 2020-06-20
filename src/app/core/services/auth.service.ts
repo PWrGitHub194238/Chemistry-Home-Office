@@ -44,7 +44,7 @@ export class AuthService {
   private userSubject$: BehaviorSubject<User | null>;
 
   // /user-displays-dict
-  private userDisplays: UserDisplayDict[];
+  private userDisplays: UserDisplayDict[] = [];
   private userDisplays$: Observable<UserDisplayDict[] | null>;
   private userDisplaySubscription: Subscription;
 
@@ -208,9 +208,7 @@ export class AuthService {
         queryParams: { returnUrl: returnUrl }
       });
     } else {
-      this.router.navigate(["home", "login"], {
-        state: redirectPayload
-      });
+      this.router.navigate(["home", "login"]);
     }
   }
 
@@ -240,7 +238,7 @@ export class AuthService {
       return of([]);
     }
 
-    return !!sync || !this.userDisplays
+    return !!sync || this.userDisplays.length === 0
       ? this.firefunctionService.getUserAdminDetails$(this.user.auth.uid).pipe(
           takeUntil(this.userDisplays$),
           untilDestroyed(this),
@@ -353,8 +351,8 @@ export class AuthService {
             );
           }
         },
-        (error: any) =>
-          this.snackBarService.showSentPasswordResetRequestFailed(error)
+        (error: Error) =>
+          this.snackBarService.showSentPasswordResetRequestFailed(error.message)
       );
   }
 

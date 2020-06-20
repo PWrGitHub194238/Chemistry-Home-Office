@@ -1,4 +1,4 @@
-import { Inject, OnDestroy, OnInit, ChangeDetectorRef } from "@angular/core";
+import { ChangeDetectorRef, Inject, OnDestroy, OnInit } from "@angular/core";
 import { FormGroup } from "@angular/forms";
 import {
   MatDialog,
@@ -9,8 +9,8 @@ import { Subscription } from "rxjs";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import { AlertDialogComponent } from "src/app/shared/components/alert-dialog/alert-dialog.component";
-import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
-import { EntityDialog } from "../../models/entity-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
+import { EntityDialog } from "../../models";
 
 export abstract class BaseTablePanelDialogComponent<T>
   implements OnInit, OnDestroy, EntityDialog<T> {

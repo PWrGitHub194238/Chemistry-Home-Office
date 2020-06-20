@@ -29,11 +29,11 @@ export class AssignmentDictComponent
   private matIconsDict: MatIconDictEntry[];
 
   constructor(
+    private route: ActivatedRoute,
+    private dictionaryService: DictionaryService,
     dataSource: AssignmentDictsDataSource,
     authService: AuthService,
-    matDialog: MatDialog,
-    private route: ActivatedRoute,
-    private dictionaryService: DictionaryService
+    matDialog: MatDialog
   ) {
     super(dataSource, authService, matDialog);
   }

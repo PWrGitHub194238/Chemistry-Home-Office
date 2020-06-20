@@ -1,4 +1,4 @@
-import { BulletPoint } from "./bullet-point.model";
+import { BulletPoint } from ".";
 
 export interface FaqPoint {
   icon: string;

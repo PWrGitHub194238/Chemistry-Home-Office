@@ -1,5 +1,5 @@
 <cho-base-panel
-  panelIcon="/assets/adm/classes.jpg"
+  panelIcon="/assets/adm/classes.png"
   panelTitle="Zdefiniowane klasy"
   panelSubtitle="tutaj znajdziesz listę wszystkich zdefiniowanych w aplikacji klas"
 >
@@ -24,7 +24,11 @@
   <mat-form-field appearance="outline" class="search">
     <mat-icon matPrefix>search</mat-icon>
     <mat-label>Szukaj</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Nazwa klasy" />
+    <input
+      matInput
+      (keyup)="applyFilter($event)"
+      placeholder="Nazwa, numer klasy"
+    />
   </mat-form-field>
 
   <table mat-table [dataSource]="dataSource" matSort>

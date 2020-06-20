@@ -13,8 +13,11 @@ import { sendResetPasswordMail } from "./emails/reset-password";
 import { sendVerifyEmailMail } from "./emails/verify-email";
 import {
   createUserRoles,
+  deleteSentHomework,
   deleteUserDetails,
   deleteUserRoles,
+  getAllHomeworkPaths,
+  getAllSentHomeworks,
   getAllUserDetails,
   getAllUserRoles,
   getSentHomework,
@@ -23,9 +26,9 @@ import {
 } from "./firestore-documents";
 import { HomeworkPath } from "./models/homework-path.model";
 import { SentHomework } from "./models/sent-homework.model";
-import { UserDetails } from "./models/user/user-details.model";
+import { UserDetailsDictEntry } from "./models/user/user-details-dict-entry.model";
 import { UserDisplayDict } from "./models/user/user-display-dict.model";
-import { UserRoles } from "./models/user/user-roles.model";
+import { UserRolesDictEntry } from "./models/user/user-roles-dict-entry.model";
 
 admin.initializeApp();
 
@@ -50,7 +53,7 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
     sentHomeworkDocument.email
   );
 
-  const senderDetails: UserDetails = await getUserDetails(sender.uid);
+  const senderDetails: UserDetailsDictEntry = await getUserDetails(sender.uid);
 
   const assignments: string[] = homeworkPathDocument.assignments.map(
     assignment => assignment.name
@@ -103,19 +106,21 @@ async function sendNotificationEmails(sentHomeworkDocument: SentHomework) {
 exports.cleanupCloudFirestore = functions.https.onCall(
   async (data, context) => {
     try {
-      const adminUserRoles: UserRoles = await getUserRoles(data["uid"]);
+      const adminUserRoles: UserRolesDictEntry = await getUserRoles(
+        data["uid"]
+      );
 
       if (adminUserRoles.admin) {
         const userRecords: admin.auth.UserRecord[] = [];
         await listAllUsers(userRecords);
 
-        const userDetails: UserDetails[] = await getAllUserDetails();
-        const userRoles: UserRoles[] = await getAllUserRoles();
+        const userDetails: UserDetailsDictEntry[] = await getAllUserDetails();
+        const userRoles: UserRolesDictEntry[] = await getAllUserRoles();
 
         const userUids: string[] = userRecords.map(user => user.uid);
         const userRoleUids: string[] = userRoles.map(userRole => userRole.uid);
 
-        userDetails.forEach(async (userDetail: UserDetails) => {
+        userDetails.forEach(async (userDetail: UserDetailsDictEntry) => {
           if (!userUids.includes(userDetail.uid)) {
             console.log(
               `No user connected to this user details. Deleting user detail: ${JSON.stringify(
@@ -126,7 +131,7 @@ exports.cleanupCloudFirestore = functions.https.onCall(
           }
         });
 
-        userRoles.forEach(async (userRole: UserRoles) => {
+        userRoles.forEach(async (userRole: UserRolesDictEntry) => {
           if (!userUids.includes(userRole.uid)) {
             console.log(
               `No user connected to this user role. Deleting user detail: ${JSON.stringify(
@@ -158,6 +163,27 @@ exports.cleanupCloudFirestore = functions.https.onCall(
           }
         });
 
+        const homeworkPaths: HomeworkPath[] = await getAllHomeworkPaths();
+        const sentHomeworks: SentHomework[] = await getAllSentHomeworks();
+
+        const homeworkPathUids: string[] = homeworkPaths.map(
+          (homeworkPath: HomeworkPath) => homeworkPath.uid
+        );
+
+        sentHomeworks.forEach(async (sentHomework: SentHomework) => {
+          if (!homeworkPathUids.includes(sentHomework.homeworkPath.uid)) {
+            console.log(
+              `Sent homework ${JSON.stringify(
+                sentHomework
+              )} is not assigned to any defined homework. Deleting sent homework with UID: ${
+                sentHomework.homeworkPath.uid
+              }.`
+            );
+
+            await deleteSentHomework(sentHomework.uid);
+          }
+        });
+
         return { success: true };
       } else {
         return { success: false };
@@ -180,11 +206,11 @@ exports.getUserData = functions.https.onCall(async (data, context) => {
 exports.updateUserData = functions.https.onCall(async (data, context) => {
   try {
     const userUid = data["update_uid"] as string;
-    const adminUserRoles: UserRoles = await getUserRoles(data["uid"]);
+    const adminUserRoles: UserRolesDictEntry = await getUserRoles(data["uid"]);
 
     let userRecord: admin.auth.UserRecord;
-    const userDetails: UserDetails = await getUserDetails(userUid);
-    const userRoles: UserRoles = await getUserRoles(userUid);
+    const userDetails: UserDetailsDictEntry = await getUserDetails(userUid);
+    const userRoles: UserRolesDictEntry = await getUserRoles(userUid);
 
     if (adminUserRoles.admin) {
       await admin.auth().updateUser(userUid, {
@@ -212,7 +238,7 @@ exports.updateUserData = functions.https.onCall(async (data, context) => {
 exports.removeUserData = functions.https.onCall(async (data, context) => {
   try {
     const userUid = data["remove_uid"] as string;
-    const adminUserRoles: UserRoles = await getUserRoles(data["uid"]);
+    const adminUserRoles: UserRolesDictEntry = await getUserRoles(data["uid"]);
 
     if (adminUserRoles.admin) {
       await admin.auth().deleteUser(userUid);
@@ -265,7 +291,7 @@ exports.verifyUserEmail = functions.https.onCall(async (data, context) => {
 
 exports.getUserAdminDetails = functions.https.onCall(async (data, context) => {
   try {
-    const adminUserRoles: UserRoles = await getUserRoles(data["uid"]);
+    const adminUserRoles: UserRolesDictEntry = await getUserRoles(data["uid"]);
     const userDisplayArray: UserDisplayDict[] = [];
 
     if (adminUserRoles.admin) {
@@ -273,15 +299,15 @@ exports.getUserAdminDetails = functions.https.onCall(async (data, context) => {
 
       await listAllUsers(userRecords);
 
-      const userDetailsArray: UserDetails[] = await getAllUserDetails();
-      const userRolesArray: UserRoles[] = await getAllUserRoles();
+      const userDetailsArray: UserDetailsDictEntry[] = await getAllUserDetails();
+      const userRolesArray: UserRolesDictEntry[] = await getAllUserRoles();
 
       userRecords.forEach((userRecord: admin.auth.UserRecord) => {
         const userDetails = userDetailsArray.find(
-          (user: UserDetails) => user.uid === userRecord.uid
+          (user: UserDetailsDictEntry) => user.uid === userRecord.uid
         );
         const userRoles = userRolesArray.find(
-          (user: UserRoles) => user.uid === userRecord.uid
+          (user: UserRolesDictEntry) => user.uid === userRecord.uid
         );
 
         if (userDetails && userRoles) {
@@ -299,8 +325,8 @@ exports.getUserAdminDetails = functions.https.onCall(async (data, context) => {
     } else {
       const userUid: string = data["uid"];
       const user: admin.auth.UserRecord = await admin.auth().getUser(userUid);
-      const userDetails: UserDetails = await getUserDetails(userUid);
-      const userRoles: UserRoles = await getUserRoles(userUid);
+      const userDetails: UserDetailsDictEntry = await getUserDetails(userUid);
+      const userRoles: UserRolesDictEntry = await getUserRoles(userUid);
 
       userDisplayArray.push({
         uid: userUid,
@@ -343,7 +369,7 @@ async function listAllUsers(
 
 exports.sendEmail = functions.https.onCall(async (data, context) => {
   try {
-    const adminUserRoles: UserRoles = await getUserRoles(data["uid"]);
+    const adminUserRoles: UserRolesDictEntry = await getUserRoles(data["uid"]);
 
     if (adminUserRoles.admin) {
       let toName = data["to_name"] as string;

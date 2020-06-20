@@ -3,7 +3,7 @@ import { MatDialog } from "@angular/material/dialog";
 import { ClassDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
-import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { ClassDictDialogComponent } from "../class-dict-dialog/class-dict-dialog.component";
 import { ClassDictsDataSource } from "./class-dict.data-source";

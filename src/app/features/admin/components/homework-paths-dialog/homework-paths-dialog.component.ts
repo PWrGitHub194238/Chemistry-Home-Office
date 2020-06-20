@@ -41,7 +41,7 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
   assignmentColumns = ["no", "name", "icon"];
   assignmentRows: AssignmentRowForm[] = [];
 
-  subjects$: Observable<SubjectDictEntry[]>;
+  subjects: SubjectDictEntry[];
   classes$: Observable<number[]>;
 
   get active(): FormControl {
@@ -80,6 +80,10 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     return this.data["matIconsDict"] as MatIconDictEntry[];
   }
 
+  get subjectDict(): SubjectDictEntry[] {
+    return this.data["subjectDict"] as SubjectDictEntry[];
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private firestoreDocumentService: FirestoreDocumentService,
@@ -95,7 +99,6 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     }
   ) {
     super(dialogRef, matDialog, spinnerService, changeDetector, data);
-    this.subjects$ = this.dictionaryService.getAllSubjects$();
     this.classes$ = this.dictionaryService.getClassesByClassOnly$();
   }
 
@@ -116,7 +119,7 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
     this.form = this.formBuilder.group({
       active: { value: selectedRow.active, disabled: this.viewMode },
       subject: [
-        { value: selectedRow.subject.name, disabled: this.viewMode },
+        { value: selectedRow.subject.uid, disabled: this.viewMode },
         Validators.required
       ],
       classNo: [
@@ -145,9 +148,9 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
       active: this.active.value,
       date: editMode ? item.date : new Date(),
       subject: {
-        uid: item.subject.uid,
-        name: this.subject.value,
-        teacherEmail: item.subject.teacherEmail
+        ...this.subjectDict.find(
+          (subject: SubjectDictEntry) => subject.uid === this.subject.value
+        )
       },
       classNo: this.classNo.value,
       topic: this.topic.value,

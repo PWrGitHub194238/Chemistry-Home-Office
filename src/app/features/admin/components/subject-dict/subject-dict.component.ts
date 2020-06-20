@@ -5,7 +5,7 @@ import { SubjectDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { EmailSenderService } from "src/app/core/services/email-sender.service";
-import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { SubjectDictDialogComponent } from "../subject-dict-dialog/subject-dict-dialog.component";
 import { SubjectDictsDataSource } from "./subject-dict.data-source";

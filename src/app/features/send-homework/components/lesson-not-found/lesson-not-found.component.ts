@@ -11,7 +11,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { map } from "rxjs/operators";
 import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
-import { MatSelect } from "src/app/models/mat-select.model";
+import { MatSelect } from "src/app/models";
 
 @UntilDestroy()
 @Component({

@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject } from "@angular/core";
+import { Component, Inject } from "@angular/core";
 import { MAT_SNACK_BAR_DATA } from "@angular/material/snack-bar";
-import { SnackBarData } from "src/app/core/models/snack-bar-data.model";
+import { SnackBarData } from "src/app/core/models";
 
 @Component({
   selector: "cho-snack-bar",

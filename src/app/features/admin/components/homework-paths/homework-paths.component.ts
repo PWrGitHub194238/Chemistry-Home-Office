@@ -1,13 +1,17 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from "@angular/core";
 import { MatDialog } from "@angular/material/dialog";
 import { ActivatedRoute } from "@angular/router";
-import { AssignmentDictEntry, MatIconDictEntry } from "src/app/core/models";
+import {
+  AssignmentDictEntry,
+  MatIconDictEntry,
+  SubjectDictEntry
+} from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { FirestoreDocumentService } from "src/app/core/services/firestore-document.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { HomeworkPath } from "src/app/models";
 import { getDate } from "src/app/shared/helpers/date.helper";
-import { AlertDialog } from "src/app/shared/models/alert-dialog.model";
+import { AlertDialog } from "src/app/shared/models";
 import { BaseTablePanelComponent } from "../base-table-panel/base-table-panel.component";
 import { HomeworkPathsDialogComponent } from "../homework-paths-dialog/homework-paths-dialog.component";
 import { HomeworkPathsDataSource } from "../homework-paths/homework-paths.data-source";
@@ -36,6 +40,7 @@ export class HomeworkPathsComponent
 
   private assignmentsDict: AssignmentDictEntry[];
   private matIconsDict: MatIconDictEntry[];
+  private subjectDict: SubjectDictEntry[];
 
   constructor(
     dataSource: HomeworkPathsDataSource,
@@ -64,14 +69,16 @@ export class HomeworkPathsComponent
   getViewDialogData() {
     return {
       assignmentsDict: this.assignmentsDict,
-      matIconsDict: this.matIconsDict
+      matIconsDict: this.matIconsDict,
+      subjectDict: this.subjectDict
     };
   }
 
   getAddDialogData() {
     return {
       assignmentsDict: this.assignmentsDict,
-      matIconsDict: this.matIconsDict
+      matIconsDict: this.matIconsDict,
+      subjectDict: this.subjectDict
     };
   }
 
@@ -83,7 +90,8 @@ export class HomeworkPathsComponent
   getEditDialogData() {
     return {
       assignmentsDict: this.assignmentsDict,
-      matIconsDict: this.matIconsDict
+      matIconsDict: this.matIconsDict,
+      subjectDict: this.subjectDict
     };
   }
 
@@ -137,5 +145,6 @@ export class HomeworkPathsComponent
   private loadResolvedData() {
     this.assignmentsDict = this.route.snapshot.data["assignmentDict"];
     this.matIconsDict = this.route.snapshot.data["matIconDict"];
+    this.subjectDict = this.route.snapshot.data["subjectDict"];
   }
 }

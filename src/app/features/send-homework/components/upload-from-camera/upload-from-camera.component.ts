@@ -46,22 +46,22 @@ export class UploadFromCameraComponent implements OnInit {
     this.makeSnapshot$ = this.makeSnapshotSubject.asObservable();
     this.snapshotSound = new Audio();
     this.snapshotSound.src = "/assets/snapshot-sound.mp3";
-     this.snapshotSound.load();
+    this.snapshotSound.load();
     this.onResize();
   }
 
-  public takeSnapshot(): void {
+  public takeSnapshot() {
     this.makeSnapshotSubject.next();
   }
 
-  public onSnapshotCapture(webcamImage: WebcamImage): void {
+  public onSnapshotCapture(webcamImage: WebcamImage) {
     this.snapshotSound.play();
     fetch(webcamImage.imageAsDataUrl)
       .then(res => res.blob())
       .then(blob => this.saveBlob.next(blob));
   }
 
-  public handleInitError(error: WebcamInitError): void {
+  public handleInitError(error: WebcamInitError) {
     if (
       error.mediaStreamError &&
       error.mediaStreamError.name === "NotAllowedError"

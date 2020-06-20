@@ -8,11 +8,11 @@ import {
   ClassDictEntry,
   MatIconDictEntry,
   SubjectDictEntry,
+  User,
   UserDetailsDictEntry,
-  UserRolesDictEntry,
-  UserDisplayDict
+  UserDisplayDict,
+  UserRolesDictEntry
 } from "../models";
-import { User } from "../models/user/user.model";
 
 @Injectable({
   providedIn: "root"
@@ -258,11 +258,12 @@ export class SnackBarService {
   }
 
   showSentPasswordResetRequestFailed(error: string) {
+    const messsage: string = this.getMessageFromFirefunctionCode(error);
     this.snackBar.openFromComponent(SnackBarComponent, {
       data: {
         header: "Coś poszło nie tak :(",
         color: "warn",
-        message: `Wysłanie formularza resetującego hasło użytkownika nie powiodło się (${error})`
+        message: `Wysłanie formularza resetującego hasło użytkownika nie powiodło się (${messsage})`
       },
       ...this.displayDefaultconfig
     });
@@ -592,6 +593,15 @@ export class SnackBarService {
       },
       ...this.displayDefaultconfig
     });
+  }
+
+  private getMessageFromFirefunctionCode(code: string) {
+    switch (code) {
+      case "auth/user-not-found":
+        return "Podany użytkownik nie istnieje lub podałeś złe dane logowania";
+      default:
+        break;
+    }
   }
 
   private getMessageFromAuthCode(code: string) {

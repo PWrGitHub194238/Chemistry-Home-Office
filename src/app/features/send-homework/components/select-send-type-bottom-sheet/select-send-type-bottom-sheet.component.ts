@@ -13,7 +13,7 @@ import { Observable } from "rxjs";
 import { AuthService } from "src/app/core/services/auth.service";
 import { BlobUploadService } from "src/app/core/services/blob-upload.service";
 import { CameraSwitchService } from "src/app/core/services/camera-switch.service";
-import { HomeworkPath } from "src/app/models/homework-path.model";
+import { HomeworkPath } from "src/app/models";
 import { SelectSendTypeBottomSheetAction } from "./select-send-type-bottom-sheet.action";
 
 @Component({

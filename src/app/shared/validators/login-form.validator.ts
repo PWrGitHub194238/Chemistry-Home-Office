@@ -7,7 +7,7 @@ import {
 } from "@angular/forms";
 import { Observable, of } from "rxjs";
 import { first, map } from "rxjs/operators";
-import { ClassDictEntry } from "src/app/core/models/dictionaries/class-dict-entry.model";
+import { ClassDictEntry } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 
 export class LoginFormValidator {

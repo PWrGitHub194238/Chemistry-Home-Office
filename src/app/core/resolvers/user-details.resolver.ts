@@ -1,9 +1,9 @@
 import { Injectable } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Observable, of } from "rxjs";
+import { UserDetailsDictEntry } from "../models";
 import { AuthService } from "../services/auth.service";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
-import { UserDetailsDictEntry } from "../models/user/user-details-dict-entry.model";
 
 @UntilDestroy()
 @Injectable({

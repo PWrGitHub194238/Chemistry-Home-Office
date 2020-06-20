@@ -6,7 +6,7 @@ import {
 } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Observable, of } from "rxjs";
-import { HomeworkPath } from "../../models/homework-path.model";
+import { HomeworkPath } from "src/app/models";
 import { FirestoreDocumentService } from "../services/firestore-document.service";
 
 @UntilDestroy()

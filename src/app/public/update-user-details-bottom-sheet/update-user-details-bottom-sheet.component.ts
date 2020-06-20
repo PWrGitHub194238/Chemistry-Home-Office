@@ -10,7 +10,7 @@ import {
   MAT_BOTTOM_SHEET_DATA
 } from "@angular/material/bottom-sheet";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { UserDetailsDictEntry } from "src/app/core/models/user/user-details-dict-entry.model";
+import { UserDetailsDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";

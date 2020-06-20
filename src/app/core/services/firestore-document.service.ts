@@ -7,7 +7,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { FirebaseError } from "firebase";
 import { interval, Observable, of, Subscription } from "rxjs";
 import { map, switchMap, take, takeUntil, tap } from "rxjs/operators";
-import { SentHomeworksForPath } from "src/app/features/admin/models/sent-homeworks-for-path.model";
+import { SentHomeworksForPath } from "src/app/features/admin/models";
 import { HomeworkPath, SentHomework } from "src/app/models";
 import {
   AssignmentDictEntry,
@@ -28,19 +28,19 @@ export class FirestoreDocumentService {
   private timeout = 1000 * 60 * 10;
 
   // /homework-paths
-  private homeworkPaths: HomeworkPath[];
+  private homeworkPaths: HomeworkPath[] = [];
   private homeworkPaths$: Observable<HomeworkPath[] | null>;
   private homeworkPathkSubscription: Subscription;
   private homeworkPathCollection: AngularFirestoreCollection<HomeworkPath>;
 
   // /sent-homeworks
-  private sentHomeworks: SentHomework[];
+  private sentHomeworks: SentHomework[] = [];
   private sentHomeworks$: Observable<SentHomework[] | null>;
   private sentHomeworkSubscription: Subscription;
   private sentHomeworkCollection: AngularFirestoreCollection<SentHomework>;
 
   // SentHomeworksForPath
-  private sentHomeworksForPaths: SentHomeworksForPath[];
+  private sentHomeworksForPaths: SentHomeworksForPath[] = [];
   private sentHomeworksForPaths$: Observable<SentHomeworksForPath[] | null>;
   private sentHomeworksForPathSubscription: Subscription;
 
@@ -123,7 +123,7 @@ export class FirestoreDocumentService {
   }
 
   getAllHomeworkPaths$(sync?: boolean): Observable<HomeworkPath[]> {
-    return !!sync || !this.homeworkPaths
+    return !!sync || this.homeworkPaths.length === 0
       ? this.homeworkPathCollection.valueChanges().pipe(
           takeUntil(this.homeworkPaths$),
           untilDestroyed(this),
@@ -197,7 +197,7 @@ export class FirestoreDocumentService {
 
   // /sent-homeworks
   getAllSentHomeworks$(sync?: boolean): Observable<SentHomework[]> {
-    return !!sync || !this.sentHomeworks
+    return !!sync || this.sentHomeworks.length === 0
       ? this.sentHomeworkCollection.valueChanges().pipe(
           take(1),
           takeUntil(this.sentHomeworks$),
@@ -216,7 +216,7 @@ export class FirestoreDocumentService {
   getAllSentHomeworksForPaths$(
     sync?: boolean
   ): Observable<SentHomeworksForPath[]> {
-    return !!sync || !this.sentHomeworksForPaths
+    return !!sync || this.sentHomeworksForPaths.length === 0
       ? this.getAllSentHomeworks$().pipe(
           takeUntil(this.sentHomeworksForPaths$),
           untilDestroyed(this),

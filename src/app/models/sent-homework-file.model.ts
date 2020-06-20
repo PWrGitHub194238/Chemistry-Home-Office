@@ -2,9 +2,9 @@ import { TaskStatus } from ".";
 import { Entity } from "../core/models";
 
 export interface SentHomeworkFile extends Entity {
-  fileName: string;
+  fileName?: string;
   fullPath: string;
-  description: string;
+  description?: string;
   assignment: string;
   status: TaskStatus;
 }

@@ -3,13 +3,13 @@ import * as Mail from "nodemailer/lib/mailer";
 import * as stringFormat from "string-format";
 import { SentHomework } from "../../models/sent-homework.model";
 import { HomeworkPath } from "../../models/homework-path.model";
-import { UserDetails } from "../../models/user/user-details.model";
+import { UserDetailsDictEntry } from "../../models/user/user-details-dict-entry.model";
 
 export async function getHomeworkSentToTeacherConfirmationOptions(
   sentHomeworkDocument: SentHomework,
   homeworkPath: HomeworkPath,
   receiver: admin.auth.UserRecord,
-  receiverDetails: UserDetails,
+  receiverDetails: UserDetailsDictEntry,
   tempFilePaths: string[],
   assignment: string
 ): Promise<Mail.Options> {
@@ -58,7 +58,7 @@ export async function getHomeworkSentToTeacherConfirmationOptions(
 function getSentToTeacherConfirmationSubject(
   homeworkPath: HomeworkPath,
   receiver: admin.auth.UserRecord,
-  receiverDetails: UserDetails,
+  receiverDetails: UserDetailsDictEntry,
   assignment: string
 ): string {
   return `[${homeworkPath.subject.name}][${receiverDetails.studentClass}][${

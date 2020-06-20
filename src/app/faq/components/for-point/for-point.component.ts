@@ -1,19 +1,19 @@
 import { trigger } from "@angular/animations";
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
   OnInit,
-  ChangeDetectorRef,
   ViewChild
 } from "@angular/core";
+import { MatCarouselComponent } from "@ngmodule/material-carousel";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { InViewportMetadata } from "ng-in-viewport";
 import { of } from "rxjs";
-import { delay, startWith } from "rxjs/operators";
+import { delay, startWith, timeout } from "rxjs/operators";
 import { slideInOutAnimation } from "src/app/shared/animations/animations";
-import { FaqPoint } from "../../model/faq-point.model";
-import { MatCarouselComponent } from "@ngmodule/material-carousel";
+import { FaqPoint } from "../../model";
 
 @UntilDestroy()
 @Component({
@@ -38,6 +38,7 @@ export class ForPointComponent implements OnInit {
   private fxFlexCarouselOrderAray: number[] = [1, 2];
   private fxFlexOrderCarouselRevertedAray: number[] = [2, 1];
   private enabledAnimation: boolean;
+  private resetAutoPlayTimeout: number | undefined;
 
   @Input() number: number;
   @Input() faqPoint: FaqPoint;
@@ -114,7 +115,17 @@ export class ForPointComponent implements OnInit {
   }
 
   onPointClick(index: number) {
+    this.carousel.autoplay = false;
     this.carousel.slideTo(index);
+
+    if (this.resetAutoPlayTimeout) {
+      window.clearTimeout(this.resetAutoPlayTimeout);
+    }
+
+    this.resetAutoPlayTimeout = window.setTimeout(() => {
+      this.carousel.next();
+      this.carousel.autoplay = true;
+    }, 5000);
   }
 
   private isEven() {

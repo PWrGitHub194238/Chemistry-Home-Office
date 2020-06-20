@@ -1,36 +1,54 @@
 import * as admin from "firebase-admin";
 import { HomeworkPath } from "./models/homework-path.model";
 import { SentHomework } from "./models/sent-homework.model";
-import { UserDetails } from "./models/user/user-details.model";
-import { UserRoles } from "./models/user/user-roles.model";
+import { UserDetailsDictEntry } from "./models/user/user-details-dict-entry.model";
+import { UserRolesDictEntry } from "./models/user/user-roles-dict-entry.model";
 import { SubjectDictEntry } from "./models/dictionaries/subject-dict-entry.model";
+
+export async function getAllSentHomeworks(): Promise<SentHomework[]> {
+  const sentHomeworks: SentHomework[] = [];
+  const snapshot = await admin
+    .firestore()
+    .collection("sent-homeworks")
+    .get();
+
+  snapshot.forEach(document => {
+    sentHomeworks.push(getSentHomeworkFromDocument(document));
+  });
+
+  return sentHomeworks;
+}
 
 export async function getSentHomework(uid: string): Promise<SentHomework> {
   const document = await getDocumentByUid("sent-homeworks", uid);
 
-  return {
-    uid: document.get("uid"),
-    email: document.get("email"),
-    displayName: document.get("displayName"),
-    userDetails: document.get("userDetails"),
-    files: document.get("files"),
-    date: document.get("date"),
-    homeworkPath: document.get("homeworkPath")
-  };
+  return getSentHomeworkFromDocument(document);
 }
 
-export async function getHomeworkPaths(uid: string): Promise<HomeworkPath> {
+export async function deleteSentHomework(
+  uid: string
+): Promise<FirebaseFirestore.WriteResult> {
+  return await deleteDocumentByUid("sent-homeworks", uid);
+}
+
+export async function getAllHomeworkPaths(): Promise<HomeworkPath[]> {
+  const homeworkPaths: HomeworkPath[] = [];
+  const snapshot = await admin
+    .firestore()
+    .collection("homework-paths")
+    .get();
+
+  snapshot.forEach(document => {
+    homeworkPaths.push(getHomeworkPathFromDocument(document));
+  });
+
+  return homeworkPaths;
+}
+
+export async function getHomeworkPath(uid: string): Promise<HomeworkPath> {
   const document = await getDocumentByUid("homework-paths", uid);
 
-  return {
-    uid: document.get("uid"),
-    active: document.get("active"),
-    date: document.get("date"),
-    subject: document.get("subject"),
-    classNo: document.get("classNo"),
-    topic: document.get("topic"),
-    assignments: document.get("assignments")
-  };
+  return getHomeworkPathFromDocument(document);
 }
 
 export async function getSubject(uid: string): Promise<SubjectDictEntry> {
@@ -43,8 +61,8 @@ export async function getSubject(uid: string): Promise<SubjectDictEntry> {
   };
 }
 
-export async function getAllUserDetails(): Promise<UserDetails[]> {
-  const userDetails: UserDetails[] = [];
+export async function getAllUserDetails(): Promise<UserDetailsDictEntry[]> {
+  const userDetails: UserDetailsDictEntry[] = [];
   const snapshot = await admin
     .firestore()
     .collection("user-details")
@@ -61,7 +79,9 @@ export async function getAllUserDetails(): Promise<UserDetails[]> {
   return userDetails;
 }
 
-export async function getUserDetails(uid: string): Promise<UserDetails> {
+export async function getUserDetails(
+  uid: string
+): Promise<UserDetailsDictEntry> {
   const document = await getDocumentByUid("user-details", uid);
   return {
     uid: document.get("uid"),
@@ -76,8 +96,8 @@ export async function deleteUserDetails(
   return await deleteDocumentByUid("user-details", uid);
 }
 
-export async function getAllUserRoles(): Promise<UserRoles[]> {
-  const userRoles: UserRoles[] = [];
+export async function getAllUserRoles(): Promise<UserRolesDictEntry[]> {
+  const userRoles: UserRolesDictEntry[] = [];
   const snapshot = await admin
     .firestore()
     .collection("user-roles")
@@ -94,7 +114,7 @@ export async function getAllUserRoles(): Promise<UserRoles[]> {
   return userRoles;
 }
 
-export async function getUserRoles(uid: string): Promise<UserRoles> {
+export async function getUserRoles(uid: string): Promise<UserRolesDictEntry> {
   const document = await getDocumentByUid("user-roles", uid);
   return {
     uid: document.get("uid"),
@@ -104,7 +124,7 @@ export async function getUserRoles(uid: string): Promise<UserRoles> {
 }
 
 export async function createUserRoles(
-  userRoles: UserRoles
+  userRoles: UserRolesDictEntry
 ): Promise<FirebaseFirestore.WriteResult> {
   return await admin
     .firestore()
@@ -147,4 +167,32 @@ async function deleteDocumentByUid(
     .collection(collectionName)
     .doc(uid)
     .delete();
+}
+
+function getSentHomeworkFromDocument(
+  document: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>
+): SentHomework {
+  return {
+    uid: document.get("uid"),
+    email: document.get("email"),
+    displayName: document.get("displayName"),
+    userDetails: document.get("userDetails"),
+    files: document.get("files"),
+    date: document.get("date"),
+    homeworkPath: document.get("homeworkPath")
+  };
+}
+
+function getHomeworkPathFromDocument(
+  document: FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData>
+): HomeworkPath {
+  return {
+    uid: document.get("uid"),
+    active: document.get("active"),
+    date: document.get("date"),
+    subject: document.get("subject"),
+    classNo: document.get("classNo"),
+    topic: document.get("topic"),
+    assignments: document.get("assignments")
+  };
 }
