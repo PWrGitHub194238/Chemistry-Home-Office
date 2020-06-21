@@ -1,27 +1,13 @@
 # ChemistryHomeOffice
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.6.
+A simple Angular application for students and teachers allowing to send and manage student's homework.
 
-## Development server
+[Demo page](http://chemistry-home-office.firebaseapp.com/).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+[Overview page for users](https://chemistry-home-office.firebaseapp.com/faq/student).
 
-## Code scaffolding
+[Overview page for admins](https://chemistry-home-office.firebaseapp.com/faq/teacher).
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+[Console panel](https://firebase.google.com/).
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+Note that **environment** files are not present here. To enable developement, follow [Firebase settings page](https://console.firebase.google.com/u/1/project/chemistry-home-office/settings/general/web:MzMzNDc4NGUtYjM1NS00NWVlLWJkMTktN2ExZDdlYTcxMGRk) to add **firebaseConfig** section.
