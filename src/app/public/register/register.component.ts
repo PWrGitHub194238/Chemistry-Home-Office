@@ -3,19 +3,18 @@ import {
   FormBuilder,
   FormControl,
   FormGroup,
-  Validators,
-  AbstractControl
+  Validators
 } from "@angular/forms";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
+import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
+import { SubjectError, SubjectSuccess } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
-import { RedirectToLoginState } from "src/app/core/actions/redirect-to-login-state.action";
-import { SubjectError, User, SubjectSuccess } from "src/app/core/models";
 
 @UntilDestroy()
 @Component({
@@ -80,11 +79,12 @@ export class RegisterComponent implements OnInit {
         if (resp["error"]) {
           this.spinnerService.hideSpinner();
           this.snackBarService.showRegistrationError(resp["error"]);
+          this.authService.registering = false;
         } else {
           this.submitted = false;
           this.spinnerService.hideSpinner();
           const state = {};
-          state[RedirectToLoginState.UserRegisterSuccess] = true;
+          state[RedirectToLoginState.AccountNeedToBeVerified] = true;
           this.authService.logout(this.returnUrl, state);
         }
       });
@@ -127,6 +127,7 @@ export class RegisterComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.registerForm.valid) {
+      this.authService.registering = true;
       this.spinnerService.showSpinner(SpinnerMessage.RegisteringUser);
       this.authService.signInWithEmailAndPassword(
         this.formatUserLogin(this.userLogin.value),

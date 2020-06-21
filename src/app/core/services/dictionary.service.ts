@@ -607,6 +607,20 @@ export class DictionaryService {
   }
 
   // /user-details
+  getUserDetails$(
+    studentClass: string,
+    studentNo: number
+  ): Observable<UserDetailsDictEntry[]> {
+    return this.fireStoreService
+      .collection<UserDetailsDictEntry>("user-details", ref =>
+        ref
+          .where("studentClass", "==", studentClass)
+          .where("studentNo", "==", studentNo)
+      )
+      .valueChanges()
+      .pipe(untilDestroyed(this));
+  }
+
   getAllUserDetails$(sync?: boolean): Observable<UserDetailsDictEntry[]> {
     return !!sync || this.userDetailsArray.length === 0
       ? this.userDetailsDictCollection.valueChanges().pipe(

@@ -124,13 +124,25 @@
               Podaj proszę numer z dziennika
             </mat-error>
             <mat-error
+              *ngIf="
+                (studentNo.touched || submitted) && studentNo.errors?.noClass
+              "
+            >
+              {{ studentClass.value }} nie istnieje
+            </mat-error>
+            <mat-error
               *ngIf="(studentNo.touched || submitted) && studentNo.errors?.no"
             >
               Dany numer jest niepoprawny dla klasy {{ studentClass.value }}
             </mat-error>
           </mat-form-field>
         </div>
-        <button mat-raised-button color="primary" type="submit">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="registerForm.status === 'PENDING'"
+        >
           Zarejestruj
         </button>
         <button

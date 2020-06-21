@@ -30,6 +30,7 @@ import {
   UserDetailsDictEntry
 } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
+import { FirefunctionService } from "src/app/core/services/firefunction.service";
 import { SnackBarService } from "src/app/core/services/snack-bar.service";
 import { SpinnerService } from "src/app/core/services/spinner.service";
 import { SpinnerMessage } from "src/app/core/spinner-message.consts";
@@ -67,10 +68,11 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   constructor(
     private formBuilder: FormBuilder,
     private authService: AuthService,
-    private route: ActivatedRoute,
-    private router: Router,
     private snackBarService: SnackBarService,
     private spinnerService: SpinnerService,
+    private firefunctionService: FirefunctionService,
+    private route: ActivatedRoute,
+    private router: Router,
     private bottomSheet: MatBottomSheet,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
@@ -106,6 +108,9 @@ export class LoginComponent implements OnInit, AfterViewChecked {
               this.authService.user.auth.email &&
               this.authService.user.details
             ) {
+              this.firefunctionService.verifyNewAccount$(
+                this.authService.user.auth.uid
+              );
               this.redirectAfterLogin();
             } else {
               this.openUpdateUserDetailsDialog();
@@ -156,6 +161,7 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   }
 
   successCallback(signInSuccessData: FirebaseUISignInSuccessWithAuthResult) {
+    this.authService.registering = true;
     this.spinnerService.hideSpinner();
   }
 
@@ -166,8 +172,14 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   private showSnackBarOnLogout(state?: { [k: string]: any }) {
     if (state) {
       this.spinnerService.hideSpinner();
-      if (state[RedirectToLoginState.UserRegisterSuccess]) {
-        this.snackBarService.showUserRegistered();
+      if (state[RedirectToLoginState.AccountNeedToBeVerified]) {
+        if (this.authService.registering) {
+          this.authService.registering = false;
+          this.snackBarService.showUserRegistered();
+        } else {
+          this.snackBarService.showUserNeedsToBeVerifiedByAdmin();
+        }
+        this.authService.signOut();
       } else if (state[RedirectToLoginState.SentHomeworkSuccess]) {
         this.authService.signOut();
         this.snackBarService.showHomeworkSent(
@@ -233,8 +245,8 @@ export class LoginComponent implements OnInit, AfterViewChecked {
     } else if (this.authService.user.roles.student) {
       this.router.navigate(["send-homework"]);
     } else {
-      this.authService.signOut();
       this.snackBarService.showNoRulesInfo(this.authService.user);
+      this.authService.signOut();
     }
   }
 

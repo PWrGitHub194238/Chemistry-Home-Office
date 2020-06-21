@@ -2,16 +2,16 @@ import { Injectable } from "@angular/core";
 import {
   ActivatedRouteSnapshot,
   CanActivate,
-  Router,
   RouterStateSnapshot
 } from "@angular/router";
+import { RedirectToLoginState } from "../actions/redirect-to-login-state.action";
 import { AuthService } from "../services/auth.service";
 
 @Injectable({
   providedIn: "root"
 })
 export class LoginGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -20,6 +20,10 @@ export class LoginGuard implements CanActivate {
     if (!this.authService.isAuthenticated) {
       this.authService.redirectToLogin(state.url, null);
       return false;
+    } else if (!this.authService.isVerified) {
+      const payload = {};
+      payload[RedirectToLoginState.AccountNeedToBeVerified] = true;
+      this.authService.redirectToLogin(state.url, payload);
     }
 
     return true;

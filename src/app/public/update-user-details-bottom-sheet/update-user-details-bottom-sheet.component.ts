@@ -13,6 +13,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { UserDetailsDictEntry } from "src/app/core/models";
 import { AuthService } from "src/app/core/services/auth.service";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
+import { FirefunctionService } from "src/app/core/services/firefunction.service";
 import { LoginFormValidator } from "src/app/shared/validators/login-form.validator";
 
 @UntilDestroy()
@@ -57,6 +58,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
     private formBuilder: FormBuilder,
     private authService: AuthService,
     private dictionaryService: DictionaryService,
+    private firefunctionService: FirefunctionService,
     private bottomSheetRef: MatBottomSheetRef<
       UpdateUserDetailsBottomSheetComponent
     >,
@@ -99,7 +101,7 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
       studentNo: [
         {
           value: this.studentNoDefaultValue,
-          disabled: !!this.studentNoDefaultValue
+          disabled: true
         },
         [Validators.required],
         [
@@ -115,16 +117,27 @@ export class UpdateUserDetailsBottomSheetComponent implements OnInit {
   onSubmit() {
     this.submitted = true;
     if (this.registerForm.valid) {
-      const UserDetails: UserDetailsDictEntry = {
+      const userDetails: UserDetailsDictEntry = {
         uid: "",
         studentClass: (this.studentClass.value as string).toUpperCase(),
         studentNo: this.studentNo.value as number
       };
 
-      this.authService.updateUserCredentials(this.userMail.value);
-      this.authService.updateUserProfileDetails(UserDetails);
+      if (this.userMail.dirty) {
+        this.authService.updateUserCredentials(this.userMail.value);
+      }
 
-      this.bottomSheetRef.dismiss(UserDetails);
+      if (this.studentClass.dirty || this.studentNo.dirty) {
+        this.authService
+          .updateUserProfileDetails(userDetails)
+          .then(() =>
+            this.firefunctionService.verifyNewAccount$(
+              this.authService.user.auth.uid
+            )
+          );
+      }
+
+      this.bottomSheetRef.dismiss(userDetails);
     }
   }
 }

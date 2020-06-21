@@ -6,7 +6,7 @@ import {
   ValidatorFn
 } from "@angular/forms";
 import { Observable, of } from "rxjs";
-import { first, map } from "rxjs/operators";
+import { first, map, take } from "rxjs/operators";
 import { ClassDictEntry } from "src/app/core/models";
 import { DictionaryService } from "src/app/core/services/dictionary.service";
 
@@ -114,7 +114,7 @@ export class LoginFormValidator {
           }
           return null;
         }),
-        first()
+        take(1)
       );
     };
   }

@@ -44,6 +44,10 @@
         "function": "verifyUserEmail"
       },
       {
+        "source": "/chemistry-home-office/us-central1/verifyNewAccount",
+        "function": "verifyNewAccount"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }

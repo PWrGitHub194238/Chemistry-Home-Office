@@ -34,7 +34,7 @@ export class ForStudentComponent {
         {
           slideIndex: 5,
           description: `Jeśli wszystko pójdzie dobrze a podane dane okażą się prawidłowe, nowe konto zostanie stworzone 
-          a użytkownik przeniesiony pponownie na stronę logowania.`
+          a użytkownik przeniesiony pponownie na stronę logowania. Konto musi zostać aktywowane przez administratora, zanim będzie się można na nie zalogować.`
         }
       ],
       slideImages: [
@@ -43,7 +43,8 @@ export class ForStudentComponent {
         "assets/faq/for-student/register/1.jpg",
         "assets/faq/for-student/register/2.jpg",
         "assets/faq/for-student/register/3.jpg",
-        "assets/faq/for-student/register/4.jpg"
+        "assets/faq/for-student/register/4.jpg",
+        "assets/faq/for-student/register/5.jpg"
       ]
     },
     {

@@ -2,9 +2,11 @@ import * as admin from "firebase-admin";
 import * as Mail from "nodemailer/lib/mailer";
 import * as stringFormat from "string-format";
 import { sendMail } from "./email";
+import { UserDetailsDictEntry } from "../models/user/user-details-dict-entry.model";
 
-export async function sendVerifyEmailMail(
+export async function sendVerifyNewAccountMail(
   user: admin.auth.UserRecord,
+  userDetails: UserDetailsDictEntry,
   verifyLinkToken: string
 ): Promise<void> {
   if (user.displayName && user.email) {
@@ -18,19 +20,22 @@ export async function sendVerifyEmailMail(
         address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       to: {
-        name: user.displayName,
-        address: user.email
+        name: "Chemistry Home Office",
+        address: "chemistry.home.office@gmail.com"
       },
-      subject: "Zweryfikuj e-mail używany w aplikacji",
-      html: sendVerifyEmailMailHtmlBody(user, verifyLinkToken)
+      subject: `Aktywuj konto dla ${
+        user.displayName ? user.displayName : user.email
+      }!`,
+      html: sendVerifyNewAccountMailHtmlBody(user, userDetails, verifyLinkToken)
     };
 
     await sendMail(mailDetails);
   }
 }
 
-function sendVerifyEmailMailHtmlBody(
+function sendVerifyNewAccountMailHtmlBody(
   user: admin.auth.UserRecord,
+  userDetails: UserDetailsDictEntry,
   verifyLinkToken: string
 ): string {
   return stringFormat(
@@ -43,14 +48,18 @@ function sendVerifyEmailMailHtmlBody(
           <meta name="viewport" content="width=device-width, initial-scale=1">
         </head>
         <body bgcolor="#ffffff" text="#000000">
-          <p>Cześć, {studentName}!</p>
-          <p>Kliknij <a href="{link}">ten</a> link, aby zweryfikować swój adres email.</p>
-          <p>Jeżeli nie prosiłeś o weryfikację adresu, zignoruj tego e-maila.</p>
+          <p>Cześć!</p>
+          <p>Uczeń klasy {studentClass} o numerze w dzienniku {studentNo} ({studentName}) właśnie się zarejestrował przy użyciu adresu e-mail: {studentEmail}.</p>
+          <p>Kliknij <a href="{link}">ten</a> link, aby zweryfikować ten adres e-mail.</p>
+          <p>Dopóki adres e-mail nie zostanie przez Ciebie zweryfikowany, użytkownik nie będzie mógł zalogować się do systemu.</p>
           <p>Proszę nie odpowiadaj na tę wiadomość.</p>
         </body>
       </html>`,
     {
+      studentClass: userDetails.studentClass,
+      studentNo: userDetails.studentNo,
       studentName: user.displayName ? user.displayName : user.email,
+      studentEmail: user.email,
       link: verifyLinkToken
     }
   );

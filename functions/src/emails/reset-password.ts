@@ -11,11 +11,11 @@ export async function sendResetPasswordMail(
     const mailDetails: Mail.Options = {
       from: {
         name: "Chemistry Home Office",
-        address: "chemistry.home.office@gmail.com"
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       sender: {
         name: "Chemistry Home Office",
-        address: "chemistry.home.office@gmail.com"
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       to: {
         name: user.displayName,

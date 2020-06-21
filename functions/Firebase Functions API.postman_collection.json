@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "add3e9c0-6660-4ece-b12b-cc4f8b9eaaaf",
+		"_postman_id": "95632763-23ab-4733-a069-12cc1e9ae306",
 		"name": "Firebase Functions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -284,13 +284,41 @@
 				"description": "Send an email to the target based on a given user's UID with a given subject and HTML body."
 			},
 			"response": []
+		},
+		{
+			"name": "verifyNewAccount",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"data\": {\r\n\t\t\"uid\": \"{{targetUserUID}}\"\r\n\t}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{domain}}/verifyNewAccount",
+					"protocol": "https",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"verifyNewAccount"
+					]
+				},
+				"description": "Send e-mail to administrator with an account activation link."
+			},
+			"response": []
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "703feb45-41ac-40af-9777-e1f95782e50f",
+				"id": "51d20bb3-ef0e-4cfa-9b2b-28ec47d5d53e",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -300,7 +328,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "f111abf7-6fc9-404c-9a31-2b6d65e97687",
+				"id": "af082ac7-52cd-40cd-9fd0-1e35bc11ac30",
 				"type": "text/javascript",
 				"exec": [
 					""

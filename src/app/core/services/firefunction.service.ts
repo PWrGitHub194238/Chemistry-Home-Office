@@ -45,6 +45,10 @@ export class FirefunctionService {
     "sendEmail"
   );
 
+  private verifyNewAccountFunctionDef = this.fireFunctionsService.httpsCallable(
+    "verifyNewAccount"
+  );
+
   constructor(private fireFunctionsService: AngularFireFunctions) {}
 
   sendHomeworkSentNotificationEmail$(
@@ -210,6 +214,20 @@ export class FirefunctionService {
       to_uid: receiverUid,
       subject: subject,
       html: htmlBody
+    }).pipe(
+      map((resp: any) => {
+        if (resp["error"]) {
+          throw new Error(resp["error"]);
+        } else {
+          return resp["success"] as boolean;
+        }
+      })
+    );
+  }
+
+  verifyNewAccount$(uid: string): Observable<boolean> {
+    return this.verifyNewAccountFunctionDef({
+      uid: uid
     }).pipe(
       map((resp: any) => {
         if (resp["error"]) {

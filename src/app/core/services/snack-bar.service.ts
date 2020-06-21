@@ -33,9 +33,21 @@ export class SnackBarService {
         color: "accent",
         message: `Cześć, Twoje konto zostało utworzone<br />
           i przypisane do klasy.<br />
-          Proszę zaloguj się teraz <br />
-          podanymi wcześniej adresem e-mail i hasłem.<br />
-          Miłego korzystania :).`
+          Zanim będzie można się zalogować na konto,
+          musi być ono aktywowane przez administratora.`
+      },
+      ...this.displayDefaultconfig,
+      duration: 10000
+    });
+  }
+
+  showUserNeedsToBeVerifiedByAdmin() {
+    this.snackBar.openFromComponent(SnackBarComponent, {
+      data: {
+        header: "Konto nie jest aktywne",
+        color: "accent",
+        message: `Zanim będzie można się zalogować na konto,
+          musi być ono aktywowane przez administratora.`
       },
       ...this.displayDefaultconfig,
       duration: 10000

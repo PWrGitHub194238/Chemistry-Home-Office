@@ -36,6 +36,7 @@ export class AuthService {
   user$: Observable<User | null>;
   user: User | null;
   onLogoutState: { [key: string]: any };
+  registering: boolean;
 
   private timeout = 1000 * 60 * 10;
 
@@ -49,7 +50,11 @@ export class AuthService {
   private userDisplaySubscription: Subscription;
 
   get isAuthenticated(): boolean {
-    return !!this.user;
+    return !!this.user && !!this.user.roles;
+  }
+
+  get isVerified(): boolean {
+    return this.isAuthenticated && this.user.auth.emailVerified;
   }
 
   get isAdmin(): boolean {
@@ -133,16 +138,16 @@ export class AuthService {
   ) {
     this.firebaseAuth.auth
       .createUserWithEmailAndPassword(email, password)
-      .then((credentials: firebase.auth.UserCredential) =>
-        this.setUserProfile(credentials, displayName, additionalDetails)
-      )
+      .then((credentials: firebase.auth.UserCredential) => {
+        this.setUserProfile(credentials, displayName, additionalDetails);
+      })
       .catch(reason => {
         this.signedInSubject$.next({ error: reason });
       });
   }
 
   updateUserCredentials(email: string) {
-    this.firebaseAuth.auth.currentUser.updateEmail(email);
+    this.user.auth.updateEmail(email);
   }
 
   setUserProfile(
@@ -179,13 +184,13 @@ export class AuthService {
       );
   }
 
-  updateUserProfileDetails(additionalDetails?: UserDetailsDictEntry) {
-    if (this.user) {
-      this.firestoreDocumentService.setUserDetails$(
-        this.user.auth.uid,
-        additionalDetails
-      );
-    }
+  updateUserProfileDetails(
+    additionalDetails?: UserDetailsDictEntry
+  ): Promise<void> {
+    return this.firestoreDocumentService.setUserDetails$(
+      this.user.auth.uid,
+      additionalDetails
+    );
   }
 
   signOut(): Promise<void> {

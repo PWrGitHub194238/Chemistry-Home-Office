@@ -25,7 +25,7 @@
         fxLayoutGap="10px"
         fxLayoutAlign="space-evenly"
       >
-        <span class="full-width" [class.hidden]="userMailDefaultValue">
+        <span class="full-width" *ngIf="!userMailDefaultValue">
           <mat-form-field class="full-width">
             <mat-label>Adres e-mail</mat-label>
             <input
@@ -49,7 +49,7 @@
         fxLayoutGap="10px"
         fxLayoutAlign="space-evenly"
       >
-        <span class="full-width" [class.hidden]="studentClassDefaultValue">
+        <span class="full-width" *ngIf="!studentClassDefaultValue">
           <mat-form-field class="full-width">
             <mat-label>Klasa</mat-label>
             <input
@@ -76,7 +76,7 @@
             </mat-error>
           </mat-form-field>
         </span>
-        <span class="full-width" [class.hidden]="studentNoDefaultValue">
+        <span class="full-width" *ngIf="!studentNoDefaultValue">
           <mat-form-field class="full-width">
             <mat-label>Numer w dzienniku</mat-label>
             <input
@@ -93,6 +93,13 @@
               Podaj proszę numer z dziennika
             </mat-error>
             <mat-error
+              *ngIf="
+                (studentNo.touched || submitted) && studentNo.errors?.noClass
+              "
+            >
+              {{ studentClass.value }} nie istnieje
+            </mat-error>
+            <mat-error
               *ngIf="(studentNo.touched || submitted) && studentNo.errors?.no"
             >
               Dany numer jest niepoprawny dla klasy {{ studentClass.value }}
@@ -100,7 +107,9 @@
           </mat-form-field>
         </span>
       </div>
-      <button mat-raised-button color="primary" type="submit">Uzupełnij</button>
+      <button mat-raised-button color="primary" type="submit">
+        Uzupełnij
+      </button>
     </form>
   </mat-card-content>
   <mat-card-actions> </mat-card-actions>

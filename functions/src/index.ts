@@ -11,6 +11,7 @@ import { getHomeworkSentToTeacherConfirmationOptions } from "./emails/homework-s
 import { getHomeworkSentToTeacherNotificationOptions } from "./emails/homework-sent/to-teacher";
 import { sendResetPasswordMail } from "./emails/reset-password";
 import { sendVerifyEmailMail } from "./emails/verify-email";
+import { sendVerifyNewAccountMail } from "./emails/verify-new-account";
 import {
   createUserRoles,
   deleteSentHomework,
@@ -340,6 +341,23 @@ exports.getUserAdminDetails = functions.https.onCall(async (data, context) => {
     }
 
     return { userDisplayArray };
+  } catch (err) {
+    return { error: err };
+  }
+});
+
+exports.verifyNewAccount = functions.https.onCall(async (data, context) => {
+  try {
+    const userUid: string = data["uid"] as string;
+    const user: admin.auth.UserRecord = await admin.auth().getUser(userUid);
+    const userDetails: UserDetailsDictEntry = await getUserDetails(userUid);
+
+    await sendVerifyNewAccountMail(
+      user,
+      userDetails,
+      await admin.auth().generateEmailVerificationLink(user.email as string)
+    );
+    return { success: true };
   } catch (err) {
     return { error: err };
   }

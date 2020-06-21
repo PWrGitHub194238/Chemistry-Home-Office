@@ -72,6 +72,13 @@
             Podaj proszę numer z dziennika
           </mat-error>
           <mat-error
+            *ngIf="
+              (studentNo.touched || submitted) && studentNo.errors?.noClass
+            "
+          >
+            {{ studentClass.value }} nie istnieje
+          </mat-error>
+          <mat-error
             *ngIf="(studentNo.touched || submitted) && studentNo.errors?.no"
           >
             Dany numer jest niepoprawny dla klasy {{ studentClass.value }}
@@ -112,7 +119,12 @@
   <div fxFlex></div>
   <div>
     <button mat-button (click)="onCancel()">Anuluj</button>
-    <button mat-raised-button color="primary" (click)="onSubmit()">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="form.status === 'PENDING'"
+    >
       {{
         editMode
           ? form.pristine
