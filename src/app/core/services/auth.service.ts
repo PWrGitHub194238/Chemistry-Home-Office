@@ -180,7 +180,7 @@ export class AuthService {
             admin: false,
             student: true
           })
-          .then(() => this.signedInSubject$.next({}))
+          .then(() => this.signedInSubject$.next({message: credentials.user.uid}))
       );
   }
 

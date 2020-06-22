@@ -156,11 +156,18 @@ export class HomeworkPathsDialogComponent extends BaseTablePanelDialogComponent<
       topic: this.topic.value,
       assignments: this.assignments.controls
         .slice(0, this.assignments.controls.length - 1)
-        .map((assignment: FormGroup) => ({
-          uid: assignment.get("uid").value,
-          name: assignment.get("name").value,
-          icon: this.getIconName(assignment.get("iconIdx").value)
-        }))
+        .map((assignment: FormGroup) => {
+          const uid: string = assignment.get("uid").value;
+
+          return uid ? {
+            uid,
+            name: assignment.get("name").value,
+            icon: this.getIconName(assignment.get("iconIdx").value)
+          } : {
+            name: assignment.get("name").value,
+            icon: this.getIconName(assignment.get("iconIdx").value)
+          };
+        })
     };
   }
 

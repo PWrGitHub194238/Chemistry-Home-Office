@@ -84,7 +84,7 @@ export class RegisterComponent implements OnInit {
           this.submitted = false;
           this.spinnerService.hideSpinner();
           const state = {};
-          state[RedirectToLoginState.AccountNeedToBeVerified] = true;
+          state[RedirectToLoginState.AccountNeedToBeVerified] = resp["message"];
           this.authService.logout(this.returnUrl, state);
         }
       });

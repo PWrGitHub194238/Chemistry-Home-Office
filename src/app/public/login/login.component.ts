@@ -108,9 +108,6 @@ export class LoginComponent implements OnInit, AfterViewChecked {
               this.authService.user.auth.email &&
               this.authService.user.details
             ) {
-              this.firefunctionService.verifyNewAccount$(
-                this.authService.user.auth.uid
-              );
               this.redirectAfterLogin();
             } else {
               this.openUpdateUserDetailsDialog();
@@ -175,6 +172,9 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       if (state[RedirectToLoginState.AccountNeedToBeVerified]) {
         if (this.authService.registering) {
           this.authService.registering = false;
+          this.firefunctionService.verifyNewAccount$(
+            state[RedirectToLoginState.AccountNeedToBeVerified]
+          );
           this.snackBarService.showUserRegistered();
         } else {
           this.snackBarService.showUserNeedsToBeVerifiedByAdmin();
