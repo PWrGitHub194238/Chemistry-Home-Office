@@ -45,6 +45,7 @@ testem.log
 .DS_Store
 Thumbs.db
 
-src/environments/
+src/environments/environment.prod.ts
 .editorconfig
 functions/ui-debug.log
+functions/firebase-debug.log
