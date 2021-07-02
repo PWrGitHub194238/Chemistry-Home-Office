@@ -16,20 +16,20 @@ export async function getHomeworkSentToTeacherConfirmationOptions(
   if (receiver.email) {
     return {
       from: {
-        name: "Chemistry Home Office",
-        address: "chemistry.home.office@gmail.com"
+        name: "Chemistry Home Office DEV",
+        address: "chemistry.home.office.dev@gmail.com"
       },
       sender: {
-        name: "Chemistry Home Office",
-        address: "chemistry.home.office@gmail.com"
+        name: "Chemistry Home Office DEV",
+        address: "chemistry.home.office.dev@gmail.com"
       },
       to: {
         name: receiver.displayName ? receiver.displayName : receiver.email,
         address: receiver.email
       },
       replyTo: {
-        name: "Chemistry Home Office",
-        address: "chemistry.home.office@gmail.com"
+        name: "Chemistry Home Office DEV",
+        address: "chemistry.home.office.dev@gmail.com"
       },
       subject: getSentToTeacherConfirmationSubject(
         homeworkPath,

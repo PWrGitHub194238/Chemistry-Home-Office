@@ -21,7 +21,7 @@
     "firebase-admin": "9.9.0",
     "firebase-functions": "^3.14.1",
     "mime-types": "^2.1.26",
-    "nodemailer": "^6.4.16",
+    "nodemailer": "^6.6.2",
     "string-format": "^2.0.0",
     "table-builder": "^2.1.1"
   },
