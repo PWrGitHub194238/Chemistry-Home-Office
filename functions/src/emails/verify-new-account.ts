@@ -12,16 +12,16 @@ export async function sendVerifyNewAccountMail(
   if (user.displayName && user.email) {
     const mailDetails: Mail.Options = {
       from: {
-        name: "Chemistry Home Office DEV",
-        address: "noreply@chemistry-home-office-dev.firebaseapp.com"
+        name: "Chemistry Home Office",
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       sender: {
-        name: "Chemistry Home Office DEV",
-        address: "noreply@chemistry-home-office-dev.firebaseapp.com"
+        name: "Chemistry Home Office",
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       to: {
-        name: "Chemistry Home Office DEV",
-        address: "chemistry.home.office.dev@gmail.com"
+        name: "Chemistry Home Office",
+        address: "chemistry.home.office@gmail.com"
       },
       subject: `Aktywuj konto dla ${
         user.displayName ? user.displayName : user.email

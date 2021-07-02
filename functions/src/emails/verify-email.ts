@@ -10,12 +10,12 @@ export async function sendVerifyEmailMail(
   if (user.displayName && user.email) {
     const mailDetails: Mail.Options = {
       from: {
-        name: "Chemistry Home Office DEV",
-        address: "noreply@chemistry-home-office-dev.firebaseapp.com"
+        name: "Chemistry Home Office",
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       sender: {
-        name: "Chemistry Home Office DEV",
-        address: "noreply@chemistry-home-office-dev.firebaseapp.com"
+        name: "Chemistry Home Office",
+        address: "noreply@chemistry-home-office.firebaseapp.com"
       },
       to: {
         name: user.displayName,
