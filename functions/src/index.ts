@@ -403,12 +403,12 @@ exports.sendEmail = functions.https.onCall(async (data, context) => {
 
       const mailDetails: Mail.Options = {
         from: {
-          name: "Chemistry Home Office",
-          address: "chemistry.home.office@gmail.com"
+          name: "Chemistry Home Office DEV",
+          address: "chemistry.home.office.dev@gmail.com"
         },
         sender: {
-          name: "Chemistry Home Office",
-          address: "chemistry.home.office@gmail.com"
+          name: "Chemistry Home Office DEV",
+          address: "chemistry.home.office.dev@gmail.com"
         },
         to: {
           name: toName,
