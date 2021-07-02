@@ -47,7 +47,7 @@ registerLocaleData(localePl, "pl");
     },
     {
       provide: ORIGIN,
-      useValue: "https://chemistry-home-office.firebaseapp.com"
+      useValue: "https://chemistry-home-office-dev.firebaseapp.com"
     }
   ],
   bootstrap: [AppComponent]
