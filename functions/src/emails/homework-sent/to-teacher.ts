@@ -26,8 +26,8 @@ export async function getHomeworkSentToTeacherNotificationOptions(
         address: sender.email
       },
       to: {
-        name: "Chemistry Home Office DEV",
-        address: "chemistry.home.office.dev@gmail.com"
+        name: "Chemistry Home Office",
+        address: "chemistry.home.office@gmail.com"
       },
       replyTo: {
         name: sender.displayName ? sender.displayName : sender.email,

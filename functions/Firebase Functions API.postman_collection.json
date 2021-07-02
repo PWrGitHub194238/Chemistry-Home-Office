@@ -340,7 +340,7 @@
 		{
 			"id": "9e9297d9-f72e-4757-897c-16636b86ded7",
 			"key": "domain",
-			"value": "us-central1-chemistry-home-office-dev.cloudfunctions.net",
+			"value": "us-central1-chemistry-home-office.cloudfunctions.net",
 			"type": "string"
 		},
 		{
